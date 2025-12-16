@@ -1,32 +1,23 @@
 import React, { useState } from "react";
 import LessonRoom from "./components/LessonRoom";
 
-// فایل‌های جدید با اسم‌های واقعی
-import life from "./lessons/life";
-import childhood from "./lessons/childhood";
-import teenage from "./lessons/teenage";
-import university from "./lessons/university";
-import military from "./lessons/military";
-import relationship from "./lessons/relationship";  // بخش جدید
-import mechanic from "./lessons/mechanic";
-import ai from "./lessons/ai";   // ← درس جدید هوش مصنوعی
+/* ====== Import Lessons ====== */
+import history from "./lessons/history";           // تاریخچه / مسیر زندگی
+import selfKnowledge from "./lessons/selfKnowledge";
+import taqwa from "./lessons/taqwa";
+import tawhid from "./lessons/tawhid";
+import education from "./lessons/education";
+import career from "./lessons/career";
+import family from "./lessons/family";
 
-function normalizeLesson(raw, name) {
+/* ====== Normalizer ====== */
+function normalizeLesson(raw, title, color) {
   if (Array.isArray(raw)) {
     return {
-      title: name,
-      color:
-        name === "نقشه کل زندگی" ? "#4ecdc4" :
-        name === "کودکی" ? "#ff6b6b" :
-        name === "نوجوانی و دبیرستان" ? "#ffe66d" :
-        name === "دانشگاه" ? "#5f6caf" :
-        name === "سربازی" ? "#c06c84" :
-        name === "ازدواج و طلاق" ? "#ff99aa" :
-        name === "مکانیکی و زین الدین" ? "#6a4c93" :
-        name === "هوش مصنوعی و برنامه‌نویسی" ? "#00c6ff" :
-        "#ffffff",
+      title,
+      color,
       chapters: raw.map((c, i) => ({
-        id: "ch" + i,
+        id: "ch_" + i,
         title: c.section || "بدون عنوان",
         topics: (c.topics || []).map((t, j) => ({
           id: `t_${i}_${j}`,
@@ -40,17 +31,17 @@ function normalizeLesson(raw, name) {
   return raw;
 }
 
-// لیست کامل درس‌ها
-const LESSONS = {
-  life: normalizeLesson(life, "نقشه کل زندگی"),
-  childhood: normalizeLesson(childhood, "کودکی"),
-  teenage: normalizeLesson(teenage, "نوجوانی و دبیرستان"),
-  university: normalizeLesson(university, "دانشگاه"),
-  military: normalizeLesson(military, "سربازی"),
-  relationship: normalizeLesson(relationship, "ازدواج و طلاق"),
-  mechanic: normalizeLesson(mechanic, "مکانیکی و زین الدین"),
-  ai: normalizeLesson(ai, "هوش مصنوعی و برنامه‌نویسی"), // ← اضافه شد
-};
+/* ====== Lessons (Order is important) ====== */
+const LESSONS = [
+  normalizeLesson(history, "تاریخچه", "#4ecdc4"),
+
+  normalizeLesson(selfKnowledge, "خودشناسی", "#ff6b6b"),
+  normalizeLesson(taqwa, "تقوا", "#1dd1a1"),
+  normalizeLesson(tawhid, "توحید", "#48dbfb"),
+  normalizeLesson(education, "تحصیلات", "#5f6caf"),
+  normalizeLesson(career, "شغل", "#f368e0"),
+  normalizeLesson(family, "تشکیل خانواده", "#ff9f43"),
+];
 
 export default function App() {
   const [activeLesson, setActiveLesson] = useState(null);
@@ -67,34 +58,27 @@ export default function App() {
   return (
     <div style={styles.container}>
       <h1 style={styles.header}>متاورس زندگی من</h1>
-      <p style={styles.subHeader}>یک بخش از زندگی را انتخاب کن</p>
+      <p style={styles.subHeader}>مسیر رشد از گذشته تا آینده</p>
 
       <div style={styles.grid}>
-        {Object.keys(LESSONS).map((key) => {
-          const lesson = LESSONS[key];
-          return (
-            <div
-              key={key}
-              style={{ ...styles.card, borderColor: lesson.color }}
-              onClick={() => setActiveLesson(lesson)}
-            >
-              <div
-                style={{
-                  ...styles.icon,
-                  backgroundColor: lesson.color,
-                }}
-              >
-                {lesson.title.substring(0, 2)}
-              </div>
-              <h3 style={styles.cardTitle}>{lesson.title}</h3>
+        {LESSONS.map((lesson, index) => (
+          <div
+            key={index}
+            style={{ ...styles.card, borderColor: lesson.color }}
+            onClick={() => setActiveLesson(lesson)}
+          >
+            <div style={{ ...styles.icon, backgroundColor: lesson.color }}>
+              {lesson.title.substring(0, 2)}
             </div>
-          );
-        })}
+            <h3 style={styles.cardTitle}>{lesson.title}</h3>
+          </div>
+        ))}
       </div>
     </div>
   );
 }
 
+/* ====== Styles ====== */
 const styles = {
   container: {
     width: "100vw",
@@ -133,7 +117,6 @@ const styles = {
     marginTop: "10px",
   },
 
-
   card: {
     width: "140px",
     height: "160px",
@@ -164,5 +147,6 @@ const styles = {
   cardTitle: {
     marginTop: "10px",
     fontSize: "0.95rem",
+    textAlign: "center",
   },
 };
