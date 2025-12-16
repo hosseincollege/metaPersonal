@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import LessonRoom from "./components/LessonRoom";
 
 /* ====== Import Lessons ====== */
-import history from "./lessons/history";           // تاریخچه / مسیر زندگی
+import history from "./lessons/history";
+
 import selfKnowledge from "./lessons/selfKnowledge";
 import taqwa from "./lessons/taqwa";
 import tawhid from "./lessons/tawhid";
@@ -12,35 +13,37 @@ import family from "./lessons/family";
 
 /* ====== Normalizer ====== */
 function normalizeLesson(raw, title, color) {
-  if (Array.isArray(raw)) {
-    return {
-      title,
-      color,
-      chapters: raw.map((c, i) => ({
-        id: "ch_" + i,
-        title: c.section || "بدون عنوان",
-        topics: (c.topics || []).map((t, j) => ({
-          id: `t_${i}_${j}`,
-          title: t.title,
-          content: t.content,
-          subtopics: t.subtopics || [],
-        })),
+  return {
+    title,
+    color,
+    chapters: raw.map((c, i) => ({
+      id: "ch_" + i,
+      title: c.section || "بدون عنوان",
+      topics: (c.topics || []).map((t, j) => ({
+        id: `t_${i}_${j}`,
+        title: t.title,
+        content: t.content,
+        subtopics: t.subtopics || [],
       })),
-    };
-  }
-  return raw;
+    })),
+  };
 }
 
-/* ====== Lessons (Order is important) ====== */
-const LESSONS = [
-  normalizeLesson(history, "تاریخچه", "#4ecdc4"),
+/* ====== History (Separate) ====== */
+const HISTORY = normalizeLesson(
+  history,
+  "تاریخچه مسیر زندگی",
+  "#4ecdc4"
+);
 
-  normalizeLesson(selfKnowledge, "خودشناسی", "#ff6b6b"),
-  normalizeLesson(taqwa, "تقوا", "#1dd1a1"),
-  normalizeLesson(tawhid, "توحید", "#48dbfb"),
-  normalizeLesson(education, "تحصیلات", "#5f6caf"),
-  normalizeLesson(career, "شغل", "#f368e0"),
-  normalizeLesson(family, "تشکیل خانواده", "#ff9f43"),
+/* ====== Principles (1 → 6) ====== */
+const PRINCIPLES = [
+  normalizeLesson(selfKnowledge, "1- خودشناسی", "#ff6b6b"),
+  normalizeLesson(taqwa, "2- تقوا", "#1dd1a1"),
+  normalizeLesson(tawhid, "3- توحید", "#48dbfb"),
+  normalizeLesson(education, "4- تحصیلات", "#5f6caf"),
+  normalizeLesson(career, "5- شغل", "#f368e0"),
+  normalizeLesson(family, "6- تشکیل خانواده", "#ff9f43"),
 ];
 
 export default function App() {
@@ -58,17 +61,37 @@ export default function App() {
   return (
     <div style={styles.container}>
       <h1 style={styles.header}>متاورس زندگی من</h1>
-      <p style={styles.subHeader}>مسیر رشد از گذشته تا آینده</p>
+      <p style={styles.subHeader}>از آنچه بوده‌ام تا آنچه باید باشم</p>
+
+      {/* ====== History Section ====== */}
+      <div style={styles.historyWrapper}>
+        <div
+          style={{ ...styles.historyCard, borderColor: HISTORY.color }}
+          onClick={() => setActiveLesson(HISTORY)}
+        >
+          <div
+            style={{ ...styles.icon, backgroundColor: HISTORY.color }}
+          >
+            📜
+          </div>
+          <h3 style={styles.cardTitle}>تاریخچه مسیر زندگی</h3>
+        </div>
+      </div>
+
+      {/* ====== Principles Section ====== */}
+      <h2 style={styles.sectionTitle}>اصول زندگی من</h2>
 
       <div style={styles.grid}>
-        {LESSONS.map((lesson, index) => (
+        {PRINCIPLES.map((lesson, index) => (
           <div
             key={index}
             style={{ ...styles.card, borderColor: lesson.color }}
             onClick={() => setActiveLesson(lesson)}
           >
-            <div style={{ ...styles.icon, backgroundColor: lesson.color }}>
-              {lesson.title.substring(0, 2)}
+            <div
+              style={{ ...styles.icon, backgroundColor: lesson.color }}
+            >
+              {lesson.title.substring(0, 1)}
             </div>
             <h3 style={styles.cardTitle}>{lesson.title}</h3>
           </div>
@@ -88,7 +111,6 @@ const styles = {
     flexDirection: "column",
     alignItems: "center",
     paddingTop: "20px",
-    overflow: "hidden",
     color: "white",
     direction: "rtl",
     fontFamily: "Vazirmatn, sans-serif",
@@ -108,13 +130,36 @@ const styles = {
     color: "#b6c0d1",
   },
 
+  sectionTitle: {
+    marginTop: "14px",
+    marginBottom: "10px",
+    fontSize: "1.1rem",
+    color: "#cbd5e1",
+  },
+
+  historyWrapper: {
+    marginBottom: "12px",
+  },
+
+  historyCard: {
+    width: "300px",
+    height: "80px",
+    background: "rgba(70, 90, 140, 0.6)",
+    borderRadius: "14px",
+    border: "2px solid",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
+    gap: "12px",
+  },
+
   grid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
     gap: "14px 18px",
     width: "80%",
     maxWidth: "900px",
-    marginTop: "10px",
   },
 
   card: {
@@ -141,7 +186,6 @@ const styles = {
     justifyContent: "center",
     fontSize: "1.2rem",
     fontWeight: "bold",
-    boxShadow: "0 0 12px rgba(255,255,255,0.2)",
   },
 
   cardTitle: {
