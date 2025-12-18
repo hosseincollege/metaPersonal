@@ -10,6 +10,7 @@ import tawhid from "./lessons/tawhid";
 import education from "./lessons/education";
 import career from "./lessons/career";
 import family from "./lessons/family";
+import three from "./lessons/three";
 
 /* ====== Normalizer ====== */
 function normalizeLesson(raw, title, color) {
@@ -44,6 +45,7 @@ const PRINCIPLES = [
   normalizeLesson(education, "4- تحصیلات", "#5f6caf"),
   normalizeLesson(career, "5- شغل", "#f368e0"),
   normalizeLesson(family, "6- تشکیل خانواده", "#ff9f43"),
+  normalizeLesson(three, "درخت اصول", "#9bff43"),
 ];
 
 export default function App() {
