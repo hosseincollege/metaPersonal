@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import LessonRoom from "./components/LessonRoom";
+import ClassroomSplitTwoD from "./components/ClassroomSplitTwoD";
 
 /* ====== Import Lessons ====== */
 import history from "./lessons/history";
-
 import selfKnowledge from "./lessons/selfKnowledge";
 import taqwa from "./lessons/taqwa";
 import tawhid from "./lessons/tawhid";
@@ -37,7 +37,7 @@ const HISTORY = normalizeLesson(
   "#4ecdc4"
 );
 
-/* ====== Principles (1 → 6) ====== */
+/* ====== Principles ====== */
 const PRINCIPLES = [
   normalizeLesson(selfKnowledge, "1- خودشناسی", "#ff6b6b"),
   normalizeLesson(taqwa, "2- تقوا", "#1dd1a1"),
@@ -48,151 +48,191 @@ const PRINCIPLES = [
   normalizeLesson(three, "درخت اصول", "#9bff43"),
 ];
 
+/* ====== Styles ====== */
+function getStyles() {
+  return {
+    container: {
+      width: "100vw",
+      height: "100vh",
+      backgroundColor: "#0f172a",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      paddingTop: "20px",
+      color: "white",
+      direction: "rtl",
+      fontFamily: "sans-serif",
+      overflow: "hidden",
+    },
+    header: {
+      fontSize: "2.2rem",
+      marginBottom: "6px",
+      background: "linear-gradient(to right, #4eaaff, #a355ff)",
+      WebkitBackgroundClip: "text",
+      WebkitTextFillColor: "transparent",
+    },
+    subHeader: {
+      fontSize: "1rem",
+      marginBottom: "12px",
+      color: "#b6c0d1",
+    },
+    scrollArea: {
+      width: "100%",
+      height: "calc(100vh - 120px)",
+      overflowY: "auto",
+      overflowX: "hidden",
+      padding: "0 20px 40px 20px",
+      boxSizing: "border-box",
+    },
+    grid: {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+      gap: "22px",
+      justifyItems: "center",
+      alignItems: "center",
+    },
+    card: {
+      width: "140px",
+      height: "160px",
+      background: "rgba(30, 41, 59, 0.9)",
+      borderRadius: "14px",
+      border: "2px solid #334155",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      cursor: "pointer",
+      transition: "0.25s",
+      position: "relative",
+    },
+    icon: {
+      width: "46px",
+      height: "46px",
+      borderRadius: "50%",
+      color: "white",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: "1.2rem",
+      fontWeight: "bold",
+    },
+    cardTitle: {
+      marginTop: "10px",
+      fontSize: "0.95rem",
+      textAlign: "center",
+    },
+    twoDButton: {
+      background: "rgba(30, 41, 59, 0.9)",
+      color: "rgba(30, 41, 59, 0.9)",
+      border: "2px solid #4e5d7e",
+      padding: "4px 10px",
+      borderRadius: "0 0 0 11px",
+      fontSize: "0.75rem",
+      cursor: "pointer",
+      fontWeight: "bold",
+      position: "absolute",
+      bottom: "0",
+      left: "0",
+    },
+  };
+}
+
+/* ====== Lesson Card ====== */
+const LessonCard = ({ lesson, onSelect3D, onSelect2D }) => {
+  const styles = getStyles();
+  return (
+    <div
+      style={{ ...styles.card, borderColor: lesson.color }}
+      onClick={() => onSelect3D(lesson)}
+    >
+      <div style={{ ...styles.icon, backgroundColor: lesson.color }}>
+        {lesson.title.substring(0, 2)}
+      </div>
+      <h3 style={styles.cardTitle}>{lesson.title}</h3>
+
+      <button
+        style={styles.twoDButton}
+        onClick={(e) => {
+          e.stopPropagation();
+          onSelect2D(lesson);
+        }}
+      >
+        2D
+      </button>
+    </div>
+  );
+};
+
+/* ====== App ====== */
 export default function App() {
   const [activeLesson, setActiveLesson] = useState(null);
+  const [viewMode, setViewMode] = useState(null);
 
-  if (activeLesson) {
+  const handleBack = useCallback(() => {
+    setActiveLesson(null);
+    setViewMode(null);
+  }, []);
+
+  const handleSelect3D = useCallback((lesson) => {
+    setActiveLesson(lesson);
+    setViewMode("3D");
+  }, []);
+
+  const handleSelect2D = useCallback((lesson) => {
+    setActiveLesson(lesson);
+    setViewMode("2D");
+  }, []);
+
+  /* ====== 3D ====== */
+  if (activeLesson && viewMode === "3D") {
     return (
       <LessonRoom
         lesson={activeLesson}
-        onBack={() => setActiveLesson(null)}
+        onBack={handleBack}
+        on2D={() => handleSelect2D(activeLesson)}
       />
     );
   }
 
+  /* ====== 2D ====== */
+  if (activeLesson && viewMode === "2D") {
+    return (
+      <ClassroomSplitTwoD
+        lesson={activeLesson}
+        onBack={handleBack}
+        onSwitchTo3D={() => handleSelect3D(activeLesson)}
+      />
+    );
+  }
+
+  /* ====== Home ====== */
   return (
-    <div style={styles.container}>
-      <h1 style={styles.header}>متاورس زندگی من</h1>
-      <p style={styles.subHeader}>از آنچه بوده‌ام تا آنچه باید باشم</p>
+    <div style={getStyles().container}>
+      <h1 style={getStyles().header}>اصول زندگی من</h1>
+      <p style={getStyles().subHeader}>
+        روی کارت کلیک کنید (پیش‌فرض 3D) یا دکمه 2D را بزنید
+      </p>
 
-      {/* ====== History Section ====== */}
-      <div style={styles.historyWrapper}>
-        <div
-          style={{ ...styles.historyCard, borderColor: HISTORY.color }}
-          onClick={() => setActiveLesson(HISTORY)}
-        >
-          <div
-            style={{ ...styles.icon, backgroundColor: HISTORY.color }}
-          >
-            📜
-          </div>
-          <h3 style={styles.cardTitle}>تاریخچه مسیر زندگی</h3>
+      <div style={getStyles().scrollArea}>
+        <div style={getStyles().grid}>
+          {/* History */}
+          <LessonCard
+            lesson={HISTORY}
+            onSelect3D={handleSelect3D}
+            onSelect2D={handleSelect2D}
+          />
+
+          {/* Principles */}
+          {PRINCIPLES.map((lesson, i) => (
+            <LessonCard
+              key={i}
+              lesson={lesson}
+              onSelect3D={handleSelect3D}
+              onSelect2D={handleSelect2D}
+            />
+          ))}
         </div>
-      </div>
-
-      {/* ====== Principles Section ====== */}
-      <h2 style={styles.sectionTitle}>اصول زندگی من</h2>
-
-      <div style={styles.grid}>
-        {PRINCIPLES.map((lesson, index) => (
-          <div
-            key={index}
-            style={{ ...styles.card, borderColor: lesson.color }}
-            onClick={() => setActiveLesson(lesson)}
-          >
-            <div
-              style={{ ...styles.icon, backgroundColor: lesson.color }}
-            >
-              {lesson.title.substring(0, 1)}
-            </div>
-            <h3 style={styles.cardTitle}>{lesson.title}</h3>
-          </div>
-        ))}
       </div>
     </div>
   );
 }
-
-/* ====== Styles ====== */
-const styles = {
-  container: {
-    width: "100vw",
-    height: "100vh",
-    backgroundColor: "#1a1a2e",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    paddingTop: "20px",
-    color: "white",
-    direction: "rtl",
-    fontFamily: "Vazirmatn, sans-serif",
-  },
-
-  header: {
-    fontSize: "2.2rem",
-    marginBottom: "4px",
-    background: "linear-gradient(to right, #4ecdc4, #c06c84)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
-  },
-
-  subHeader: {
-    fontSize: "1rem",
-    marginBottom: "14px",
-    color: "#b6c0d1",
-  },
-
-  sectionTitle: {
-    marginTop: "14px",
-    marginBottom: "10px",
-    fontSize: "1.1rem",
-    color: "#cbd5e1",
-  },
-
-  historyWrapper: {
-    marginBottom: "12px",
-  },
-
-  historyCard: {
-    width: "300px",
-    height: "80px",
-    background: "rgba(70, 90, 140, 0.6)",
-    borderRadius: "14px",
-    border: "2px solid",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    cursor: "pointer",
-    gap: "12px",
-  },
-
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
-    gap: "14px 18px",
-    width: "80%",
-    maxWidth: "900px",
-  },
-
-  card: {
-    width: "140px",
-    height: "160px",
-    background: "rgba(50, 50, 80, 0.7)",
-    borderRadius: "14px",
-    border: "2px solid #334155",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    cursor: "pointer",
-    transition: "0.25s",
-  },
-
-  icon: {
-    width: "42px",
-    height: "42px",
-    borderRadius: "50%",
-    color: "white",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: "1.2rem",
-    fontWeight: "bold",
-  },
-
-  cardTitle: {
-    marginTop: "10px",
-    fontSize: "0.95rem",
-    textAlign: "center",
-  },
-};
