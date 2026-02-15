@@ -51,14 +51,14 @@ function normalizeLesson(raw, key, title) {
 // ✅ Final Life Lessons Data
 // ===============================
 const LESSONS_DATA = {
-  history: normalizeLesson(history, "history", "تاریخچه مسیر زندگی"),
+  history: normalizeLesson(history, "history", "تاریخچه"),
   selfKnowledge: normalizeLesson(selfKnowledge, "selfKnowledge", "۱- خودشناسی"),
   taqwa: normalizeLesson(taqwa, "taqwa", "۲- تقوا"),
   tawhid: normalizeLesson(tawhid, "tawhid", "۳- توحید"),
   education: normalizeLesson(education, "education", "۴- تحصیلات"),
   career: normalizeLesson(career, "career", "۵- شغل"),
   family: normalizeLesson(family, "family", "۶- تشکیل خانواده"),
-  three: normalizeLesson(three, "three", "درخت اصول"),
+  three: normalizeLesson(three, "three", "درخت برنامه ریزی"),
   now: normalizeLesson(now, "now", "اکنونِ من"),
 };
 
