@@ -1,0 +1,598 @@
+export default [
+
+  /* ============================================================
+     بخش ۱: مفاهیم پایه و لایه‌ها
+     (برگرفته از فایل اصلی: بخش ۱)
+  ============================================================ */
+  {
+    section: "بخش ۱: مبانی شبکه و لایه‌ها",
+    topics: [
+      {
+        title: "۱. ساختار TCP/IP",
+        content: "آدرس‌دهی در شبکه در لایه‌های مختلفی انجام می‌شود.",
+        subtopics: [
+          {
+            title: "لایه ۲ (Data Link)",
+            content: "استفاده از آدرس فیزیکی (MAC) که ۴۸ بیتی است و روی سخت‌افزار حک شده."
+          },
+          {
+            title: "لایه ۳ (Network)",
+            content: "استفاده از آدرس منطقی (IP) برای مسیریابی بین شبکه‌های مختلف."
+          }
+        ]
+      },
+      {
+        title: "۲. معرفی IPv4",
+        content: "آدرس ۳۲ بیتی که به ۴ بخش ۸ بیتی (Octet) تقسیم می‌شود (مثال: 192.168.1.1).",
+        subtopics: [
+          {
+            title: "ساختار داخلی",
+            content: "هر IP دو بخش دارد: Net ID (شناسه شبکه) و Host ID (شناسه میزبان). مرز این دو را Subnet Mask تعیین می‌کند."
+          },
+          {
+            title: "تشبیه",
+            content: "IP مثل آدرس پستی است؛ بدون آن داده مقصد را پیدا نمی‌کند."
+          }
+        ]
+      }
+    ]
+  },
+
+  /* ============================================================
+     بخش ۲: کلاس‌بندی آدرس‌ها (Classful Addressing)
+     (برگرفته از فایل اصلی: بخش ۲ و ۸)
+  ============================================================ */
+  {
+    section: "بخش ۲: آدرس‌دهی کلاسیک (Classful)",
+    topics: [
+      {
+        title: "۱. کلاس A (شبکه‌های کلان)",
+        content: "بیت اول ۰ است. ماسک پیش‌فرض 255.0.0.0 (یا /8).",
+        subtopics: [
+          {
+            title: "بازه و کاربرد",
+            content: "از ۱ تا ۱۲۶. مناسب برای سازمان‌های عظیم (۱۶ میلیون میزبان)."
+          }
+        ]
+      },
+      {
+        title: "۲. کلاس B (شبکه‌های متوسط)",
+        content: "دو بیت اول ۱۰ است. ماسک پیش‌فرض 255.255.0.0 (یا /16).",
+        subtopics: [
+          {
+            title: "بازه و کاربرد",
+            content: "از ۱۲۸ تا ۱۹۱. مناسب برای دانشگاه‌ها و شرکت‌های متوسط (۶۵ هزار میزبان)."
+          }
+        ]
+      },
+      {
+        title: "۳. کلاس C (شبکه‌های کوچک)",
+        content: "سه بیت اول ۱۱۰ است. ماسک پیش‌فرض 255.255.255.0 (یا /24).",
+        subtopics: [
+          {
+            title: "بازه و کاربرد",
+            content: "از ۱۹۲ تا ۲۲۳. مناسب برای خانه و ادارات کوچک (۲۵۴ میزبان)."
+          }
+        ]
+      },
+      {
+        title: "۴. کلاس‌های D و E",
+        content: "برای میزبان‌ها استفاده نمی‌شوند.",
+        subtopics: [
+          {
+            title: "کلاس D",
+            content: "بازه ۲۲۴ تا ۲۳۹. مخصوص Multicast (چندپخشی)."
+          },
+          {
+            title: "کلاس E",
+            content: "بازه ۲۴۰ تا ۲۵۵. رزرو شده برای مقاصد آزمایشی."
+          }
+        ]
+      },
+      {
+        title: "۵. مشکل اصلی Classful",
+        content: "اندازه شبکه‌ها ثابت بود و امکان انتخاب متناسب با نیاز وجود نداشت.",
+        subtopics: [
+          {
+            title: "هدر رفت IP",
+            content: "مثلاً نیاز به ۵۰۰ میزبان داشتید ولی مجبور بودید کلاس B با ۶۵۰۰۰ IP بردارید که باعث هدر رفتن شدید آدرس‌ها می‌شد."
+          }
+        ]
+      }
+    ]
+  },
+
+  /* ============================================================
+     بخش ۳: آدرس‌دهی مدرن (CIDR & Subnetting)
+     (برگرفته از فایل اصلی: بخش ۳ و ۱۱)
+  ============================================================ */
+  {
+    section: "بخش ۳: آدرس‌دهی مدرن (CIDR)",
+    topics: [
+      {
+        title: "۱. راه حل CIDR",
+        content: "Classless Inter-Domain Routing اجازه می‌دهد مرز شبکه و هاست هر جایی باشد، نه فقط روی ۸، ۱۶ و ۲۴.",
+        subtopics: [
+          {
+            title: "مزیت",
+            content: "محدودیت کلاس‌ها حذف شد و اندازه شبکه دقیقاً متناسب با نیاز انتخاب می‌شود."
+          }
+        ]
+      },
+      {
+        title: "۲. Subnet Mask",
+        content: "Subnet Mask تعیین می‌کند کدام بیت‌ها متعلق به شبکه هستند (عدد ۱) و کدام‌ها برای هاست (عدد ۰).",
+        subtopics: [
+          {
+            title: "ناتیِشن (Notation)",
+            content: "به صورت اسلش و تعداد بیت‌های یک نوشته می‌شود. مثال: 192.168.10.0/26."
+          },
+          {
+            title: "تفسیر Prefix",
+            content: "/26 یعنی ۲۶ بیت Network و ۶ بیت Host."
+          }
+        ]
+      },
+      {
+        title: "۳. مفهوم Subnetting",
+        content: "Subnetting یعنی تقسیم یک شبکه بزرگ به چند شبکه کوچکتر.",
+        subtopics: [
+          {
+            title: "دلیل استفاده",
+            content: "برای مدیریت بهتر، امنیت بیشتر و کاهش ترافیک Broadcast."
+          },
+          {
+            title: "روش کار",
+            content: "چند بیت از بخش Host قرض گرفته شده و به Network اضافه می‌شود. نتیجه: تعداد شبکه‌ها زیاد و تعداد میزبان‌ها کمتر می‌شود."
+          }
+        ]
+      }
+    ]
+  },
+
+  /* ============================================================
+     بخش ۴: انواع ارسال داده و آدرس‌های خاص
+     (برگرفته از فایل اصلی: بخش ۴)
+  ============================================================ */
+  {
+    section: "بخش ۴: روش‌های ارسال و آدرس‌های خاص",
+    topics: [
+      {
+        title: "۱. انواع ارسال (Transmission)",
+        content: "نحوه ارتباط فرستنده با گیرندگان.",
+        subtopics: [
+          {
+            title: "Unicast",
+            content: "ارسال تک‌به‌تک (مثل مکالمه تلفنی)."
+          },
+          {
+            title: "Multicast",
+            content: "ارسال تک‌به‌گروه (مثل کلاس آنلاین)."
+          },
+          {
+            title: "Broadcast",
+            content: "ارسال تک‌به‌همه (مثل رادیو)."
+          }
+        ]
+      },
+      {
+        title: "۲. آدرس‌های ویژه",
+        content: "آدرس‌هایی که نمی‌توان به دستگاه اختصاص داد.",
+        subtopics: [
+          {
+            title: "Network Address",
+            content: "اولین آدرس (وقتی تمام بیت‌های Host صفر باشند). معرف کل شبکه است."
+          },
+          {
+            title: "Broadcast Address",
+            content: "آخرین آدرس (وقتی تمام بیت‌های Host یک باشند). برای ارسال پیام به همه اعضای آن شبکه."
+          },
+          {
+            title: "Loopback",
+            content: "127.0.0.1 برای تست داخلی خود دستگاه (کارت شبکه)."
+          }
+        ]
+      }
+    ]
+  },
+
+  /* ============================================================
+     بخش ۵: جزئیات تکمیلی Subnetting و VLSM
+     (برگرفته از فایل اصلی: بخش ۵ و نکات امتحانی فایل)
+  ============================================================ */
+  {
+    section: "بخش ۵: تکنیک‌های پیشرفته (VLSM)",
+    topics: [
+      {
+        title: "۱. مثال Subnetting",
+        content: "فرض کنید شبکه 192.168.1.0/24 داریم (۲۵۴ میزبان).",
+        subtopics: [
+          {
+            title: "تقسیم",
+            content: "با تبدیل به /26، شبکه به ۴ Subnet کوچکتر تقسیم می‌شود که هر کدام ۶۲ میزبان دارند."
+          }
+        ]
+      },
+      {
+        title: "۲. VLSM (طول متغیر)",
+        content: "VLSM نسخه پیشرفته Subnetting است.",
+        subtopics: [
+          {
+            title: "مشکل قدیمی",
+            content: "در روش‌های قدیمی همه Subnetها باید هم‌اندازه می‌بودند."
+          },
+          {
+            title: "راه‌حل VLSM",
+            content: "در VLSM هر Subnet می‌تواند اندازه مخصوص خودش را داشته باشد (مثلاً یکی /24 و دیگری /30)."
+          }
+        ]
+      },
+      {
+        title: "۳. جمع‌بندی (نکته مهم)",
+        content: "تفاوت رویکردها در یک نگاه:",
+        subtopics: [
+          {
+            title: "Classful",
+            content: "بسیار محدود و ثابت."
+          },
+          {
+            title: "Classless + Subnetting",
+            content: "حرفه‌ای و منعطف."
+          }
+        ]
+      }
+    ]
+  },
+
+  /* ============================================================
+     بخش ۶: سرویس‌های زیرساختی (NAT & DHCP)
+     (برگرفته از فایل اصلی: بخش ۵)
+  ============================================================ */
+  {
+    section: "بخش ۶: سرویس‌های NAT و DHCP",
+    topics: [
+      {
+        title: "۱. دسته‌بندی IPها",
+        content: "جهت امنیت و صرفه‌جویی، IPها دو دسته شدند.",
+        subtopics: [
+          {
+            title: "Private (محلی)",
+            content: "رایگان، مخصوص شبکه داخلی، غیرقابل مسیریابی در اینترنت (مثل ۱۹۲.۱۶۸...)."
+          },
+          {
+            title: "Public (جهانی)",
+            content: "پولی، یکتا در کل جهان، قابل دیدن در اینترنت."
+          }
+        ]
+      },
+      {
+        title: "۲. NAT (ترجمه آدرس)",
+        content: "وظیفه تبدیل IP خصوصی به عمومی برای دسترسی به اینترنت.",
+        subtopics: [
+          {
+            title: "PAT (NAT Overload)",
+            content: "رایج‌ترین مدل. تمام کاربران خانگی با یک IP Public به اینترنت می‌روند ولی با پورت‌های مختلف تفکیک می‌شوند."
+          }
+        ]
+      },
+      {
+        title: "۳. DHCP",
+        content: "پروتکل پیکربندی پویا.",
+        subtopics: [
+          {
+            title: "وظیفه",
+            content: "اختصاص اتوماتیک IP، Subnet Mask، Gateway و DNS به کلاینت‌ها تا نیاز به تنظیم دستی نباشد."
+          }
+        ]
+      }
+    ]
+  },
+
+  /* ============================================================
+     بخش ۷: شبکه محلی مجازی (VLAN)
+     (برگرفته از فایل اصلی: بخش ۶)
+  ============================================================ */
+  {
+    section: "بخش ۷: شبکه محلی مجازی (VLAN)",
+    topics: [
+      {
+        title: "۱. تعریف VLAN",
+        content: "تقسیم منطقی یک سوئیچ فیزیکی به چند شبکه جداگانه.",
+        subtopics: [
+          {
+            title: "مزایا",
+            content: "افزایش امنیت (جداسازی واحدها)، کاهش ترافیک Broadcast و مدیریت بهتر."
+          }
+        ]
+      },
+      {
+        title: "۲. ترانک (Trunk)",
+        content: "چگونگی انتقال داده بین سوئیچ‌ها.",
+        subtopics: [
+          {
+            title: "Trunk Link",
+            content: "لینکی که ترافیک همه VLANها را عبور می‌دهد و آن‌ها را برچسب‌گذاری (Tagging) می‌کند تا مقصد مشخص شود."
+          }
+        ]
+      }
+    ]
+  },
+
+  /* ============================================================
+    بخش ۸: آدرس‌دهی IPv6
+    (برگرفته از فایل اصلی: بخش ۱۲ با تمام جزئیات)
+  ============================================================ */
+  {
+    section: "بخش ۸: آدرس‌دهی IPv6",
+    topics: [
+      {
+        title: "۱. چرا IPv6؟",
+        content: "به دلیل تمام شدن آدرس‌های IPv4 (محدودیت ۴.۳ میلیارد آدرس) و رشد اینترنت اشیا.",
+        subtopics: [
+          {
+            title: "ظرفیت",
+            content: "IPv6 یک آدرس ۱۲۸ بیتی است که تعداد آدرس‌ها را تقریباً نامحدود می‌کند."
+          }
+        ]
+      },
+      {
+        title: "۲. ساختار و نمایش",
+        content: "به صورت ۸ گروه ۱۶ بیتی هگزادسیمال که با ':' جدا می‌شوند (xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx).",
+        subtopics: [
+          {
+            title: "Hexadecimal",
+            content: "هر ۴ بیت با یک رقم هگز (۰-۹ و A-F) نمایش داده می‌شود."
+          }
+        ]
+      },
+      {
+        title: "۳. ساده‌سازی (Compression)",
+        content: "قوانینی برای کوتاه‌تر نوشتن آدرس.",
+        subtopics: [
+          {
+            title: "حذف صفر",
+            content: "صفرهای ابتدای هر بخش قابل حذف هستند."
+          },
+          {
+            title: "علامت ::",
+            content: "چند گروه صفر متوالی را می‌توان با '::' جایگزین کرد (فقط یک‌بار در کل آدرس مجاز است)."
+          }
+        ]
+      },
+      {
+        title: "۴. Subnetting در IPv6",
+        content: "بسیار ساده‌تر و استانداردتر از نسخه ۴ است.",
+        subtopics: [
+          {
+            title: "Prefix استاندارد",
+            content: "معمولاً از /64 استفاده می‌شود (۶۴ بیت Network و ۶۴ بیت Interface ID)."
+          }
+        ]
+      }
+    ]
+  },
+
+  /* ============================================================
+     بخش ۹: سیستم‌های خودگردان و دامنه‌های مسیریابی
+     (مبحث جدید و تکمیلی)
+  ============================================================ */
+  {
+    section: "بخش ۹: ساختار مسیریابی اینترنت (AS)",
+    topics: [
+      {
+        title: "۱. سیستم خودگردان (AS)",
+        content: "مفهوم Autonomous System پایه و اساس ساختار اینترنت است.",
+        subtopics: [
+          {
+            title: "تعریف",
+            content: "مجموعه‌ای از شبکه‌ها و روترها که تحت یک مدیریت واحد (مثل یک ISP یا دانشگاه بزرگ) هستند و سیاست مسیریابی یکسانی دارند."
+          },
+          {
+            title: "شماره AS (یا ASN)",
+            content: "هر سیستم خودگردان یک شناسه یکتا دارد."
+          }
+        ]
+      },
+      {
+        title: "۲. دامنه‌های مسیریابی",
+        content: "مسیریابی به دو محدوده کلی تقسیم می‌شود.",
+        subtopics: [
+          {
+            title: "Intra-Domain (IGP)",
+            content: "مسیریابی در داخل یک AS. هدف: پیدا کردن سریع‌ترین مسیر بین روترهای داخلی."
+          },
+          {
+            title: "Inter-Domain (EGP)",
+            content: "مسیریابی بین ASهای مختلف (بین ISPها). هدف: پیدا کردن مسیر بر اساس سیاست‌ها و توافقات."
+          }
+        ]
+      }
+    ]
+  },
+
+  /* ============================================================
+     بخش ۱۰: پروتکل‌های مسیریابی (RIP, OSPF, BGP)
+     (مبحث جدید و تکمیلی)
+  ============================================================ */
+  {
+    section: "بخش ۱۰: انواع پروتکل‌های مسیریابی",
+    topics: [
+      {
+        title: "۱. پروتکل RIP",
+        content: "Routing Information Protocol - قدیمی‌ترین پروتکل Distance Vector.",
+        subtopics: [
+          {
+            title: "معیار (Metric)",
+            content: "Hop Count (تعداد روترهای مسیر). حداکثر ۱۵ هاپ مجاز است."
+          },
+          {
+            title: "معایب",
+            content: "همگرایی کند (Slow Convergence) و ارسال کل جدول مسیریابی هر ۳۰ ثانیه."
+          }
+        ]
+      },
+      {
+        title: "۲. پروتکل OSPF",
+        content: "Open Shortest Path First - پروتکل Link State و استاندارد IGP دنیا.",
+        subtopics: [
+          {
+            title: "نحوه کار",
+            content: "استفاده از الگوریتم دایکسترا برای داشتن نقشه کامل شبکه. همگرایی بسیار سریع."
+          },
+          {
+            title: "معیار (Metric)",
+            content: "Cost (هزینه) که بر اساس پهنای باند لینک محاسبه می‌شود (پهنای باند بیشتر = هزینه کمتر)."
+          },
+          {
+            title: "Area",
+            content: "شبکه به نواحی مختلف تقسیم می‌شود (Area 0 ناحیه مرکزی است)."
+          }
+        ]
+      },
+      {
+        title: "۳. پروتکل BGP",
+        content: "Border Gateway Protocol - تنها پروتکل EGP اینترنت.",
+        subtopics: [
+          {
+            title: "کاربرد",
+            content: "اتصال ASهای مختلف به یکدیگر. اینترنت بدون BGP کار نمی‌کند."
+          },
+          {
+            title: "نوع",
+            content: "Path Vector است و مسیریابی را بر اساس Policy (سیاست‌های مدیریتی) انجام می‌دهد نه لزوماً سرعت."
+          }
+        ]
+      }
+    ]
+  },
+
+  /* ============================================================
+     بخش ۱۱S — خلاصه کل درس شبکه
+  ============================================================ */
+  {
+    section: "بخش ۱۱S: خلاصه کل درس شبکه",
+    topics: [
+
+      {
+        title: "1- مبانی شبکه و TCP/IP",
+        content: "TCP/IP، MAC Address، IP Address، لایه ۲ و ۳",
+        subtopics: [
+          { title: "1-1 Data Link Layer", content: "MAC Address 48-bit" },
+          { title: "1-2 Network Layer", content: "IP Routing" },
+          { title: "1-3 IPv4 Overview", content: "32-bit Address" },
+          { title: "1-4 NetID / HostID", content: "Subnet Mask Boundary" }
+        ]
+      },
+
+      {
+        title: "2- آدرس‌دهی کلاسیک (Classful)",
+        content: "Class A,B,C، Mask پیش‌فرض، هدررفت IP",
+        subtopics: [
+          { title: "2-1 Class A", content: "/8، شبکه‌های عظیم" },
+          { title: "2-2 Class B", content: "/16، شبکه‌های متوسط" },
+          { title: "2-3 Class C", content: "/24، شبکه‌های کوچک" },
+          { title: "2-4 Class D", content: "Multicast" },
+          { title: "2-5 Class E", content: "Reserved" },
+          { title: "2-6 Classful Problem", content: "IP Waste" }
+        ]
+      },
+
+      {
+        title: "3- CIDR و Subnetting",
+        content: "Classless، Prefix، Network/Host Bits",
+        subtopics: [
+          { title: "3-1 CIDR", content: "Flexible Addressing" },
+          { title: "3-2 Slash Notation", content: "/26، /24" },
+          { title: "3-3 Subnet Mask", content: "Network vs Host" },
+          { title: "3-4 Subnetting", content: "Divide Networks" },
+          { title: "3-5 Borrowing Bits", content: "More Subnets" }
+        ]
+      },
+
+      {
+        title: "4- انواع ارسال و آدرس‌های خاص",
+        content: "Unicast، Multicast، Broadcast، Special IP",
+        subtopics: [
+          { title: "4-1 Unicast", content: "One-to-One" },
+          { title: "4-2 Multicast", content: "One-to-Group" },
+          { title: "4-3 Broadcast", content: "One-to-All" },
+          { title: "4-4 Network Address", content: "All Host Bits 0" },
+          { title: "4-5 Broadcast Address", content: "All Host Bits 1" },
+          { title: "4-6 Loopback", content: "127.0.0.1" }
+        ]
+      },
+
+      {
+        title: "5- VLSM و Subnetting پیشرفته",
+        content: "VLSM، Subnet Example، Address Efficiency",
+        subtopics: [
+          { title: "5-1 Subnet Example", content: "/24 → /26" },
+          { title: "5-2 Fixed Length Issue", content: "Equal Subnets" },
+          { title: "5-3 VLSM", content: "Variable Length" },
+          { title: "5-4 Comparison", content: "Classful vs Classless" }
+        ]
+      },
+
+      {
+        title: "6- NAT و DHCP",
+        content: "Private/Public IP، NAT، PAT، DHCP",
+        subtopics: [
+          { title: "6-1 Private IP", content: "Internal Network" },
+          { title: "6-2 Public IP", content: "Internet Reachable" },
+          { title: "6-3 NAT", content: "Address Translation" },
+          { title: "6-4 PAT", content: "Port Based NAT" },
+          { title: "6-5 DHCP", content: "Auto Configuration" }
+        ]
+      },
+
+      {
+        title: "7- VLAN و Trunking",
+        content: "VLAN، Broadcast Domain، Trunk Link",
+        subtopics: [
+          { title: "7-1 VLAN", content: "Logical Segmentation" },
+          { title: "7-2 VLAN Benefits", content: "Security, Management" },
+          { title: "7-3 Trunk", content: "Multiple VLAN Traffic" },
+          { title: "7-4 Tagging", content: "VLAN Identification" }
+        ]
+      },
+
+      {
+        title: "8- آدرس‌دهی IPv6",
+        content: "128-bit، Hexadecimal، Compression، /64",
+        subtopics: [
+          { title: "8-1 IPv6 Motivation", content: "IPv4 Exhaustion" },
+          { title: "8-2 Address Format", content: "8 Hex Blocks" },
+          { title: "8-3 Zero Compression", content: ":: Rule" },
+          { title: "8-4 IPv6 Subnetting", content: "/64 Prefix" }
+        ]
+      },
+
+      {
+        title: "9- سیستم‌های خودگردان و دامنه مسیریابی",
+        content: "AS، ASN، Intra-Domain، Inter-Domain",
+        subtopics: [
+          { title: "9-1 Autonomous System", content: "Single Authority" },
+          { title: "9-2 ASN", content: "Unique Identifier" },
+          { title: "9-3 IGP", content: "Internal Routing" },
+          { title: "9-4 EGP", content: "Between ASes" }
+        ]
+      },
+
+      {
+        title: "10- پروتکل‌های مسیریابی",
+        content: "RIP، OSPF، BGP، Metric، Policy",
+        subtopics: [
+          { title: "10-1 RIP", content: "Distance Vector" },
+          { title: "10-2 RIP Metric", content: "Hop Count" },
+          { title: "10-3 OSPF", content: "Link State, Dijkstra" },
+          { title: "10-4 OSPF Metric", content: "Cost, Bandwidth" },
+          { title: "10-5 Areas", content: "Area 0 Backbone" },
+          { title: "10-6 BGP", content: "Inter-Domain Routing" },
+          { title: "10-7 BGP Type", content: "Path Vector, Policy-Based" }
+        ]
+      }
+
+    ]
+  }
+
+];

@@ -1,69 +1,31 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import LessonRoom from "./components/LessonRoom";
 import ClassroomSplitTwoD from "./components/ClassroomSplitTwoD";
-
-/* ====== Import Life Principles Lessons ====== */
-import history from "./lessons/history";
-import selfKnowledge from "./lessons/selfKnowledge";
-import taqwa from "./lessons/taqwa";
-import tawhid from "./lessons/tawhid";
-import education from "./lessons/education";
-import career from "./lessons/career";
-import family from "./lessons/family";
-import three from "./lessons/three";
-import now from "./lessons/now";
+import PROJECTS from "./projects";
 
 // ===============================
 // ✅ Normalize Lesson
 // ===============================
-function normalizeLesson(raw, key, title) {
-  if (Array.isArray(raw)) {
-    return {
-      key,
-      title,
-      color:
-        key === "history" ? "#5f6caf" :
-        key === "selfKnowledge" ? "#ff6b6b" :
-        key === "taqwa" ? "#1dd1a1" :
-        key === "tawhid" ? "#48dbfb" :
-        key === "education" ? "#feca57" :
-        key === "career" ? "#f368e0" :
-        key === "family" ? "#ff9f43" :
-        key === "three" ? "#54a0ff" :
-        key === "now" ? "#10ac84" :
-        "#ffffff",
-      chapters: raw.map((c, i) => ({
-        id: "ch" + i,
-        title: c.section || "بدون عنوان",
-        topics: (c.topics || []).map((t, j) => ({
-          id: `t_${i}_${j}`,
-          title: t.title,
-          content: t.content,
-          subtopics: t.subtopics || [],
-        })),
+function normalizeLesson(raw, key, title, color) {
+  return {
+    key,
+    title,
+    color,
+    chapters: raw.map((c, i) => ({
+      id: "ch" + i,
+      title: c.section || "بدون عنوان",
+      topics: (c.topics || []).map((t, j) => ({
+        id: `t_${i}_${j}`,
+        title: t.title,
+        content: t.content,
+        subtopics: t.subtopics || [],
       })),
-    };
-  }
-  return raw;
+    })),
+  };
 }
 
 // ===============================
-// ✅ Final Life Lessons Data
-// ===============================
-const LESSONS_DATA = {
-  history: normalizeLesson(history, "history", "تاریخچه"),
-  selfKnowledge: normalizeLesson(selfKnowledge, "selfKnowledge", "۱- خودشناسی"),
-  taqwa: normalizeLesson(taqwa, "taqwa", "۲- تقوا"),
-  tawhid: normalizeLesson(tawhid, "tawhid", "۳- توحید"),
-  education: normalizeLesson(education, "education", "۴- تحصیلات"),
-  career: normalizeLesson(career, "career", "۵- شغل"),
-  family: normalizeLesson(family, "family", "۶- تشکیل خانواده"),
-  three: normalizeLesson(three, "three", "درخت برنامه ریزی"),
-  now: normalizeLesson(now, "now", "اکنونِ من"),
-};
-
-// ===============================
-// ✅ Dark Styles
+// ✅ Dark & Light Styles
 // ===============================
 function getDarkStyles() {
   return {
@@ -71,18 +33,18 @@ function getDarkStyles() {
       width: "100vw",
       height: "100vh",
       backgroundColor: "#0f172a",
+      color: "#fff",
+      fontFamily: "sans-serif",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      paddingTop: "20px",
-      color: "white",
-      direction: "rtl",
-      fontFamily: "sans-serif",
+      paddingTop: 20,
       overflow: "hidden",
+      direction: "rtl",
     },
     header: {
-      fontSize: "2.3rem",
-      marginBottom: "6px",
+      fontSize: "2.2rem",
+      marginBottom: 6,
       background: "linear-gradient(to right, #38bdf8, #a78bfa)",
       WebkitBackgroundClip: "text",
       WebkitTextFillColor: "transparent",
@@ -92,16 +54,11 @@ function getDarkStyles() {
       marginBottom: "12px",
       color: "#b6c0d1",
     },
-    scrollArea: {
-      width: "100%",
-      height: "calc(100vh - 120px)",
-      overflowY: "auto",
-      padding: "0 20px 40px",
-    },
     grid: {
       display: "grid",
-      gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+      gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
       gap: "22px",
+      width: "90%",
       justifyItems: "center",
     },
     card: {
@@ -115,8 +72,8 @@ function getDarkStyles() {
       alignItems: "center",
       justifyContent: "center",
       cursor: "pointer",
-      transition: "0.25s",
       position: "relative",
+      transition: "0.25s",
     },
     icon: {
       width: "48px",
@@ -125,67 +82,73 @@ function getDarkStyles() {
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      fontSize: "1rem",
       fontWeight: "bold",
     },
-    cardTitle: {
-      marginTop: "12px",
-      fontSize: "0.9rem",
-      textAlign: "center",
-      lineHeight: "1.4",
-    },
     twoDButton: {
-      background: "rgba(30,41,59,0.9)",
-      border: "2px solid #475569",
-      padding: "4px 12px",
-      borderRadius: "0 0 0 14px",
-      fontSize: "0.75rem",
-      cursor: "pointer",
       position: "absolute",
       bottom: 0,
       left: 0,
+      padding: "4px 10px",
+      borderRadius: "0 0 0 12px",
+      background: "#1e293b",
+      border: "none",
       color: "#fff",
+      cursor: "pointer",
+      fontSize: "0.8rem",
+    },
+    backButton: {
+      marginBottom: "12px",
+      padding: "6px 12px",
+      borderRadius: "8px",
+      border: "1px solid #475569",
+      background: "#1e293b",
+      color: "#fff",
+      cursor: "pointer",
     },
     themeButton: {
       marginBottom: "10px",
       background: "#1e293b",
-      color: "#fff",
       border: "1px solid #475569",
       borderRadius: "8px",
       padding: "4px 12px",
       cursor: "pointer",
-      fontSize: "0.75rem",
+      fontSize: "0.8rem",
+      color: "#fff",
     },
   };
 }
 
-// ===============================
-// ✅ Light Styles
-// ===============================
 function getLightStyles() {
+  const dark = getDarkStyles();
   return {
-    ...getDarkStyles(),
+    ...dark,
     container: {
-      ...getDarkStyles().container,
+      ...dark.container,
       backgroundColor: "#f8fafc",
       color: "#0f172a",
     },
     subHeader: {
-      ...getDarkStyles().subHeader,
+      ...dark.subHeader,
       color: "#475569",
     },
     card: {
-      ...getDarkStyles().card,
+      ...dark.card,
       background: "#ffffff",
       border: "2px solid #e2e8f0",
     },
     twoDButton: {
-      ...getDarkStyles().twoDButton,
+      ...dark.twoDButton,
       background: "#e2e8f0",
       color: "#0f172a",
     },
+    backButton: {
+      ...dark.backButton,
+      background: "#e2e8f0",
+      color: "#0f172a",
+      border: "1px solid #cbd5e1",
+    },
     themeButton: {
-      ...getDarkStyles().themeButton,
+      ...dark.themeButton,
       background: "#e2e8f0",
       color: "#0f172a",
     },
@@ -193,39 +156,28 @@ function getLightStyles() {
 }
 
 // ===============================
-// ✅ Lesson Card
+// ✅ Card Component
 // ===============================
-const LessonCard = ({ lesson, onSelect3D, onSelect2D, styles }) => (
-  <div
-    style={{ ...styles.card, borderColor: lesson.color }}
-    onClick={() => onSelect3D(lesson)}
-  >
-    <div style={{ ...styles.icon, backgroundColor: lesson.color }}>
-      {lesson.title.slice(0, 2)}
+const Card = ({ title, color, onClick, children, styles }) => (
+  <div style={{ ...styles.card, borderColor: color }} onClick={onClick}>
+    <div style={{ ...styles.icon, backgroundColor: color }}>
+      {title.slice(0, 2)}
     </div>
-
-    <h3 style={styles.cardTitle}>{lesson.title}</h3>
-
-    <button
-      style={styles.twoDButton}
-      onClick={(e) => {
-        e.stopPropagation();
-        onSelect2D(lesson);
-      }}
-    >
-      2D
-    </button>
+    <h3 style={{ marginTop: 12 }}>{title}</h3>
+    {children}
   </div>
 );
 
 // ===============================
-// ✅ App
+// ✅ App Component
 // ===============================
 export default function App() {
+  const [activeProject, setActiveProject] = useState(null);
   const [activeLesson, setActiveLesson] = useState(null);
   const [viewMode, setViewMode] = useState(null);
   const [themeMode, setThemeMode] = useState("system");
 
+  // تعیین تم واقعی با توجه به تنظیم سیستم
   const systemIsDark =
     window.matchMedia &&
     window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -238,11 +190,17 @@ export default function App() {
     [effectiveTheme]
   );
 
+  // بازگشت بین مرحله انتخاب درس یا پروژه
   const handleBack = useCallback(() => {
-    setActiveLesson(null);
-    setViewMode(null);
-  }, []);
+    if (activeLesson) {
+      setActiveLesson(null);
+      setViewMode(null);
+    } else {
+      setActiveProject(null);
+    }
+  }, [activeLesson]);
 
+  // نمایش صفحات 3D / 2D
   if (activeLesson && viewMode === "3D") {
     return (
       <LessonRoom
@@ -265,42 +223,82 @@ export default function App() {
     );
   }
 
+  // صفحه انتخاب درس‌ها
+  if (activeProject) {
+    return (
+      <div style={styles.container}>
+        <button style={styles.themeButton}
+          onClick={() =>
+            setThemeMode((p) =>
+              p === "system" ? "dark" : p === "dark" ? "light" : "system"
+            )
+          }>
+           Theme: {themeMode}
+        </button>
+
+        <button style={styles.backButton} onClick={handleBack}>
+          ← بازگشت به پروژه‌ها
+        </button>
+
+        <h1 style={styles.header}>{activeProject.title}</h1>
+
+        <div style={styles.grid}>
+          {activeProject.lessons.map((l) => {
+            const lesson = normalizeLesson(l.raw, l.key, l.title, l.color);
+            return (
+              <Card
+                key={lesson.key}
+                title={lesson.title}
+                color={lesson.color}
+                styles={styles}
+                onClick={() => {
+                  setActiveLesson(lesson);
+                  setViewMode("3D");
+                }}
+              >
+                <button
+                  style={styles.twoDButton}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveLesson(lesson);
+                    setViewMode("2D");
+                  }}
+                >
+                  2D
+                </button>
+              </Card>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // صفحه انتخاب پروژه‌ها
   return (
     <div style={styles.container}>
-      <button
-        style={styles.themeButton}
+      <button style={styles.themeButton}
         onClick={() =>
           setThemeMode((p) =>
             p === "system" ? "dark" : p === "dark" ? "light" : "system"
           )
-        }
-      >
-        Theme: {themeMode}
+        }>
+         Theme: {themeMode}
       </button>
 
-      <h1 style={styles.header}>اصول زندگی من</h1>
-      <p style={styles.subHeader}>
-        انتخاب درس برای ورود به فضای یادگیری
-      </p>
+      <h1 style={styles.header}>انتخاب پروژه</h1>
+      <p style={styles.subHeader}>ابتدا پروژه را انتخاب کنید</p>
 
-      <div style={styles.scrollArea}>
-        <div style={styles.grid}>
-          {Object.values(LESSONS_DATA).map((lesson) => (
-            <LessonCard
-              key={lesson.key}
-              lesson={lesson}
-              onSelect3D={(l) => {
-                setActiveLesson(l);
-                setViewMode("3D");
-              }}
-              onSelect2D={(l) => {
-                setActiveLesson(l);
-                setViewMode("2D");
-              }}
-              styles={styles}
-            />
-          ))}
-        </div>
+      <div style={styles.grid}>
+        {Object.values(PROJECTS).map((p) => (
+          <Card
+            key={p.key}
+            title={p.title}
+            color={p.color}
+            styles={styles}
+            onClick={() => setActiveProject(p)}
+          />
+        ))}
       </div>
     </div>
   );

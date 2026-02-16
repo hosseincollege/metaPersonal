@@ -1,0 +1,561 @@
+export default [
+
+
+  /* =======================
+    فصل ۲ | Elastic Computing
+  ======================= */
+  {
+    section: "فصل ۲ | Elastic Computing",
+    topics: [
+      {
+        title: "2.1 مقدمه",
+        content:
+          "محاسبات الاستیک به معنای استفاده از منابع محاسباتی به‌صورت پویا و قابل تنظیم است تا بتوان با تغییر نیازها، ظرفیت سیستم را به سرعت افزایش یا کاهش داد.",
+        subtopics: [
+          {
+            title: "تعریف",
+            content:
+              "محاسبات الاستیک (Elastic Computing) یکی از پایه‌های اصلی رایانش ابری است که از مجازی‌سازی برای تأمین مقیاس‌پذیری و انعطاف استفاده می‌کند."
+          },
+          {
+            title: "مدل کسب‌وکار",
+            content:
+              "مدل‌های تجاری ابر بر اساس پرداخت به ازای مصرف (Pay-as-you-go) شکل گرفته‌اند و هزینه‌ها را بر اساس میزان استفاده تنظیم می‌کنند."
+          },
+          {
+            title: "Keywords",
+            content:
+              "Elastic computing, Virtualization, Cloud scalability, Business models – محاسبات الاستیک، مجازی‌سازی، مقیاس‌پذیری ابری، مدل‌های کسب‌وکار"
+          }
+        ]
+      },
+      {
+        title: "2.2 چندمستاجره",
+        content:
+          "ابرهای چندمستاجره امکان می‌دهند که چندین کاربر یا سازمان به‌صورت اشتراکی از منابع فیزیکی واحدی استفاده کنند در حالی که داده‌ها و محیط‌های آن‌ها از یکدیگر جدا باقی می‌ماند.",
+        subtopics: [
+          {
+            title: "ادغام سرورها",
+            content:
+              "میزبان‌های مجازی منابع فیزیکی را بین چند کاربر تقسیم می‌کنند تا بهره‌وری افزایش و هزینه کاهش یابد."
+          },
+          {
+            title: "جداسازی داده‌ها",
+            content:
+              "هر مستاجر فضای اختصاصی خود را دارد و امنیت اطلاعات تضمین می‌شود."
+          },
+          {
+            title: "Keywords",
+            content:
+              "Multi-tenancy, Server consolidation, Cost reduction, Data isolation – چندمستاجره، ادغام سرورها، کاهش هزینه، جداسازی داده‌ها"
+          }
+        ]
+      },
+      {
+        title: "2.3 کشش‌پذیری",
+        content:
+          "مفهوم اصلی محاسبات الاستیک، توانایی سیستم برای تخصیص منابع به‌شکل پویا بر اساس نیاز لحظه‌ای است.",
+        subtopics: [
+          {
+            title: "تخصیص پویای منابع",
+            content:
+              "در مواقع افزایش درخواست‌ها، ظرفیت سرورها افزایش یافته و پس از کاهش تقاضا، منابع آزاد می‌شوند."
+          },
+          {
+            title: "پرداخت به‌ازای مصرف",
+            content:
+              "کاربران فقط به اندازه استفاده واقعی از منابع هزینه پرداخت می‌کنند، مشابه سیستم مصرف انرژی."
+          },
+          {
+            title: "تقاضای اوج",
+            content:
+              "در زمان‌هایی مانند فروش‌های آنلاین یا رویدادهای خاص، الاستیسیته امکان پاسخ سریع به اوج تقاضا را فراهم می‌کند."
+          },
+          {
+            title: "Keywords",
+            content:
+              "Elastic computing, Dynamic resource allocation, Pay-as-you-go, Peak demand – محاسبات الاستیک، تخصیص پویای منابع، پرداخت به‌ازای مصرف، تقاضای اوج"
+          }
+        ]
+      },
+      {
+        title: "2.4 مجازی‌سازی",
+        content:
+          "مجازی‌سازی، زیربنای محاسبات الاستیک است و به‌کمک آن می‌توان منابع را سریع ایجاد، تغییر یا جابه‌جا کرد.",
+        subtopics: [
+          {
+            title: "سرورهای مجازی",
+            content:
+              "ماشین‌های مجازی (Virtual Machines) اجازه می‌دهند روی یک سرور فیزیکی چند محیط مستقل ایجاد شود."
+          },
+          {
+            title: "تأمین سریع منابع",
+            content:
+              "راه‌اندازی سریع سرورهای جدید تنها با چند کلیک یا اسکریپت امکان‌پذیر است."
+          },
+          {
+            title: "اشتراک فیزیکی و جداسازی منطقی",
+            content:
+              "کاربران منابع فیزیکی را به اشتراک می‌گذارند ولی سیستم‌عامل‌هایشان به‌صورت مجزا اجرا می‌شود."
+          },
+          {
+            title: "نقش ارائه‌دهندگان",
+            content:
+              "مجازی‌سازی مدیریت مقیاس‌پذیری، متعادل‌سازی بار و بهره‌وری منابع را برای ارائه‌دهنده آسان‌تر می‌کند."
+          },
+          {
+            title: "مزایای مشتری",
+            content:
+              "مشتریان می‌توانند محیط‌های آزمایشی، توسعه و بهره‌برداری را سریعاً راه‌اندازی و گسترش دهند."
+          },
+          {
+            title: "Keywords",
+            content:
+              "Virtualized servers, Rapid provisioning, Resource utilization, Logical isolation, Load balancing, Ease of deployment – سرور مجازی، تأمین سریع، بهره‌برداری منابع، جداسازی منطقی، متعادل‌سازی بار، سهولت استقرار"
+          }
+        ]
+      },
+      {
+        title: "2.5 مدل‌ها",
+        content:
+          "مدل‌های کسب‌وکار و سرویس‌های ابری شامل سطوح مختلفی هستند که هر کدام خدماتی خاص ارائه می‌کنند.",
+        subtopics: [
+          {
+            title: "IaaS",
+            content:
+              "Infrastructure as a Service – زیرساخت به‌عنوان سرویس است که دسترسی به ماشین‌های مجازی، شبکه و ذخیره‌سازی فراهم می‌کند."
+          },
+          {
+            title: "PaaS",
+            content:
+              "Platform as a Service – پلتفرمی است برای توسعه، آزمون و اجرای نرم‌افزار بدون نیاز به مدیریت سخت‌افزار یا سیستم‌عامل."
+          },
+          {
+            title: "SaaS",
+            content:
+              "Software as a Service – نرم‌افزارهایی که مستقیماً از طریق وب قابل استفاده‌اند و بر مدل اشتراکی کار می‌کنند."
+          },
+          {
+            title: "DaaS",
+            content:
+              "Desktop as a Service – دسکتاپ مجازی ارائه‌شده به‌صورت ابری برای دسترسی از راه دور با استفاده از کلاینت نازک."
+          },
+          {
+            title: "Keywords",
+            content:
+              "IaaS, PaaS, SaaS, DaaS, Cloud business models – زیرساخت به‌عنوان سرویس، پلتفرم به‌عنوان سرویس، نرم‌افزار به‌عنوان سرویس، دسکتاپ به‌عنوان سرویس، مدل کسب‌وکار ابری"
+          }
+        ]
+      },
+      {
+        title: "2.6 جمع‌بندی",
+        content:
+          "محاسبات الاستیک به کمک مجازی‌سازی و مدل‌های متنوع سرویس، زیرساختی کارآمد، پویا و مقرون‌به‌صرفه برای کاربران و ارائه‌دهندگان ابر فراهم می‌کند.",
+        subtopics: [
+          {
+            title: "مرور مفاهیم",
+            content:
+              "از چندمستاجره بودن تا تخصیص منابع پویا، همه اجزای ابر در جهت مقیاس‌پذیری و کارایی اقتصادی عمل می‌کنند."
+          },
+          {
+            title: "Keywords",
+            content:
+              "Elasticity, Virtualization benefits, Cloud service models, IaaS, PaaS, SaaS, DaaS – کشش‌پذیری، مزایای مجازی‌سازی، مدل‌های سرویس ابری، IaaS، PaaS، SaaS، DaaS"
+          }
+        ]
+      }
+    ]
+  },
+
+  /* =======================
+      فصل ۳ | Types of Clouds & Cloud Providers
+    ======================= */
+  {
+    section: "فصل ۳ | Types  & Providers",
+    topics: [
+      {
+        title: "3.1 کلیات و مفاهیم پایه ابر",
+        content:
+          "در این بخش مفاهیم اولیه انواع ابرها، مدل‌های ارائه خدمات و چالش‌های کلی بررسی می‌شود.",
+        subtopics: [
+          {
+            title: "مقدمه",
+            content:
+              "این فصل انواع ابرها و مدل‌های مختلف ارائه‌دهندگان خدمات ابری را معرفی می‌کند."
+          },
+          {
+            title: "ابرهای خصوصی و عمومی",
+            content:
+              "ابرها می‌توانند به‌صورت خصوصی در داخل سازمان یا به‌صورت عمومی توسط ارائه‌دهندگان تجاری عرضه شوند."
+          },
+          {
+            title: "قفل شدن به ارائه‌دهنده",
+            content:
+              "وابستگی به یک ارائه‌دهنده می‌تواند تغییر سیستم و مهاجرت را دشوار کند."
+          },
+          {
+            title: "Keywords",
+            content:
+              "Elastic computing, Virtualization, Cloud business models, Cloud adoption, Provider lock-in – محاسبات الاستیک، مجازی‌سازی، مدل‌های کسب‌وکار ابری، پذیرش ابر، قفل ارائه‌دهنده"
+          }
+        ]
+      },
+      {
+        title: "3.2 ابر خصوصی (Private Cloud)",
+        content:
+          "ابر خصوصی زیرساختی اختصاصی برای یک سازمان فراهم می‌کند.",
+        subtopics: [
+          {
+            title: "تعریف",
+            content:
+              "ابر خصوصی به‌صورت داخلی و تحت مالکیت کامل سازمان استفاده می‌شود."
+          },
+          {
+            title: "مثال ابر خصوصی",
+            content:
+              "نمونه‌ها به بهبود بهره‌وری منابع و متعادل‌سازی بار کاری کمک می‌کنند."
+          },
+          {
+            title: "مزایا",
+            content:
+              "کنترل بیشتر، کاهش تأخیر و ثبات هزینه از مزایای اصلی ابر خصوصی هستند."
+          },
+          {
+            title: "نکته",
+            content:
+              "مالکیت داخلی امکان اشتراک کنترل‌شده و امن منابع را فراهم می‌کند."
+          },
+          {
+            title: "Keywords",
+            content:
+              "Private cloud, Internal data center, Control, Compliance, Reduced latency – ابر خصوصی، مرکز داده داخلی، کنترل، انطباق، کاهش تأخیر"
+          }
+        ]
+      },
+      {
+        title: "3.3 ابر عمومی (Public Cloud)",
+        content:
+          "ابر عمومی توسط ارائه‌دهندگان خارجی ایجاد شده و منابع آن به مشتریان اجاره داده می‌شود.",
+        subtopics: [
+          {
+            title: "زیرساخت",
+            content:
+              "مراکز داده در مالکیت ارائه‌دهندگان ابر عمومی قرار دارند."
+          },
+          {
+            title: "مزایا",
+            content:
+              "کاهش هزینه به‌واسطه اقتصاد مقیاس و بهره‌گیری از تخصص فنی ارائه‌دهندگان از مزایای مهم ابر عمومی است."
+          },
+          {
+            title: "تخصص فنی",
+            content:
+              "ارائه‌دهندگان عمومی از فناوری‌های پیشرفته مانند AI و ML استفاده می‌کنند."
+          },
+          {
+            title: "Keywords",
+            content:
+              "Public cloud, Economies of scale, Expertise, Leasing, AI/ML – ابر عمومی، اقتصاد مقیاس، تخصص، اجاره سرویس، هوش مصنوعی"
+          }
+        ]
+      },
+      {
+        title: "3.4 ابر ترکیبی و چندابری",
+        content:
+          "این مدل‌ها برای افزایش انعطاف‌پذیری و کاهش ریسک وابستگی استفاده می‌شوند.",
+        subtopics: [
+          {
+            title: "ابر ترکیبی",
+            content:
+              "ابر ترکیبی ترکیبی از ابر خصوصی و عمومی برای سناریوهای کنترلی و مقیاس‌پذیر است."
+          },
+          {
+            title: "سرریز محاسبات",
+            content:
+              "در زمان اوج بار، پردازش‌ها به‌صورت موقت به ابر عمومی منتقل می‌شوند."
+          },
+          {
+            title: "چندابری",
+            content:
+              "چندابری به استفاده هم‌زمان از چند ارائه‌دهنده ابری اشاره دارد."
+          },
+          {
+            title: "چالش‌ها",
+            content:
+              "پیچیدگی عملیاتی، مدیریت امنیت و سازگاری از چالش‌های این مدل‌ها هستند."
+          },
+          {
+            title: "Keywords",
+            content:
+              "Hybrid cloud, Multi-cloud, Cloud bursting, Interoperability – ابر ترکیبی، چندابری، سرریز ابری، هم‌کنش‌پذیری"
+          }
+        ]
+      },
+      {
+        title: "3.5 ارائه‌دهندگان ابری و هایپراسکیلرها",
+        content:
+          "در این بخش بازیگران اصلی صنعت رایانش ابری معرفی می‌شوند.",
+        subtopics: [
+          {
+            title: "هایپراسکیلرها",
+            content:
+              "هایپراسکیلرها ارائه‌دهندگان ابری با زیرساخت بسیار عظیم و مقیاس‌پذیر هستند."
+          },
+          {
+            title: "ارائه‌دهندگان اصلی",
+            content:
+              "AWS، Microsoft Azure و Google Cloud از مهم‌ترین هایپراسکیلرهای جهان هستند."
+          },
+          {
+            title: "رشد بازار",
+            content:
+              "سرمایه‌گذاری گسترده در فناوری‌های نو موجب رشد سریع بازار ابر شده است."
+          },
+          {
+            title: "Keywords",
+            content:
+              "Hyperscale, AWS, Azure, GCP, Cloud providers – هایپراسکیل، آمازون، آژور، گوگل کلاد، ارائه‌دهندگان ابری"
+          }
+        ]
+      }
+    ]
+  },
+
+  /* ===============================
+    فصل ۴ | Data Center Infrastructure
+  =============================== */
+  {
+    section: "فصل ۴ | Data Center Infrastructure and Equipment",
+    topics: [
+      {
+        title: "4.1 کلیات",
+        content:
+          "نمای کلی زیرساخت مرکز داده و نقش آن در سرویس‌های مدرن دیجیتال.",
+        subtopics: [
+          {
+            title: "مقدمه",
+            content:
+              "زیرساخت مرکز داده شامل مجموعه‌ای از تجهیزات فیزیکی و منطقی است که امکان پردازش، ذخیره‌سازی و انتقال داده را فراهم می‌کنند."
+          },
+          {
+            title: "نقش زیرساخت",
+            content:
+              "زیرساخت مرکز داده پایه اجرای رایانش ابری، مجازی‌سازی و سرویس‌های دیجیتال در مقیاس بزرگ است."
+          },
+          {
+            title: "Keywords",
+            content:
+              "Data center infrastructure, Cooling systems, Virtualization, Cloud computing – زیرساخت مرکز داده، سیستم‌های خنک‌کننده، مجازی‌سازی، رایانش ابری"
+          }
+        ]
+      },
+      {
+        title: "4.2 چیدمان",
+        content:
+          "سازمان‌دهی فیزیکی تجهیزات برای بهبود کارایی و خنک‌سازی.",
+        subtopics: [
+          {
+            title: "رک‌ها، راهروها و پادها",
+            content:
+              "رک‌ها برای نصب سرورها، راهروها برای مدیریت جریان هوا و پادها برای گروه‌بندی منطقی تجهیزات استفاده می‌شوند."
+          },
+          {
+            title: "Keywords",
+            content:
+              "Data center layout, Racks, Aisles, Pods (PoD) – چیدمان مرکز داده، رک‌ها، راهروها، پاد"
+          }
+        ]
+      },
+      {
+        title: "4.3 پاد",
+        content:
+          "پاد به‌عنوان واحد ماژولار طراحی و گسترش مرکز داده.",
+        subtopics: [
+          {
+            title: "طراحی منطقی پاد",
+            content:
+              "طراحی منطقی پادها باعث افزایش مقیاس‌پذیری و سادگی توسعه مرکز داده می‌شود."
+          },
+          {
+            title: "طراحی ماژولار",
+            content:
+              "پادهای تکرارپذیر و از پیش ساخته‌شده امکان گسترش سریع و استاندارد مرکز داده را فراهم می‌کنند."
+          },
+          {
+            title: "اندازه پاد",
+            content:
+              "اندازه پاد ظرفیت اولیه و امکان گسترش آینده مرکز داده را مشخص می‌کند."
+          },
+          {
+            title: "نکته",
+            content:
+              "پادهای آماده می‌توانند در مدت‌زمان کوتاه نصب و راه‌اندازی شوند."
+          },
+          {
+            title: "Keywords",
+            content:
+              "Pod size, Modular design, Pre-built pods, Point of Delivery – اندازه پاد، طراحی ماژولار، پاد از پیش ساخته، نقطه تحویل"
+          }
+        ]
+      },
+      {
+        title: "4.4 توان",
+        content:
+          "مدیریت انرژی و تأثیر آن بر طراحی مرکز داده.",
+        subtopics: [
+          {
+            title: "توان و چگالی",
+            content:
+              "افزایش تراکم پردازنده‌ها و تجهیزات شبکه منجر به افزایش چگالی توان در رک‌ها می‌شود."
+          },
+          {
+            title: "زیرساخت حیاتی",
+            content:
+              "تأمین پایدار توان برای تضمین عملکرد مداوم تجهیزات ضروری است."
+          },
+          {
+            title: "Keywords",
+            content:
+              "Power density, Critical infrastructure, Energy management – چگالی توان، زیرساخت حیاتی، مدیریت انرژی"
+          }
+        ]
+      },
+      {
+        title: "4.5 خنک‌سازی",
+        content:
+          "روش‌ها و فناوری‌های دفع گرما در مراکز داده.",
+        subtopics: [
+          {
+            title: "کف مرتفع",
+            content:
+              "هوای سرد از زیر کف مرتفع و از طریق کاشی‌های سوراخ‌دار به تجهیزات هدایت می‌شود."
+          },
+          {
+            title: "مهار حرارتی",
+            content:
+              "تفکیک راهروهای گرم و سرد باعث افزایش بهره‌وری سیستم خنک‌کننده می‌شود."
+          },
+          {
+            title: "دودکش‌ها",
+            content:
+              "انتقال مستقیم هوای گرم از رک‌ها به بیرون موجب کاهش نقاط داغ می‌شود."
+          },
+          {
+            title: "مراکز داده چراغ‌خاموش",
+            content:
+              "مدیریت خودکار، کاهش مصرف انرژی و حداقل حضور انسانی از ویژگی‌های این مراکز است."
+          },
+          {
+            title: "خنک‌کننده مایع",
+            content:
+              "راهکاری پیشرفته برای مراکز داده پرتراکم شامل خنک‌کنندگی مستقیم تراشه و غوطه‌وری."
+          },
+          {
+            title: "Keywords",
+            content:
+              "Cooling infrastructure, Raised floor, Thermal containment, Liquid cooling, Lights-out data center – زیرساخت خنک‌کننده، کف مرتفع، مهار حرارتی، خنک‌کننده مایع، مرکز داده چراغ‌خاموش"
+          }
+        ]
+      }
+    ]
+  },
+
+  
+  /* ============================================================
+     فصل ۷S — خلاصه کل درس رایانش ابری (کلیدواژه‌محور)
+     ============================================================ */
+  {
+    section: "فصل ۷S: خلاصه کل درس رایانش ابری",
+    topics: [
+
+      {
+        title: "1- انگیزه و پیدایش ابر",
+        content: "تعریف Cloud، سیستم توزیع‌شده، دیتاسنتر، صرفه اقتصادی",
+        subtopics: [
+          { title: "1-1 رایانش ابری", content: "Cloud Computing" },
+          { title: "1-2 انعطاف‌پذیری", content: "Scalability" },
+          { title: "1-3 دیوار توان", content: "Power Wall" },
+          { title: "1-4 چند‌هسته‌ای", content: "Multi-Core" },
+          { title: "1-5 سیستم توزیع‌شده", content: "Distributed System" },
+          { title: "1-6 مراکز داده", content: "Data Center" },
+          { title: "1-7 انگیزه اقتصادی", content: "Cost Reduction" }
+        ]
+      },
+
+      {
+        title: "2- محاسبات الاستیک",
+        content: "Elasticity، مجازی‌سازی، چندمستاجره، مدل‌های سرویس",
+        subtopics: [
+          { title: "2-1 Elastic Computing", content: "الاستیسیته" },
+          { title: "2-2 چندمستاجره", content: "Multi-Tenancy" },
+          { title: "2-3 کشش‌پذیری", content: "Auto Scaling" },
+          { title: "2-4 مجازی‌سازی", content: "Virtualization" },
+          { title: "2-5 IaaS", content: "Infrastructure Service" },
+          { title: "2-6 PaaS", content: "Platform Service" },
+          { title: "2-7 SaaS", content: "Software Service" },
+          { title: "2-8 DaaS", content: "Desktop Service" }
+        ]
+      },
+
+      {
+        title: "3- انواع ابر و ارائه‌دهندگان",
+        content: "Private، Public، Hybrid، Multi-Cloud، Vendor Lock-in",
+        subtopics: [
+          { title: "3-1 ابر خصوصی", content: "Private Cloud" },
+          { title: "3-2 ابر عمومی", content: "Public Cloud" },
+          { title: "3-3 ابر ترکیبی", content: "Hybrid Cloud" },
+          { title: "3-4 چندابری", content: "Multi Cloud" },
+          { title: "3-5 قفل ارائه‌دهنده", content: "Vendor Lock-in" },
+          { title: "3-6 هایپراسکیلر", content: "Hyperscaler" },
+          { title: "3-7 AWS / Azure / GCP", content: "Cloud Providers" }
+        ]
+      },
+
+      {
+        title: "4- زیرساخت مرکز داده",
+        content: "Rack، Pod، Cooling، Power Density، Automation",
+        subtopics: [
+          { title: "4-1 زیرساخت مرکز داده", content: "Infrastructure" },
+          { title: "4-2 رک و راهرو", content: "Rack & Aisle" },
+          { title: "4-3 پاد", content: "Pod Design" },
+          { title: "4-4 چگالی توان", content: "Power Density" },
+          { title: "4-5 خنک‌سازی", content: "Cooling System" },
+          { title: "4-6 مرکز داده چراغ‌خاموش", content: "Lights-Out DC" }
+        ]
+      },
+
+      {
+        title: "5- مجازی‌سازی و مهاجرت",
+        content: "VM، Hypervisor، Docker، Kubernetes، Cloud Migration",
+        subtopics: [
+          { title: "5-1 مجازی‌سازی", content: "Virtualization" },
+          { title: "5-2 VM", content: "Virtual Machine" },
+          { title: "5-3 هایپروایزر", content: "Hypervisor" },
+          { title: "5-4 مهاجرت ابری", content: "Cloud Migration" },
+          { title: "5-5 استراتژی 6R", content: "Migration Strategies" },
+          { title: "5-6 کانتینر", content: "Container" },
+          { title: "5-7 Docker", content: "Container Engine" },
+          { title: "5-8 Kubernetes", content: "Orchestration" }
+        ]
+      },
+
+      {
+        title: "6- مفاهیم و مدل‌های ابری",
+        content: "PAYG، Security، Fault Tolerance، DR، CAPEX/OPEX",
+        subtopics: [
+          { title: "6-1 مدل اجاره‌ای", content: "Rental Model" },
+          { title: "6-2 On-Premises", content: "Traditional IT" },
+          { title: "6-3 PAYG", content: "Pay As You Go" },
+          { title: "6-4 مقیاس‌پذیری", content: "Vertical & Horizontal" },
+          { title: "6-5 امنیت", content: "Cloud Security" },
+          { title: "6-6 تحمل خطا", content: "Fault Tolerance" },
+          { title: "6-7 بازیابی فاجعه", content: "Disaster Recovery" },
+          { title: "6-8 CAPEX vs OPEX", content: "Cost Model" },
+          { title: "6-9 IaaS / PaaS / SaaS", content: "Service Models" }
+        ]
+      }
+
+    ]
+  }
+
+];
