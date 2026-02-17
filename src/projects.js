@@ -63,7 +63,7 @@ import tarhWilayah from "./lessons/TarhKoli/wilayah";
 const PROJECTS = {
   personal: {
     key: "personal",
-    title: "متاورس شخصی",
+    title: "شخصی",
     color: "#e5533d",
     lessons: [
       { key: "per-career", title: "مسیر شغلی", color: "#ef6a52", raw: personalCareer },
@@ -80,7 +80,7 @@ const PROJECTS = {
 
   hiweb: {
     key: "hiweb",
-    title: "متاورس های‌وب",
+    title: "های‌وب",
     color: "#2f80ed",
     lessons: [
       { key: "hw-adsl", title: "ADSL", color: "#4f9cf5", raw: hiwebADSL },
@@ -97,7 +97,7 @@ const PROJECTS = {
 
   computer: {
     key: "computer",
-    title: "متاورس کامپیوتر",
+    title: "کامپیوتر",
     color: "#2bb673",
     lessons: [
       { key: "uni-python", title: "Python", color: "#239b63", raw: computerPython },
