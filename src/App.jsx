@@ -34,7 +34,7 @@ function getDarkStyles() {
       height: "100vh",
       backgroundColor: "#0f172a",
       color: "#fff",
-      fontFamily: "sans-serif",
+      fontFamily: "'Vazirmatn', sans-serif",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",

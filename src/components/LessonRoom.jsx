@@ -84,7 +84,7 @@ function TopicTooltip({ topic, position, onClose, theme }) {
         pointerEvents: "auto",
         border: `2px solid ${borderColor}`,
         boxShadow: "0 25px 60px rgba(0,0,0,0.35)",
-        fontFamily: "IRANSans, sans-serif",
+        fontFamily: "'Vazirmatn', IRANSans, sans-serif",
       }}
     >
 
@@ -264,6 +264,7 @@ export default function LessonRoom({ lesson, onBack, on2D, theme = "dark" }) {
           right: 6,
           zIndex: 30,
           display: "flex",
+          direction: "ltr",
           alignItems: "center",
           gap: "8px", 
           // تغییر رنگ پنل بالا

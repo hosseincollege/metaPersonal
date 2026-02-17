@@ -17,7 +17,7 @@ const getThemeStyles = (isDark) => ({
         flexDirection: "column",
         color: isDark ? "white" : "#0f172a",
         direction: "rtl",
-        fontFamily: "sans-serif",
+        fontFamily: "'Vazirmatn', sans-serif",
         position: "relative",
         transition: "background-color 0.3s ease, color 0.3s ease",
     },
