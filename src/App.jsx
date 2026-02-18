@@ -39,7 +39,7 @@ function getDarkStyles() {
       flexDirection: "column",
       alignItems: "center",
       paddingTop: 20,
-      overflow: "hidden",
+      overflow: "auto",
       direction: "rtl",
     },
     header: {
