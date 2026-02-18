@@ -341,8 +341,8 @@ export default function ClassroomSplitTwoD({ lesson, onBack, onSwitchTo3D, theme
                             onClick={() => handleChapterChange(ch.id)}
                             title={ch.title}
                         >
-                            {ch.title.length > 30
-                                ? ch.title.substring(0, 30) + "..."
+                            {ch.title.length > 27
+                                ? ch.title.substring(0, 27) + "..."
                                 : ch.title}
                         </button>
                     ))}
