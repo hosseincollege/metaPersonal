@@ -11,7 +11,7 @@ import personalNow from "./lessons/personal/now";
 import personalSelfKnowledge from "./lessons/personal/selfKnowledge";
 import personalTaqwa from "./lessons/personal/taqwa";
 import personalTawhid from "./lessons/personal/tawhid";
-import personalThree from "./lessons/personal/three";
+import personalFuture from "./lessons/personal/future";
 
 // ======================
 // HIWEB
@@ -64,77 +64,77 @@ const PROJECTS = {
   personal: {
     key: "personal",
     title: "شخصی",
-    color: "#e5533d",
+    color: "#e04b3f",
     lessons: [
-      { key: "per-career", title: "مسیر شغلی", color: "#ef6a52", raw: personalCareer },
-      { key: "per-education", title: "تحصیل", color: "#e5533d", raw: personalEducation },
-      { key: "per-family", title: "خانواده", color: "#d94832", raw: personalFamily },
-      { key: "per-history", title: "تاریخچه", color: "#c93f2b", raw: personalHistory },
-      { key: "per-now", title: "اکنون", color: "#b83726", raw: personalNow },
-      { key: "per-self", title: "خودشناسی", color: "#a73022", raw: personalSelfKnowledge },
-      { key: "per-taqwa", title: "تقوا", color: "#96301f", raw: personalTaqwa },
-      { key: "per-tawhid", title: "توحید", color: "#85301f", raw: personalTawhid },
-      { key: "per-three", title: "Three.js", color: "#74301f", raw: personalThree },
+      { key: "per-self", title: "1. خودشناسی", color: "#ff7043", raw: personalSelfKnowledge },
+      { key: "per-taqwa", title: "2. تقوا", color: "#f4511e", raw: personalTaqwa },
+      { key: "per-tawhid", title: "3. توحید", color: "#e53935", raw: personalTawhid },
+      { key: "per-education", title: "4. تحصیل", color: "#d32f2f", raw: personalEducation },
+      { key: "per-career", title: "5. شغل", color: "#c62828", raw: personalCareer },
+      { key: "per-family", title: "6. خانواده", color: "#b71c1c", raw: personalFamily },
+      { key: "per-history", title: "7. تاریخچه", color: "#ab1b1b", raw: personalHistory },
+      { key: "per-now", title: "8. اکنون", color: "#a01818", raw: personalNow },
+      { key: "per-future", title: "9. آینده", color: "#8f1414", raw: personalFuture },
     ],
   },
 
   hiweb: {
     key: "hiweb",
     title: "های‌وب",
-    color: "#2f80ed",
+    color: "#1e88e5",
     lessons: [
-      { key: "hw-adsl", title: "ADSL", color: "#4f9cf5", raw: hiwebADSL },
-      { key: "hw-fiber", title: "Fiber", color: "#2f80ed", raw: hiwebFiber },
-      { key: "hw-flow", title: "Flow", color: "#2975d9", raw: hiwebFlow },
-      { key: "hw-microwave", title: "Microwave", color: "#236ac5", raw: hiwebMicrowave },
-      { key: "hw-rahcom", title: "Rahcom", color: "#1f5fb1", raw: hiwebRahcom },
-      { key: "hw-safety", title: "Safety", color: "#1b549d", raw: hiwebSafety },
-      { key: "hw-telecom", title: "Telecom", color: "#174a8a", raw: hiwebTelecom },
-      { key: "hw-uso", title: "USO", color: "#144078", raw: hiwebUSO },
-      { key: "hw-vsat", title: "VSAT", color: "#103665", raw: hiwebVSAT },
+      { key: "hw-adsl", title: "1. ADSL", color: "#26c6da", raw: hiwebADSL },
+      { key: "hw-fiber", title: "2. Fiber", color: "#00acc1", raw: hiwebFiber },
+      { key: "hw-flow", title: "3. Flow", color: "#039be5", raw: hiwebFlow },
+      { key: "hw-microwave", title: "4. Microwave", color: "#1e88e5", raw: hiwebMicrowave },
+      { key: "hw-rahcom", title: "5. Rahcom", color: "#1976d2", raw: hiwebRahcom },
+      { key: "hw-safety", title: "6. Safety", color: "#1565c0", raw: hiwebSafety },
+      { key: "hw-telecom", title: "7. Telecom", color: "#0d47a1", raw: hiwebTelecom },
+      { key: "hw-uso", title: "8. USO", color: "#0b3c91", raw: hiwebUSO },
+      { key: "hw-vsat", title: "9. VSAT", color: "#08306b", raw: hiwebVSAT },
     ],
   },
 
   computer: {
     key: "DevAI",
     title: "هوش مصنوعی",
-    color: "#2bb673",
+    color: "#26a69a",
     lessons: [
-      { key: "DevAI-python", title: "Python", color: "#239b63", raw: DevAIPython },
+      { key: "DevAI-python", title: "1. Python", color: "#2e7d32", raw: DevAIPython },
     ],
   },
 
   uni404: {
     key: "uni404",
     title: "uni404",
-    color: "#6f5bd3",
+    color: "#5e60ce",
     lessons: [
-      { key: "u404-algorithms", title: "Algorithms", color: "#7c6fe0", raw: uniAlgorithms },
-      { key: "u404-alguni", title: "Alg uni", color: "#6f5bd3", raw: uniAlguni },
-      { key: "u404-circuits", title: "Circuits", color: "#6550c8", raw: uniCircuits },
-      { key: "u404-ciruni", title: "Cir uni", color: "#5a46bc", raw: uniCiruni },
-      { key: "u404-cloud", title: "Cloud", color: "#503cb0", raw: uniCloud },
-      { key: "u404-clouni", title: "Cloud uni", color: "#4633a4", raw: uniClouni },
-      { key: "u404-iot", title: "IoT", color: "#3d2b97", raw: uniIot },
-      { key: "u404-iotuni", title: "IoT uni", color: "#34238a", raw: uniIotuni },
-      { key: "u404-jame", title: "Jame", color: "#2c1c7d", raw: uniJame },
-      { key: "u404-networks", title: "Networks", color: "#26186f", raw: uniNetworks },
-      { key: "u404-netuni", title: "Net uni", color: "#211462", raw: uniNetuni },
-      { key: "u404-pytam", title: "Pytam", color: "#1d1155", raw: uniPytam },
-      { key: "u404-python", title: "Python", color: "#191049", raw: uniPython },
-      { key: "u404-pytuni", title: "Pyt uni", color: "#150f3d", raw: uniPytuni },
+      { key: "u404-algorithms", title: "1. Algorithms", color: "#4ea8de", raw: uniAlgorithms },
+      { key: "u404-alguni", title: "2. Alg uni", color: "#5390d9", raw: uniAlguni },
+      { key: "u404-circuits", title: "3. Circuits", color: "#5e60ce", raw: uniCircuits },
+      { key: "u404-ciruni", title: "4. Cir uni", color: "#6930c3", raw: uniCiruni },
+      { key: "u404-cloud", title: "5. Cloud", color: "#7400b8", raw: uniCloud },
+      { key: "u404-clouni", title: "6. Cloud uni", color: "#6a00a8", raw: uniClouni },
+      { key: "u404-iot", title: "7. IoT", color: "#5a189a", raw: uniIot },
+      { key: "u404-iotuni", title: "8. IoT uni", color: "#4c1d95", raw: uniIotuni },
+      { key: "u404-jame", title: "9. Jame", color: "#3c096c", raw: uniJame },
+      { key: "u404-networks", title: "10. Networks", color: "#3a0ca3", raw: uniNetworks },
+      { key: "u404-netuni", title: "11. Net uni", color: "#2f0a8d", raw: uniNetuni },
+      { key: "u404-pytam", title: "12. Pytam", color: "#3f37c9", raw: uniPytam },
+      { key: "u404-python", title: "13. Python", color: "#4361ee", raw: uniPython },
+      { key: "u404-pytuni", title: "14. Pyt uni", color: "#4895ef", raw: uniPytuni },
     ],
   },
 
   TarhKoli: {
     key: "TarhKoli",
     title: "طرح کلی",
-    color: "#f2b705",
+    color: "#f4a261",
     lessons: [
-      { key: "tk-iman", title: "ایمان", color: "#f5c842", raw: tarhIman },
-      { key: "tk-nubuwwah", title: "نبوت", color: "#f2b705", raw: tarhNubuwwah },
-      { key: "tk-tawhid", title: "توحید", color: "#e0a800", raw: tarhTawhid },
-      { key: "tk-wilayah", title: "ولایت", color: "#c99300", raw: tarhWilayah },
+      { key: "tk-iman", title: "1. ایمان", color: "#ffd166", raw: tarhIman },
+      { key: "tk-tawhid", title: "2. توحید", color: "#fcbf49", raw: tarhTawhid },
+      { key: "tk-nubuwwah", title: "3. نبوت", color: "#f4a261", raw: tarhNubuwwah },
+      { key: "tk-wilayah", title: "4. ولایت", color: "#e76f51", raw: tarhWilayah },
     ],
   },
 };
