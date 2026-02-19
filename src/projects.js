@@ -27,9 +27,9 @@ import hiwebUSO from "./lessons/hiweb/USO";
 import hiwebVSAT from "./lessons/hiweb/VSAT";
 
 // ======================
-// COMPUTER
+// DevAI
 // ======================
-import computerPython from "./lessons/computer/python";
+import DevAIPython from "./lessons/DevAI/python";
 
 // ======================
 // uni404
@@ -96,11 +96,11 @@ const PROJECTS = {
   },
 
   computer: {
-    key: "computer",
-    title: "کامپیوتر",
+    key: "DevAI",
+    title: "هوش مصنوعی",
     color: "#2bb673",
     lessons: [
-      { key: "uni-python", title: "Python", color: "#239b63", raw: computerPython },
+      { key: "DevAI-python", title: "Python", color: "#239b63", raw: DevAIPython },
     ],
   },
 
