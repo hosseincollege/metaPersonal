@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from "react";
 import LessonRoom from "./components/LessonRoom";
 import ClassroomSplitTwoD from "./components/ClassroomSplitTwoD";
-import PROJECTS from "./projects";
+import SECTIONS from "./Section";
 
 // ===============================
 // ✅ Normalize Lesson
@@ -60,6 +60,7 @@ function getDarkStyles() {
       gap: "22px",
       width: "90%",
       justifyItems: "center",
+      paddingBottom: "40px"
     },
     card: {
       width: "150px",
@@ -161,46 +162,53 @@ function getLightStyles() {
 const Card = ({ title, color, onClick, children, styles }) => (
   <div style={{ ...styles.card, borderColor: color }} onClick={onClick}>
     <div style={{ ...styles.icon, backgroundColor: color }}>
-      {title.slice(0, 2)}
+      {title ? title.split('.')[0] : "??"} 
     </div>
-    <h3 style={{ marginTop: 12 }}>{title}</h3>
+    <h3 style={{ 
+      marginTop: 15, 
+      fontSize: '1.1rem',      // اندازه فونت بزرگتر
+      fontWeight: 'bold',      // ضخیم کردن نوشته
+      textAlign: 'center', 
+      padding: '0 5px',
+      lineHeight: '1.4'        // فاصله بین خطوط
+    }}>
+      {title}
+    </h3>
     {children}
   </div>
 );
 
 // ===============================
-// ✅ App Component
+// ✅ Main App Component
 // ===============================
-export default function App() {
-  const [activeProject, setActiveProject] = useState(null);
+export default function App()
+  {
   const [activeLesson, setActiveLesson] = useState(null);
   const [viewMode, setViewMode] = useState(null);
   const [themeMode, setThemeMode] = useState("system");
 
-  // تعیین تم واقعی با توجه به تنظیم سیستم
-  const systemIsDark =
-    window.matchMedia &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-  const effectiveTheme =
-    themeMode === "system" ? (systemIsDark ? "dark" : "light") : themeMode;
+  // تعریف متغیرهای محاسباتی (بدون تغییر ترتیب هوک‌ها)
+  const systemIsDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  
+  const effectiveTheme = useMemo(() =>
+  {
+    return themeMode === "system" ? (systemIsDark ? "dark" : "light") : themeMode;
+  }, [themeMode, systemIsDark]);
 
   const styles = useMemo(
     () => (effectiveTheme === "dark" ? getDarkStyles() : getLightStyles()),
     [effectiveTheme]
   );
 
-  // بازگشت بین مرحله انتخاب درس یا پروژه
-  const handleBack = useCallback(() => {
-    if (activeLesson) {
-      setActiveLesson(null);
-      setViewMode(null);
-    } else {
-      setActiveProject(null);
-    }
-  }, [activeLesson]);
+  const handleBack = useCallback(() => 
+  {
+    setActiveLesson(null);
+    setViewMode(null);
+  }, []);
 
-  // نمایش صفحات 3D / 2D
+  // --- حالا شرط‌های Return رو بعد از همه هوک‌ها می‌نویسیم ---
+
+  // ۱. نمایش صفحه ۳ بعدی
   if (activeLesson && viewMode === "3D") {
     return (
       <LessonRoom
@@ -212,6 +220,7 @@ export default function App() {
     );
   }
 
+  // ۲. نمایش صفحه ۲ بعدی
   if (activeLesson && viewMode === "2D") {
     return (
       <ClassroomSplitTwoD
@@ -223,82 +232,50 @@ export default function App() {
     );
   }
 
-  // صفحه انتخاب درس‌ها
-  if (activeProject) {
-    return (
-      <div style={styles.container}>
-        <button style={styles.themeButton}
-          onClick={() =>
-            setThemeMode((p) =>
-              p === "system" ? "dark" : p === "dark" ? "light" : "system"
-            )
-          }>
-           Theme: {themeMode}
-        </button>
-
-        <button style={styles.backButton} onClick={handleBack}>
-          ← بازگشت به پروژه‌ها
-        </button>
-
-        <h1 style={styles.header}>{activeProject.title}</h1>
-
-        <div style={styles.grid}>
-          {activeProject.lessons.map((l) => {
-            const lesson = normalizeLesson(l.raw, l.key, l.title, l.color);
-            return (
-              <Card
-                key={lesson.key}
-                title={lesson.title}
-                color={lesson.color}
-                styles={styles}
-                onClick={() => {
-                  setActiveLesson(lesson);
-                  setViewMode("3D");
-                }}
-              >
-                <button
-                  style={styles.twoDButton}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setActiveLesson(lesson);
-                    setViewMode("2D");
-                  }}
-                >
-                  2D
-                </button>
-              </Card>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
-
-  // صفحه انتخاب پروژه‌ها
+  // ۳. نمایش لیست تمام درس‌ها (حالت پیش‌فرض)
   return (
     <div style={styles.container}>
-      <button style={styles.themeButton}
+      <button 
+        style={styles.themeButton}
         onClick={() =>
           setThemeMode((p) =>
             p === "system" ? "dark" : p === "dark" ? "light" : "system"
           )
-        }>
+        }
+      >
          Theme: {themeMode}
       </button>
 
-      <h1 style={styles.header}>انتخاب پروژه</h1>
-      <p style={styles.subHeader}>ابتدا پروژه را انتخاب کنید</p>
+      <h1 style={styles.header}>متاورس</h1>
+      <p style={styles.subHeader}>ver:1405.03.05</p>
 
       <div style={styles.grid}>
-        {Object.values(PROJECTS).map((p) => (
-          <Card
-            key={p.key}
-            title={p.title}
-            color={p.color}
-            styles={styles}
-            onClick={() => setActiveProject(p)}
-          />
-        ))}
+        {SECTIONS.map((l) => {
+          const lesson = normalizeLesson(l.raw, l.key, l.title, l.color);
+          return (
+            <Card
+              key={lesson.key}
+              title={lesson.title}
+              color={lesson.color}
+              styles={styles}
+              onClick={() => {
+                setActiveLesson(lesson);
+                setViewMode("2D"); 
+              }}
+            >
+              <button
+                style={styles.twoDButton}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveLesson(lesson);
+                  setViewMode("3D");
+                }}
+              >
+                3D
+              </button>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );

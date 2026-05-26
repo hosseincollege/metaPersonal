@@ -1,3 +1,5 @@
+//ClassroomSplitTwoD.jsx
+
 import React, {
     useState,
     useMemo,
@@ -8,7 +10,7 @@ import React, {
 // ==========================================
 // ✅ تابع تولید استایل‌ها بر اساس تم
 // ==========================================
-const getThemeStyles = (isDark) => ({
+const getThemeStyles = (isDark, collapsed) => ({ 
     mainContainer: {
         width: "100vw",
         height: "100vh",
@@ -81,9 +83,11 @@ const getThemeStyles = (isDark) => ({
         flex: 1,
         overflow: "hidden",
     },
+
     chapterNavPanel: {
-        width: "280px",
-        minWidth: "280px",
+        width: collapsed ? "60px" : "280px",
+        minWidth: collapsed ? "60px" : "280px",
+        overflow: "hidden",
         backgroundColor: isDark ? "#0f0f0f" : "#ffffff",
         padding: "12px 10px",
         overflowY: "auto",
@@ -91,7 +95,7 @@ const getThemeStyles = (isDark) => ({
         display: "flex",
         flexDirection: "column",
         gap: "6px",
-        transition: "background-color 0.3s ease",
+        transition: "all 0.3s ease",
 
         scrollbarWidth: isDark ? "thin" : "thin",
         scrollbarColor: isDark
@@ -99,8 +103,9 @@ const getThemeStyles = (isDark) => ({
             : "#cbd5e1 transparent",
     },
     topicListPanel: {
-        width: "260px",
-        minWidth: "260px",
+        width: collapsed ? "60px" : "260px",
+        minWidth: collapsed ? "60px" : "260px",
+        overflow: "hidden",
         backgroundColor: isDark ? "#131313" : "#f1f5f9",
         padding: "12px 10px",
         overflowY: "auto",
@@ -108,8 +113,8 @@ const getThemeStyles = (isDark) => ({
         display: "flex",
         flexDirection: "column",
         gap: "8px",
-        transition: "background-color 0.3s ease",
-
+        transition: "all 0.3s ease",
+        
         scrollbarWidth: isDark ? "thin" : "thin",
         scrollbarColor: isDark
             ? "#444 transparent"
@@ -203,11 +208,12 @@ const getThemeStyles = (isDark) => ({
 });
 
 export default function ClassroomSplitTwoD({ lesson, onBack, onSwitchTo3D, theme = "dark" }) {
+    const [collapsed, setCollapsed] = useState(false);
     // 1. بررسی تم
     const isDark = theme === "dark";
     
     // 2. تولید استایل‌ها
-    const styles = useMemo(() => getThemeStyles(isDark), [isDark]);
+    const styles = useMemo(() => getThemeStyles(isDark, collapsed), [isDark, collapsed]);
 
     if (!lesson || !lesson.chapters || lesson.chapters.length === 0) {
         return (
@@ -281,6 +287,24 @@ export default function ClassroomSplitTwoD({ lesson, onBack, onSwitchTo3D, theme
                 {/* جداکننده عمودی */}
                 <div style={{ width: 1, height: 20, background: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)", margin: "0 4px" }} />
 
+                    <button
+                        onClick={() => setCollapsed(!collapsed)}
+                        title={collapsed ? "گسترش پنل‌ها" : "جمع‌کردن پنل‌ها"}
+                        style={styles.iconButtonStyle(true, collapsed ? "#38bdf8" : "#fbbf24")}
+                    >
+                        {collapsed ? (
+                            // حالت بسته است: اگر کلیک شود پنل باز می‌شود -> آیکون باید فلش به سمت چپ باشد
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                        ) : (
+                            // حالت باز است: اگر کلیک شود پنل بسته می‌شود -> آیکون باید فلش به سمت راست باشد
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        )}
+                    </button>
+
                 {/* آیکون‌های انتخاب حالت */}
                 <div style={{ display: "flex", gap: "4px", marginLeft: "auto" }}>
 
@@ -341,9 +365,9 @@ export default function ClassroomSplitTwoD({ lesson, onBack, onSwitchTo3D, theme
                             onClick={() => handleChapterChange(ch.id)}
                             title={ch.title}
                         >
-                            {ch.title.length > 27
-                                ? ch.title.substring(0, 27) + "..."
-                                : ch.title}
+                            {collapsed 
+                                ? ch.title.substring(0, 2) 
+                                : (ch.title.length > 27 ? ch.title.substring(0, 27) + "..." : ch.title)}
                         </button>
                     ))}
                 </div>
@@ -384,7 +408,7 @@ export default function ClassroomSplitTwoD({ lesson, onBack, onSwitchTo3D, theme
                                 onClick={() => setActiveTopic(t)}
                             >
                                 <span style={styles.topicTitle}>
-                                    {t.title}
+                                    {collapsed ? t.title.substring(0, 2) : t.title}
                                 </span>
                             </div>
                         ))}
@@ -416,6 +440,7 @@ export default function ClassroomSplitTwoD({ lesson, onBack, onSwitchTo3D, theme
                             </div>
                             <p
                                 style={{
+                                    whiteSpace: "pre-line",
                                     margin: "0 0 16px 0",
                                     fontSize: "1.2rem",
                                     lineHeight: "1.9",
@@ -441,6 +466,7 @@ export default function ClassroomSplitTwoD({ lesson, onBack, onSwitchTo3D, theme
                                             </h5>
                                             <p
                                                 style={{
+                                                    whiteSpace: "pre-line",
                                                     margin: 0,
                                                     fontSize: "1.1rem",
                                                     lineHeight: "1.85",

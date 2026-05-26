@@ -1,0 +1,24 @@
+// src/Section.js
+
+import hiweb from "./lessons/hiweb";
+import university from "./lessons/university";
+import computer from "./lessons/computer";
+import complex from "./lessons/complex";
+import advancedNet from "./lessons/advancedNet";
+import arshad from "./lessons/arshad";
+import quranThought from "./lessons/quranThought";
+
+// ======================
+// LESSONS
+// ======================
+const SECTIONS = [
+  { key: "hiweb", title: "1. های وب", color: "#d21919", raw: hiweb },
+  { key: "university", title: "2. دانشگاه", color: "#feed00", raw: university },
+  { key: "computer", title: "3. کامپیوتر", color: "#023ee3", raw: computer },
+  { key: "complex", title: "4. مجتمع", color: "#ff7043", raw: complex },
+  { key: "advancedNet", title: "5. شبکه های پیشرفته", color: "#39ab52", raw: advancedNet },
+  { key: "arshad", title: "6. arshad", color: "#37c943", raw: arshad },
+  { key: "quran", title: "7. اندیشه اسلامی", color: "#6cff43", raw: quranThought },
+];
+
+export default SECTIONS;
