@@ -1,6 +1,6 @@
 // src/Section.js
 
-import hiweb from "./lessons/hiweb";
+import hiweb from "./lessons/hiweb/index";
 import university from "./lessons/university/index";
 import computer from "./lessons/computer/index";
 import complex from "./lessons/complex";
