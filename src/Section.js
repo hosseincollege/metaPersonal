@@ -1,8 +1,8 @@
 // src/Section.js
 
 import hiweb from "./lessons/hiweb";
-import university from "./lessons/university";
-import computer from "./lessons/computer";
+import university from "./lessons/university/index";
+import computer from "./lessons/computer/index";
 import complex from "./lessons/complex";
 import advancedNet from "./lessons/advancedNet";
 import arshad from "./lessons/arshad";
