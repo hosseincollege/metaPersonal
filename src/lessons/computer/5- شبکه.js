@@ -1,4 +1,4 @@
-  // src/lessons/computer/section5.js
+  // src/lessons/computer/5- شبکه.js
 
 export default {
 

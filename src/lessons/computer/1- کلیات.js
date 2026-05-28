@@ -1,4 +1,4 @@
-  // src/lessons/computer/section1.js
+  // src/lessons/computer/1- کلیات.js
 
 export default {
 

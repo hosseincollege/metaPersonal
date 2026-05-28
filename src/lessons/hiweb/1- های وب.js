@@ -1,4 +1,4 @@
-  // src/lessons/hiweb/section1.js
+  // src/lessons/hiweb/1- های وب.js
 
 export default {
   // ================== فصل 1- های وب ==================

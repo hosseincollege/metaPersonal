@@ -1,4 +1,4 @@
-  // src/lessons/university/section0.js
+  // src/lessons/university/3- سوئیچینگ.js
 
 export default {
   // ================== فصل 3- سوئیچینگ و مسیریابی ==================

@@ -1,14 +1,14 @@
 // src/lessons/university/index.js
 
-import section0 from "./section0";
-import section1 from "./section1";
-import section2 from "./section2";
-import section3 from "./section3";
-import section4 from "./section4";
-import section5 from "./section5";
-import section6 from "./section6";
-import section7 from "./section7";
-import section8 from "./section8";
+import section0 from "./0- ترم 4042";
+import section1 from "./1- امنیت";
+import section2 from "./2- تاریخ";
+import section3 from "./3- سوئیچینگ";
+import section4 from "./4- شبکه های پیشرفته";
+import section5 from "./5- شبکه های گسترده";
+import section6 from "./6- معماری";
+import section7 from "./7- نصب";
+import section8 from "./8- کنکور ارشد";
 
 export default [
   section0,

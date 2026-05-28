@@ -1,11 +1,11 @@
 // src/lessons/computer/index.js
 
-import section1 from "./section1";
-import section2 from "./section2";
-import section3 from "./section3";
-import section4 from "./section4";
-import section5 from "./section5";
-import section6 from "./section6";
+import section1 from "./1- کلیات";
+import section2 from "./2- هوش مصنوعی";
+import section3 from "./3- برنامه نویسی";
+import section4 from "./4- پایگاه داده";
+import section5 from "./5- شبکه";
+import section6 from "./6- مخابرات";
 
 export default [
   section1,

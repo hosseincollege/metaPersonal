@@ -1,4 +1,4 @@
-  // src/lessons/hiweb/section2.js
+  // src/lessons/hiweb/2- رهکام.js
 
 export default {
 

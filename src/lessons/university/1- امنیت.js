@@ -1,4 +1,4 @@
-  // src/lessons/university/section0.js
+  // src/lessons/university/1- امنیت.js
 
 export default {
   // ================== فصل 1-امنیت و مدیریت شبکه ==================

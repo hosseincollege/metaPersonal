@@ -1,8 +1,8 @@
 // src/lessons/hiweb/index.js
 
-import section1 from "./section1";
-import section2 from "./section2";
-import section3 from "./section3";
+import section1 from "./1- های وب";
+import section2 from "./2- رهکام";
+import section3 from "./3- کار های جانبی";
 
 export default [
   section1,

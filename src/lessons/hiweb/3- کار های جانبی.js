@@ -1,4 +1,4 @@
-  // src/lessons/hiweb/section3.js
+  // src/lessons/hiweb/3- کار های جانبی.js
 
 export default {
 

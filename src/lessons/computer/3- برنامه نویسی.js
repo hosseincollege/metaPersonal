@@ -1,4 +1,4 @@
-  // src/lessons/computer/section3.js
+  // src/lessons/computer/3- برنامه نویسی.js
 
 export default {
 

@@ -1,4 +1,4 @@
-  // src/lessons/computer/section6.js
+  // src/lessons/computer/6- مخابرات.js
 
 export default {
 

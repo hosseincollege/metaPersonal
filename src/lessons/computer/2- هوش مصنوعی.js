@@ -1,4 +1,4 @@
-  // src/lessons/computer/section2.js
+  // src/lessons/computer/2- هوش مصنوعی.js
 
 export default {
 

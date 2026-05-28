@@ -1,4 +1,4 @@
-  // src/lessons/university/section0.js
+  // src/lessons/university/4- شبکه های پیشرفته.js
 
 export default {
   // ================== فصل 4- شبکه های پیشرفته ==================

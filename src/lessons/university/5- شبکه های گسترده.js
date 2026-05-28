@@ -1,4 +1,4 @@
-  // src/lessons/university/section0.js
+  // src/lessons/university/5- شبکه های گسترده.js
 
 export default {
   // ================== فصل 5- شبکه های گسترده ==================

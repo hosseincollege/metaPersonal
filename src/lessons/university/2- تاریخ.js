@@ -1,4 +1,4 @@
-  // src/lessons/university/section0.js
+  // src/lessons/university/2- تاریخ.js
 
 export default {
   // ================== فصل 2- تاریخ تحلیلی صدر اسلام ==================

@@ -1,4 +1,4 @@
-  // src/lessons/university/section0.js
+  // src/lessons/university/8- کنکور ارشد.js
 
 export default {
   // ================== فصل 8- کنکور ارشد ==================

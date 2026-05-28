@@ -1,4 +1,4 @@
-  // src/lessons/computer/section4.js
+  // src/lessons/computer/4- پایگاه داده.js
 
 export default {
 

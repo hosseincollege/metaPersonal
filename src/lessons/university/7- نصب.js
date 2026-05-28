@@ -1,4 +1,4 @@
-  // src/lessons/university/section0.js
+  // src/lessons/university/7- نصب.js
 
 export default {
   // ================== فصل 7- نصب و پیکربندی تجهیزات ==================

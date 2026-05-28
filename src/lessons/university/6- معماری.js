@@ -1,4 +1,4 @@
-  // src/lessons/university/section0.js
+  // src/lessons/university/6- معماری.js
 
 export default {
   // ================== فصل 6- معماری و طراحی شبکه ==================
