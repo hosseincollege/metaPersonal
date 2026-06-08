@@ -39,7 +39,7 @@ export default {
         ]
       },
       {
-        title: "1.pdf",
+        title: "1.pdf 🚧 دو مدل OSI و TCP/IP",
         content:
           " معرفی منابع درسی، بررسی دقیق دو مدل مرجع OSI و TCP/IP ",
         subtopics: [
@@ -81,7 +81,7 @@ export default {
         ]
       },
       {
-        title: "2.pdf",
+        title: "2.pdf 🚧 آدرس‌دهی IPv4",
         content:
           "آدرس‌دهی IPv4",
         subtopics: [
@@ -113,7 +113,7 @@ export default {
         ]
       },
       {
-        title: "3.pdf",
+        title: "3.pdf 🚧 آدرس‌دهی IPv4",
         content:
           "آدرس‌دهی IPv4",
         subtopics: [
@@ -145,7 +145,7 @@ export default {
         ]
       },
       {
-        title: "4.pdf",
+        title: "4.pdf 🚧 آدرس‌دهی IPv6 ، مسیریابی ایستا و پویا و سیستم‌های خودمختار",
         content:
           "آدرس‌دهی IPv6 ، مسیریابی ایستا و پویا و سیستم‌های خودمختار",
         subtopics: [
@@ -178,7 +178,7 @@ export default {
       },
 
       {
-        title: "5.pdf",
+        title: "5.pdf 🚧 مسیریابی",
         content:
           " مسیریابی بردار فاصله (Distance Vector)، مسیریابی حالت لینک (Link State) و مسیریابی بردار مسیر (Path Vector). هدف این است که بدانیم هر روش چگونه جدول مسیریابی را می‌سازد، چه اطلاعاتی بین روترها رد و بدل می‌شود، مزایا/محدودیت‌ها چیست، و چرا برخی روش‌ها برای داخل یک AS مناسب‌اند و برخی برای بین ASها. همچنین OSPF به‌عنوان یک نمونه مهم از Link State و RIP به‌عنوان نمونه Distance Vector بررسی می‌شوند.",
         subtopics: [

@@ -26,7 +26,8 @@ export default {
             "✅ 3 پیکربندی سوئیج و روتر برای VLAN \n"+
             "✅ 4 پیکربندی VTP سوئیچ \n"+
             "✅ 5 تکلیف STP \n"+
-            "✅ 6 sttic route 🚧 فک کنم سر کاری بود \n"
+            "✅ 6 sttic route 🚧 فک کنم سر کاری بود \n"+
+            "✅ 7 RIP - OSPF - EIGRP Routing \n"
           },
           {
             title: "ریلاین",
@@ -147,6 +148,7 @@ export default {
           }
         ]
       },
+
       {
         title: "3- IMP یا واسط پیغام رسان",
         content: "در این فصل با تجهیزات اصلی شبکه و نقش آن‌ها در لایه‌های مختلف مدل شبکه آشنا می‌شویم.",
@@ -174,11 +176,71 @@ export default {
         ]
       },
       {
-        title: "4- پکت تریسر",
-        content: "کانفیگ",
+        title: "4- Packet Tracer",
+        content: "در این فصل با مفاهیم و پروتکل‌های مهمی که در نرم‌افزار Cisco Packet Tracer پیاده‌سازی و شبیه‌سازی می‌شوند آشنا می‌شویم.",
         subtopics: [
           {
-            title: "سر تیتر های جزوه یا کلاس",
+            title: "VLAN",
+            content: "VLAN مخفف Virtual Local Area Network است. در Packet Tracer از VLAN برای تقسیم یک سوئیچ فیزیکی به چند شبکه منطقی استفاده می‌شود تا Broadcast Domain ها جدا شوند و امنیت و مدیریت شبکه افزایش یابد."
+          },
+          {
+            title: "SSH",
+            content: "SSH مخفف Secure Shell است. این پروتکل برای مدیریت امن روتر و سوئیچ از راه دور استفاده می‌شود. در Packet Tracer می‌توان برای دسترسی امن به تجهیزات شبکه، SSH را پیکربندی کرد."
+          },
+          {
+            title: "Telnet",
+            content: "Telnet یک پروتکل دسترسی از راه دور است که به صورت غیر رمزنگاری شده کار می‌کند. در Packet Tracer برای مدیریت تجهیزات شبکه از طریق CLI استفاده می‌شود اما از نظر امنیتی نسبت به SSH ضعیف‌تر است."
+          },
+          {
+            title: "HTTP",
+            content: "HTTP مخفف HyperText Transfer Protocol است. این پروتکل برای انتقال صفحات وب استفاده می‌شود. در Packet Tracer می‌توان سرور HTTP راه‌اندازی کرد تا کلاینت‌ها از طریق مرورگر به آن متصل شوند."
+          },
+          {
+            title: "DNS",
+            content: "DNS مخفف Domain Name System است. این سرویس وظیفه تبدیل نام دامنه به آدرس IP را بر عهده دارد. در Packet Tracer می‌توان DNS Server تنظیم کرد تا نام‌ها به IP تبدیل شوند."
+          },
+          {
+            title: "DHCP",
+            content: "DHCP مخفف Dynamic Host Configuration Protocol است. این پروتکل به صورت خودکار به دستگاه‌ها IP Address، Subnet Mask و Gateway اختصاص می‌دهد. در Packet Tracer می‌توان DHCP Server برای تخصیص خودکار IP تنظیم کرد."
+          },
+          {
+            title: "VTP",
+            content: "VTP مخفف VLAN Trunking Protocol است. این پروتکل برای مدیریت و همگام‌سازی VLAN ها بین چند سوئیچ استفاده می‌شود. در Packet Tracer می‌توان VTP را در حالت Server، Client یا Transparent تنظیم کرد."
+          },
+          {
+            title: "STP",
+            content: "STP مخفف Spanning Tree Protocol است. این پروتکل از ایجاد Loop در شبکه‌های سوئیچینگ جلوگیری می‌کند. در Packet Tracer می‌توان عملکرد STP را در توپولوژی‌های دارای مسیرهای افزونه مشاهده کرد."
+          },
+          {
+            title: "Static Route",
+            content: "Static Route مسیریابی ایستا است که به صورت دستی روی روتر تنظیم می‌شود. در Packet Tracer می‌توان مسیرهای ثابت تعریف کرد تا بسته‌ها به مقصد مشخص هدایت شوند."
+          },
+          {
+            title: "EIGRP Routing",
+            content: "EIGRP مخفف Enhanced Interior Gateway Routing Protocol است. این یک پروتکل مسیریابی دینامیک پیشرفته از شرکت Cisco است که از الگوریتم DUAL برای انتخاب بهترین مسیر استفاده می‌کند."
+          },
+          {
+            title: "RIP",
+            content: "RIP مخفف Routing Information Protocol است. یک پروتکل مسیریابی دینامیک ساده است که بر اساس تعداد Hop بهترین مسیر را انتخاب می‌کند. در Packet Tracer می‌توان نسخه 2 آن را برای شبکه‌های کوچک تنظیم کرد."
+          },
+          {
+            title: "OSPF",
+            content: "OSPF مخفف Open Shortest Path First است. یک پروتکل مسیریابی دینامیک مبتنی بر Link-State است که با استفاده از الگوریتم SPF بهترین مسیر را محاسبه می‌کند."
+          },
+          {
+            title: "PPP",
+            content: "PPP مخفف Point-to-Point Protocol است. این پروتکل در ارتباطات سریال بین دو روتر استفاده می‌شود و امکان احراز هویت و مدیریت اتصال را فراهم می‌کند."
+          },
+          {
+            title: "Port Security",
+            content: "Port Security قابلیتی در سوئیچ‌های سیسکو است که تعداد و نوع MAC Address های مجاز روی هر پورت را محدود می‌کند تا از دسترسی غیرمجاز جلوگیری شود."
+          },
+          {
+            title: "کانفیگ سوئیچ و روتر ، انواع مود ها",
+            content: "در Packet Tracer برای پیکربندی تجهیزات از محیط CLI استفاده می‌شود. مودهای اصلی شامل User EXEC Mode، Privileged EXEC Mode، Global Configuration Mode و Interface Configuration Mode هستند. هر مود سطح دسترسی و نوع دستورات مخصوص به خود را دارد."
+          },
+          {
+            title: "سر تیتر ها",
             content: "VLAN-ssh-telnet-HTTP-DNS-DHCP-VTP-STP-Static Route-EIGRP Routing-RIP-OSPF-PPP-Port Security"+
             " کانفیگ سوییچ و روتر ، انواع مود ها"
           },

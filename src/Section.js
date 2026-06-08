@@ -3,8 +3,7 @@
 import hiweb from "./lessons/hiweb/index";
 import university from "./lessons/university/index";
 import computer from "./lessons/computer/index";
-import history from "./lessons/history";
-import complex from "./lessons/complex";
+import complex from "./lessons/complex/index";
 import quranThought from "./lessons/quranThought";
 
 // ======================
@@ -14,9 +13,8 @@ const SECTIONS = [
   { key: "hiweb", title: "1. های وب", color: "#d21919", raw: hiweb },
   { key: "university", title: "2. دانشگاه", color: "#feed00", raw: university },
   { key: "computer", title: "3. کامپیوتر", color: "#023ee3", raw: computer },
-  { key: "history", title: "4. تاریخ", color: "#43d3ff", raw: history },
-  { key: "complex", title: "5. مجتمع", color: "#ff7043", raw: complex },
-  { key: "quran", title: "6. اندیشه اسلامی", color: "#6cff43", raw: quranThought },
+  { key: "complex", title: "4. مجتمع", color: "#ff7043", raw: complex },
+  { key: "quran", title: "5. اندیشه اسلامی", color: "#6cff43", raw: quranThought },
 ];
 
 export default SECTIONS;
