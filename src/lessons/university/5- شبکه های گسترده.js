@@ -286,5 +286,28 @@ export default {
         ]
       },
 
+      {
+        title: "4- آزمون عملی",
+        content: "آموزش گام‌به‌گام راه‌اندازی سناریوهای مختلف شبکه در محیط Packet Tracer.",
+        subtopics: [
+          {
+            title: "شبیه‌سازی شبکه Dial-up",
+            content:
+              "هدف: ایجاد اتصال Dial-up بین دو کامپیوتر از طریق بستر تلفنی با استفاده از Cloud و Router.\n\nمراحل انجام کار:\n1. افزودن دستگاه‌ها: PC0 ،PC1 ،Cloud-PT و Router 1841.\n2. خاموش کردن PCها و نصب ماژول PT-HOST-NM-1AM روی هر دو PC سپس روشن کردن مجدد آنها.\n3. خاموش کردن Cloud و نصب چند ماژول PT-CLOUD-NM-1AM برای ایجاد پورت‌های مودم.\n4. خاموش کردن Router و نصب ماژول WIC-2AM برای پشتیبانی از خطوط Dial-up.\n5. اتصال دستگاه‌ها با Telephone Cable:\n   - PC0 به Cloud\n   - PC1 به Cloud\n   - Router به Cloud\n6. در تنظیمات Cloud پورت‌های مودم را با دستگاه‌ها مچ کرده و برای هر پورت یک Phone Number تعریف کنید.\n7. روی Router برای اینترفیس‌ها IP Address و Subnet Mask تنظیم کنید.\n8. Router را به عنوان DHCP Server تنظیم کنید تا به کلاینت‌ها IP بدهد.\n9. روی Router برای احراز هویت اتصال Dial-up یک Username و Password تعریف کنید.\n10. در هر PC وارد Desktop شده و برنامه Dial-up را باز کنید.\n11. شماره تلفن، نام کاربری و رمز عبور را وارد کرده و اتصال Dial-up را برقرار کنید.\n12. پس از اتصال، تنظیمات IP سیستم را روی DHCP قرار دهید تا IP به صورت خودکار دریافت شود.\n13. در صورت دریافت IP، اتصال Dial-up با موفقیت برقرار شده است."
+          },
+          {
+            title: "شبیه‌سازی شبکه ADSL",
+            content:
+              "هدف: شبیه‌سازی اتصال اینترنت ADSL با استفاده از DSL Modem، Cloud و Router.\n\nمراحل انجام کار:\n1. افزودن دستگاه‌ها: PC، DSL Modem، Cloud و Router 2811.\n2. اتصال کابل‌ها:\n   - PC به DSL Modem با کابل Copper Straight-through.\n   - DSL Modem به Cloud با کابل Phone.\n   - Cloud به Router با کابل Copper Straight-through.\n3. وارد CLI روتر شوید و برای اینترفیس FastEthernet یک IP Address تنظیم کنید.\n4. اینترفیس را فعال کنید (no shutdown).\n5. روتر را به عنوان DHCP Server تنظیم کنید تا کلاینت‌ها IP دریافت کنند.\n6. وارد تنظیمات Cloud شوید و گزینه DSL را انتخاب کنید.\n7. مودم DSL را به Ethernet Port داخل Cloud متصل یا Map کنید.\n8. در PC وارد بخش IP Configuration شوید.\n9. تنظیمات IP را روی DHCP قرار دهید.\n10. در صورت دریافت IP از Router، ارتباط ADSL به درستی برقرار شده است."
+          },
+          {
+            title: "شبیه‌سازی شبکه کابلی (Cable Network)",
+            content:
+              "هدف: شبیه‌سازی اینترنت کابلی با استفاده از Cable Modem و روتر.\n\nمراحل انجام کار:\n1. افزودن دستگاه‌ها: PC، Cable Modem، PT Cloud و Router 2811.\n2. اتصال کابل‌ها:\n   - PC به Cable Modem با کابل Copper Straight-through.\n   - Cable Modem به PT Cloud با کابل Coaxial.\n   - PT Cloud به Router با کابل Copper Straight-through.\n3. وارد CLI روتر شوید.\n4. اینترفیس FastEthernet0/0 را فعال کنید.\n5. آدرس IP برابر 192.168.1.1 برای آن تنظیم کنید.\n6. یک DHCP Pool با نام testpool ایجاد کنید.\n7. در DHCP Pool شبکه و Default Router را تنظیم کنید.\n8. وارد تنظیمات PT Cloud شوید.\n9. حالت Cloud را از DSL به Cable تغییر دهید.\n10. پورت Coaxial را به Ethernet Port Map کنید.\n11. در PC وارد بخش IP Configuration شوید.\n12. تنظیمات IP را روی DHCP قرار دهید.\n13. در صورت دریافت IP از Router، شبکه کابلی با موفقیت راه‌اندازی شده است."
+          }
+        ]
+      }
+
+
     ]
   };

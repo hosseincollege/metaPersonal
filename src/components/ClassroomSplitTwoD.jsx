@@ -330,7 +330,7 @@ export default function ClassroomSplitTwoD({ lesson, onBack, onSwitchTo3D, theme
 
             {/* محتوای سه ستونه */}
             <div style={styles.threeColumnSplit}>
-                {/* فصل‌ها */}
+                {/* بخش‌ها */}
                 <div style={styles.chapterNavPanel}>
                     <h2
                         style={{
@@ -341,7 +341,7 @@ export default function ClassroomSplitTwoD({ lesson, onBack, onSwitchTo3D, theme
                                 : `2px solid ${chapterColor}`, // مشابه
                         }}
                     >
-                        فصل‌ها
+                        بخش‌ ها
                     </h2>
                     {chapters.map((ch) => (
                         <button
