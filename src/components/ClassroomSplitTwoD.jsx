@@ -129,7 +129,7 @@ const getThemeStyles = (isDark, collapsed) => ({
 
   // ستون اول و دوم تحت تاثیر collapsed هستند
   sidePanel: {
-    width: collapsed ? 90 : 260,
+    width: collapsed ? 80 : 240,
     background: isDark ? "#0a0a0a" : "#ffffff",
     borderLeft: isDark ? "1px solid #222" : "1px solid #e2e8f0",
     display: "flex",
@@ -137,7 +137,7 @@ const getThemeStyles = (isDark, collapsed) => ({
     transition: "0.3s cubic-bezier(0.4, 0, 0.2, 1)",
   },
   middlePanel: {
-    width: collapsed ? 90 : 260,
+    width: collapsed ? 80 : 240,
     background: isDark ? "#0d0d0d" : "#fcfcfc",
     borderLeft: isDark ? "1px solid #222" : "1px solid #e2e8f0",
     display: "flex",
@@ -147,7 +147,7 @@ const getThemeStyles = (isDark, collapsed) => ({
 
   // ستون سوم عرض ثابت دارد و فقط غیب/ظاهر می‌شود
   thirdColumnPanel: (visible) => ({
-    width: visible ? 280 : 0,
+    width: visible ? 240 : 0,
     background: isDark ? "#0a0a0a" : "#ffffff",
     borderLeft: visible ? (isDark ? "1px solid #222" : "1px solid #e2e8f0") : "none",
     display: "flex",
@@ -238,7 +238,7 @@ const getThemeStyles = (isDark, collapsed) => ({
     textAlign: "right",
     cursor: "pointer",
     marginBottom: 6,
-    padding: "11px 14px",
+    padding: "11px 5px",
     borderRadius: 10,
     background: active
       ? isDark
@@ -545,7 +545,6 @@ export default function ClassroomSplitTwoD({ lesson, onBack, theme = "dark" }) {
                   style={{
                     color: lessonColor,
                     fontWeight: 950,
-                    minWidth: "35px",
                     fontSize: "0.85rem",
                     direction: "ltr",
                     textAlign: "left",
