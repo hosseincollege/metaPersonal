@@ -1,281 +1,220 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import LessonRoom from "./components/LessonRoom";
 import ClassroomSplitTwoD from "./components/ClassroomSplitTwoD";
 import SECTIONS from "./Section";
 
-// ===============================
-// ✅ Normalize Lesson
-// ===============================
-function normalizeLesson(raw, key, title, color) {
-  return {
-    key,
-    title,
-    color,
-    chapters: raw.map((c, i) => ({
-      id: "ch" + i,
-      title: c.section || "بدون عنوان",
-      topics: (c.topics || []).map((t, j) => ({
-        id: `t_${i}_${j}`,
-        title: t.title,
-        content: t.content,
-        subtopics: t.subtopics || [],
-      })),
+const normalizeLesson = (raw, key, title, color) => ({
+  key,
+  title,
+  color,
+  chapters: (raw || []).map((c, i) => ({
+    id: `ch_${i}`,
+    title: c.section || "بدون عنوان",
+    topics: (c.topics || []).map((t, j) => ({
+      id: `t_${i}_${j}`,
+      title: t.title,
+      content: t.content,
+      subtopics: t.subtopics || [],
     })),
-  };
-}
+  })),
+});
 
-// ===============================
-// ✅ Dark & Light Styles
-// ===============================
-function getDarkStyles() {
-  return {
-    container: {
-      width: "100vw",
-      height: "100vh",
-      backgroundColor: "#0f172a",
-      color: "#fff",
-      fontFamily: "'Vazirmatn', sans-serif",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      paddingTop: 20,
-      overflow: "auto",
-      direction: "rtl",
-    },
-    header: {
-      fontSize: "2.2rem",
-      marginBottom: 6,
-      background: "linear-gradient(to right, #38bdf8, #a78bfa)",
-      WebkitBackgroundClip: "text",
-      WebkitTextFillColor: "transparent",
-    },
-    subHeader: {
-      fontSize: "1rem",
-      marginBottom: "12px",
-      color: "#b6c0d1",
-    },
-    grid: {
-      display: "grid",
-      gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-      gap: "22px",
-      width: "90%",
-      justifyItems: "center",
-      paddingBottom: "40px"
-    },
-    card: {
-      width: "150px",
-      height: "170px",
-      background: "rgba(30, 41, 59, 0.95)",
-      borderRadius: "16px",
-      border: "2px solid #334155",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      cursor: "pointer",
-      position: "relative",
-      transition: "0.25s",
-    },
-    icon: {
-      width: "48px",
-      height: "48px",
-      borderRadius: "50%",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      fontWeight: "bold",
-    },
-    twoDButton: {
-      position: "absolute",
-      bottom: 0,
-      left: 0,
-      padding: "4px 10px",
-      borderRadius: "0 0 0 12px",
-      background: "#1e293b",
-      border: "none",
-      color: "#fff",
-      cursor: "pointer",
-      fontSize: "0.8rem",
-    },
-    backButton: {
-      marginBottom: "12px",
-      padding: "6px 12px",
-      borderRadius: "8px",
-      border: "1px solid #475569",
-      background: "#1e293b",
-      color: "#fff",
-      cursor: "pointer",
-    },
-    themeButton: {
-      marginBottom: "10px",
-      background: "#1e293b",
-      border: "1px solid #475569",
-      borderRadius: "8px",
-      padding: "4px 12px",
-      cursor: "pointer",
-      fontSize: "0.8rem",
-      color: "#fff",
-    },
-  };
-}
+const Card = React.memo(({ title, color, onClick, onThreeDClick, isDark }) => {
+  const [hovered, setHovered] = useState(false);
+  const initials = title ? title.split(".")[0] : "??";
 
-function getLightStyles() {
-  const dark = getDarkStyles();
-  return {
-    ...dark,
-    container: {
-      ...dark.container,
-      backgroundColor: "#f8fafc",
-      color: "#0f172a",
-    },
-    subHeader: {
-      ...dark.subHeader,
-      color: "#475569",
-    },
-    card: {
-      ...dark.card,
-      background: "#ffffff",
-      border: "2px solid #e2e8f0",
-    },
-    twoDButton: {
-      ...dark.twoDButton,
-      background: "#e2e8f0",
-      color: "#0f172a",
-    },
-    backButton: {
-      ...dark.backButton,
-      background: "#e2e8f0",
-      color: "#0f172a",
-      border: "1px solid #cbd5e1",
-    },
-    themeButton: {
-      ...dark.themeButton,
-      background: "#e2e8f0",
-      color: "#0f172a",
-    },
-  };
-}
-
-// ===============================
-// ✅ Card Component
-// ===============================
-const Card = ({ title, color, onClick, children, styles }) => (
-  <div style={{ ...styles.card, borderColor: color }} onClick={onClick}>
-    <div style={{ ...styles.icon, backgroundColor: color }}>
-      {title ? title.split('.')[0] : "??"} 
+  return (
+    <div
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        width: "150px",
+        height: "170px",
+        borderRadius: "16px",
+        border: `2px solid ${hovered ? color : isDark ? "#4a4d55" : "#d5d6d7"}`,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: "pointer",
+        position: "relative",
+        overflow: "hidden",
+        transition: "border-color 0.22s, background 0.22s",
+        background: isDark
+          ? hovered ? `linear-gradient(180deg, ${color}15 0%, #050505 100%)` : "#000000"
+          : hovered ? `linear-gradient(180deg, ${color}0d 0%, #ffffff 100%)` : "#ffffff",
+      }}
+    >
+      <div style={{
+        width: "48px",
+        height: "48px",
+        borderRadius: "50%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontWeight: "700",
+        fontSize: "0.95rem",
+        backgroundColor: color || "#38bdf8",
+        color: "#fff"
+      }}>
+        {initials}
+      </div>
+      <h3 style={{
+        marginTop: "14px",
+        fontSize: "0.95rem",
+        fontWeight: "700",
+        textAlign: "center",
+        padding: "0 8px",
+        lineHeight: "1.4",
+        color: isDark ? "#f1f5f9" : "#0f172a"
+      }}>
+        {title}
+      </h3>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onThreeDClick();
+        }}
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          padding: "4px 10px",
+          borderRadius: "0 0 0 12px",
+          background: hovered ? color : isDark ? "#121824" : "#e2e8f0",
+          border: "none",
+          color: hovered ? "#fff" : isDark ? "#94a3b8" : "#475569",
+          cursor: "pointer",
+          fontSize: "0.75rem",
+          fontWeight: "bold",
+          transition: "all 0.2s"
+        }}
+      >
+        3D
+      </button>
     </div>
-    <h3 style={{ 
-      marginTop: 15, 
-      fontSize: '1.1rem',      // اندازه فونت بزرگتر
-      fontWeight: 'bold',      // ضخیم کردن نوشته
-      textAlign: 'center', 
-      padding: '0 5px',
-      lineHeight: '1.4'        // فاصله بین خطوط
-    }}>
-      {title}
-    </h3>
-    {children}
-  </div>
-);
+  );
+});
 
-// ===============================
-// ✅ Main App Component
-// ===============================
-export default function App()
-  {
+Card.displayName = "Card";
+
+export default function App() {
   const [activeLesson, setActiveLesson] = useState(null);
   const [viewMode, setViewMode] = useState(null);
   const [themeMode, setThemeMode] = useState("system");
+  const [systemIsDark, setSystemIsDark] = useState(false);
 
-  // تعریف متغیرهای محاسباتی (بدون تغییر ترتیب هوک‌ها)
-  const systemIsDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-  
-  const effectiveTheme = useMemo(() =>
-  {
-    return themeMode === "system" ? (systemIsDark ? "dark" : "light") : themeMode;
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    setSystemIsDark(mq.matches);
+    const handler = (e) => setSystemIsDark(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  const isDark = useMemo(() => {
+    return themeMode === "system" ? systemIsDark : themeMode === "dark";
   }, [themeMode, systemIsDark]);
 
-  const styles = useMemo(
-    () => (effectiveTheme === "dark" ? getDarkStyles() : getLightStyles()),
-    [effectiveTheme]
-  );
+  const normalizedLessons = useMemo(() => {
+    return SECTIONS.map((l) => normalizeLesson(l.raw, l.key, l.title, l.color));
+  }, []);
 
-  const handleBack = useCallback(() => 
-  {
+  const handleBack = useCallback(() => {
     setActiveLesson(null);
     setViewMode(null);
   }, []);
 
-  // --- حالا شرط‌های Return رو بعد از همه هوک‌ها می‌نویسیم ---
+  const handleSelectLesson = useCallback((lesson, mode) => {
+    setActiveLesson(lesson);
+    setViewMode(mode);
+  }, []);
 
-  // ۱. نمایش صفحه ۳ بعدی
   if (activeLesson && viewMode === "3D") {
     return (
       <LessonRoom
         lesson={activeLesson}
         onBack={handleBack}
         on2D={() => setViewMode("2D")}
-        theme={effectiveTheme}
+        theme={isDark ? "dark" : "light"}
       />
     );
   }
 
-  // ۲. نمایش صفحه ۲ بعدی
   if (activeLesson && viewMode === "2D") {
     return (
       <ClassroomSplitTwoD
         lesson={activeLesson}
         onBack={handleBack}
         onSwitchTo3D={() => setViewMode("3D")}
-        theme={effectiveTheme}
+        theme={isDark ? "dark" : "light"}
       />
     );
   }
 
-  // ۳. نمایش لیست تمام درس‌ها (حالت پیش‌فرض)
   return (
-    <div style={styles.container}>
-      <button 
-        style={styles.themeButton}
-        onClick={() =>
-          setThemeMode((p) =>
-            p === "system" ? "dark" : p === "dark" ? "light" : "system"
-          )
-        }
+    <div style={{
+      width: "100vw",
+      minHeight: "100vh",
+      direction: "rtl",
+      fontFamily: "'Vazirmatn', sans-serif",
+      color: isDark ? "#fff" : "#0f172a",
+      background: isDark
+        ? "linear-gradient(185deg, #000000 0%, #0c0e12 60%, #000000 100%)"
+        : "linear-gradient(185deg, #f8fafc 0%, #f1f5f9 60%, #e2e8f0 100%)",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      padding: "20px 20px 40px",
+      boxSizing: "border-box"
+    }}>
+      <button
+        onClick={() => setThemeMode((p) => p === "system" ? "dark" : p === "dark" ? "light" : "system")}
+        style={{
+          marginBottom: "15px",
+          background: isDark ? "#121824" : "#e2e8f0",
+          border: `1px solid ${isDark ? "#1e293b" : "#cbd5e1"}`,
+          borderRadius: "8px",
+          padding: "6px 12px",
+          cursor: "pointer",
+          fontSize: "0.8rem",
+          color: isDark ? "#fff" : "#0f172a"
+        }}
       >
-         Theme: {themeMode}
+        پوسته: {themeMode === "system" ? "سیستم" : themeMode === "dark" ? "تاریک" : "روشن"}
       </button>
 
-      <h1 style={styles.header}>متاورس</h1>
-      <p style={styles.subHeader}>ver:1405.03.05</p>
+      <h1 style={{
+        fontSize: "2.2rem",
+        marginBottom: "6px",
+        background: "linear-gradient(to right, #38bdf8, #a78bfa)",
+        WebkitBackgroundClip: "text",
+        WebkitTextFillColor: "transparent"
+      }}>
+        متاورس
+      </h1>
+      <p style={{ fontSize: "1rem", marginBottom: "25px", color: isDark ? "#64748b" : "#94a3b8" }}>
+        ver:1405.03.05
+      </p>
 
-      <div style={styles.grid}>
-        {SECTIONS.map((l) => {
-          const lesson = normalizeLesson(l.raw, l.key, l.title, l.color);
-          return (
-            <Card
-              key={lesson.key}
-              title={lesson.title}
-              color={lesson.color}
-              styles={styles}
-              onClick={() => {
-                setActiveLesson(lesson);
-                setViewMode("2D"); 
-              }}
-            >
-              <button
-                style={styles.twoDButton}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setActiveLesson(lesson);
-                  setViewMode("3D");
-                }}
-              >
-                3D
-              </button>
-            </Card>
-          );
-        })}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+        gap: "22px",
+        width: "90%",
+        justifyItems: "center"
+      }}>
+        {normalizedLessons.map((lesson) => (
+          <Card
+            key={lesson.key}
+            title={lesson.title}
+            color={lesson.color}
+            isDark={isDark}
+            onClick={() => handleSelectLesson(lesson, "2D")}
+            onThreeDClick={() => handleSelectLesson(lesson, "3D")}
+          />
+        ))}
       </div>
     </div>
   );
