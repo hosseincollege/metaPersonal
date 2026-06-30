@@ -129,7 +129,7 @@ const getThemeStyles = (isDark, collapsed) => ({
 
   // ستون اول و دوم تحت تاثیر collapsed هستند
   sidePanel: {
-    width: collapsed ? 80 : 240,
+    width: collapsed ? 90 : 250,
     background: isDark ? "#0a0a0a" : "#ffffff",
     borderLeft: isDark ? "1px solid #222" : "1px solid #e2e8f0",
     display: "flex",
@@ -137,7 +137,7 @@ const getThemeStyles = (isDark, collapsed) => ({
     transition: "0.3s cubic-bezier(0.4, 0, 0.2, 1)",
   },
   middlePanel: {
-    width: collapsed ? 80 : 240,
+    width: collapsed ? 90 : 240,
     background: isDark ? "#0d0d0d" : "#fcfcfc",
     borderLeft: isDark ? "1px solid #222" : "1px solid #e2e8f0",
     display: "flex",
@@ -311,7 +311,12 @@ const getThemeStyles = (isDark, collapsed) => ({
   },
 });
 
-export default function ClassroomSplitTwoD({ lesson, onBack, theme = "dark" }) {
+export default function ClassroomSplitTwoD({
+  lesson,
+  onBack,
+  onSwitchTo3D,
+  theme = "dark",
+}) {
   const [collapsed, setCollapsed] = useState(false);
   const [isThirdColumnVisible, setIsThirdColumnVisible] = useState(true);
   const [activeSectionIdx, setActiveSectionIdx] = useState(0);
@@ -411,11 +416,30 @@ export default function ClassroomSplitTwoD({ lesson, onBack, theme = "dark" }) {
     <div style={styles.mainContainer}>
       <div style={styles.topToolbar}>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          
+          {/* ✅ دکمه خروج / بازگشت (قرمز و برجسته) */}
           {onBack && (
-            <button onClick={onBack} style={styles.iconButton()}>
+            <button
+              onClick={onBack}
+              title="خروج"
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "32px",
+                height: "32px",
+                padding: 0,
+                borderRadius: "8px",
+                border: "none",
+                cursor: "pointer",
+                background: "#ef4444", 
+                color: "#ffffff",
+                boxShadow: "0 2px 8px rgba(239, 68, 68, 0.4)", 
+              }}
+            >
               <svg
-                width="22"
-                height="22"
+                width="20"
+                height="20"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -428,13 +452,31 @@ export default function ClassroomSplitTwoD({ lesson, onBack, theme = "dark" }) {
             </button>
           )}
 
+          {/* دکمه جمع کردن منو (خنثی) */}
           <button
             onClick={() => setCollapsed(!collapsed)}
-            style={styles.iconButton(collapsed, lessonColor)}
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "32px",
+              height: "32px",
+              padding: 0,
+              borderRadius: "8px",
+              border: "none",
+              cursor: "pointer",
+              background: collapsed
+                ? (isDark ? "#3f3f46" : "#e4e4e7") 
+                : (isDark ? "#27272a" : "#ffffff"),
+              color: collapsed 
+                ? (isDark ? "#ffffff" : "#18181b") 
+                : (isDark ? "#a1a1aa" : "#52525b"),
+              boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+            }}
           >
             <svg
-              width="22"
-              height="22"
+              width="20"
+              height="20"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -456,13 +498,31 @@ export default function ClassroomSplitTwoD({ lesson, onBack, theme = "dark" }) {
             </svg>
           </button>
 
+          {/* دکمه ستون سوم (خنثی) */}
           <button
             onClick={() => setIsThirdColumnVisible(!isThirdColumnVisible)}
-            style={styles.iconButton(isThirdColumnVisible, lessonColor)}
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "32px",
+              height: "32px",
+              padding: 0,
+              borderRadius: "8px",
+              border: "none",
+              cursor: "pointer",
+              background: isThirdColumnVisible
+                ? (isDark ? "#3f3f46" : "#e4e4e7") 
+                : (isDark ? "#27272a" : "#ffffff"),
+              color: isThirdColumnVisible 
+                ? (isDark ? "#ffffff" : "#18181b") 
+                : (isDark ? "#a1a1aa" : "#52525b"),
+              boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+            }}
           >
             <svg
-              width="22"
-              height="22"
+              width="20"
+              height="20"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -472,6 +532,40 @@ export default function ClassroomSplitTwoD({ lesson, onBack, theme = "dark" }) {
             >
               <rect x="3" y="4" width="18" height="16" rx="3" />
               <path d="M9 4v16" />
+            </svg>
+          </button>
+
+          {/* دکمه 3D (خنثی) */}
+          <button
+            onClick={onSwitchTo3D}
+            title="نمای سه بعدی"
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "32px",
+              height: "32px",
+              padding: 0,
+              borderRadius: "8px",
+              border: "none",
+              cursor: "pointer",
+              background: isDark ? "#27272a" : "#ffffff",
+              color: isDark ? "#a1a1aa" : "#52525b",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+            }}
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12 3l10 6v6l-10 6-10-6V9z" />
+              <path d="M22 9l-10 6-10-6" />
             </svg>
           </button>
         </div>
