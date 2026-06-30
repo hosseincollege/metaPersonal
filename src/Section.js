@@ -14,7 +14,7 @@ const SECTIONS = [
   { key: "university", title: "2. دانشگاه", color: "#feed00", raw: university },
   { key: "computer", title: "3. کامپیوتر", color: "#023ee3", raw: computer },
   { key: "complex", title: "4. مجتمع", color: "#ff7043", raw: complex },
-  { key: "quran", title: "5. اندیشه اسلامی", color: "#6cff43", raw: quranThought },
+  { key: "quran", title: "5. طرح کلی اندیشه اسلامی", color: "#6cff43", raw: quranThought },
 ];
 
 export default SECTIONS;
