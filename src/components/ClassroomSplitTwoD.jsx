@@ -129,7 +129,7 @@ const getThemeStyles = (isDark, collapsed) => ({
 
   // ستون اول و دوم تحت تاثیر collapsed هستند
   sidePanel: {
-    width: collapsed ? 90 : 250,
+    width: collapsed ? 80 : 250,
     background: isDark ? "#0a0a0a" : "#ffffff",
     borderLeft: isDark ? "1px solid #222" : "1px solid #e2e8f0",
     display: "flex",
@@ -137,7 +137,7 @@ const getThemeStyles = (isDark, collapsed) => ({
     transition: "0.3s cubic-bezier(0.4, 0, 0.2, 1)",
   },
   middlePanel: {
-    width: collapsed ? 90 : 240,
+    width: collapsed ? 80 : 240,
     background: isDark ? "#0d0d0d" : "#fcfcfc",
     borderLeft: isDark ? "1px solid #222" : "1px solid #e2e8f0",
     display: "flex",
