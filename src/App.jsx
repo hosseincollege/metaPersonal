@@ -105,6 +105,11 @@ export default function App() {
   const [themeMode, setThemeMode] = useState("system");
   const [systemIsDark, setSystemIsDark] = useState(false);
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [pendingLesson, setPendingLesson] = useState(null);
+  const [pendingMode, setPendingMode] = useState(null);
+  const [password, setPassword] = useState("");
+
   useEffect(() => {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     setSystemIsDark(mq.matches);
@@ -127,9 +132,31 @@ export default function App() {
   }, []);
 
   const handleSelectLesson = useCallback((lesson, mode) => {
+
+    if (lesson.key === "complex") {
+      setPendingLesson(lesson);
+      setPendingMode(mode);
+      setShowPassword(true);
+      return;
+    }
+
     setActiveLesson(lesson);
     setViewMode(mode);
+
   }, []);
+
+  const checkPassword = () => {
+
+    if (password === "163264") {
+      setShowPassword(false);
+      setPassword("");
+      setActiveLesson(pendingLesson);
+      setViewMode(pendingMode);
+    } else {
+      alert("رمز اشتباه است");
+    }
+
+  };
 
   if (activeLesson && viewMode === "3D") {
     return (
@@ -216,6 +243,105 @@ export default function App() {
           />
         ))}
       </div>
+
+      {showPassword && (
+        <div style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          background: "rgba(0,0,0,0.92)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 9999
+        }}>
+          
+          <div style={{
+            width: "420px",
+            background: "#000",
+            border: "1px solid #555",
+            borderRadius: "10px",
+            padding: "25px",
+            color: "#e5e7eb",
+            fontFamily: "monospace",
+            position: "relative"
+          }}>
+
+            {/* دکمه بستن */}
+            <button
+              onClick={() => {
+                setShowPassword(false);
+                setPassword("");
+              }}
+              style={{
+                position: "absolute",
+                top: "8px",
+                left: "10px",
+                background: "transparent",
+                border: "none",
+                color: "#aaa",
+                fontSize: "18px",
+                cursor: "pointer"
+              }}
+            >
+              ✕
+            </button>
+
+            <div style={{ marginBottom: "12px", fontSize: "14px" }}>
+              ACCESS
+            </div>
+
+            <div style={{ marginBottom: "10px", fontSize: "13px", color:"#aaa" }}>
+              Enter password:
+            </div>
+
+            <input
+              type="password"
+              value={password}
+              autoFocus
+              onChange={(e)=>setPassword(e.target.value)}
+              onKeyDown={(e)=> e.key === "Enter" && checkPassword()}
+              style={{
+                width: "100%",
+                background: "#000",
+                border: "1px solid #555",
+                color: "#fff",
+                padding: "8px",
+                fontFamily: "monospace",
+                outline: "none",
+                borderRadius:"6px"
+              }}
+            />
+
+            {/* دکمه ها */}
+            <div style={{
+              display:"flex",
+              justifyContent:"space-between",
+              marginTop:"16px"
+            }}>
+
+              <button
+                onClick={checkPassword}
+                style={{
+                  background:"#1f2937",
+                  border:"1px solid #555",
+                  color:"#fff",
+                  padding:"6px 14px",
+                  borderRadius:"6px",
+                  cursor:"pointer"
+                }}
+              >
+                Enter
+              </button>
+
+            </div>
+
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
