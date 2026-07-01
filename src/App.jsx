@@ -105,10 +105,12 @@ export default function App() {
   const [themeMode, setThemeMode] = useState("system");
   const [systemIsDark, setSystemIsDark] = useState(false);
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [pendingLesson, setPendingLesson] = useState(null);
-  const [pendingMode, setPendingMode] = useState(null);
-  const [password, setPassword] = useState("");
+  const [hiddenPassword, setHiddenPassword] = useState("");
+  const hiddenInputRef = React.useRef(null);
+  const pendingLessonRef = React.useRef(null);
+  const pendingModeRef = React.useRef(null);
+  const [passError, setPassError] = useState(false);
+
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
@@ -134,9 +136,13 @@ export default function App() {
   const handleSelectLesson = useCallback((lesson, mode) => {
 
     if (lesson.key === "complex") {
-      setPendingLesson(lesson);
-      setPendingMode(mode);
-      setShowPassword(true);
+      pendingLessonRef.current = lesson;
+      pendingModeRef.current = mode;
+
+      if (hiddenInputRef.current) {
+        hiddenInputRef.current.focus();
+      }
+
       return;
     }
 
@@ -144,19 +150,6 @@ export default function App() {
     setViewMode(mode);
 
   }, []);
-
-  const checkPassword = () => {
-
-    if (password === "163264") {
-      setShowPassword(false);
-      setPassword("");
-      setActiveLesson(pendingLesson);
-      setViewMode(pendingMode);
-    } else {
-      alert("رمز اشتباه است");
-    }
-
-  };
 
   if (activeLesson && viewMode === "3D") {
     return (
@@ -244,103 +237,72 @@ export default function App() {
         ))}
       </div>
 
-      {showPassword && (
-        <div style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100vw",
-          height: "100vh",
-          background: "rgba(0,0,0,0.92)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 9999
-        }}>
-          
-          <div style={{
-            width: "420px",
-            background: "#000",
-            border: "1px solid #555",
-            borderRadius: "10px",
-            padding: "25px",
-            color: "#e5e7eb",
-            fontFamily: "monospace",
-            position: "relative"
-          }}>
+<input
+  ref={hiddenInputRef}
+  type="password"
+  value={hiddenPassword}
+  onChange={(e)=>setHiddenPassword(e.target.value)}
+  onKeyDown={(e)=>{
 
-            {/* دکمه بستن */}
-            <button
-              onClick={() => {
-                setShowPassword(false);
-                setPassword("");
-              }}
-              style={{
-                position: "absolute",
-                top: "8px",
-                left: "10px",
-                background: "transparent",
-                border: "none",
-                color: "#aaa",
-                fontSize: "18px",
-                cursor: "pointer"
-              }}
-            >
-              ✕
-            </button>
+    if(e.key === "Enter"){
 
-            <div style={{ marginBottom: "12px", fontSize: "14px" }}>
-              ACCESS
-            </div>
+      if(hiddenPassword === "1234"){
 
-            <div style={{ marginBottom: "10px", fontSize: "13px", color:"#aaa" }}>
-              Enter password:
-            </div>
+        setPassError(false);
 
-            <input
-              type="password"
-              value={password}
-              autoFocus
-              onChange={(e)=>setPassword(e.target.value)}
-              onKeyDown={(e)=> e.key === "Enter" && checkPassword()}
-              style={{
-                width: "100%",
-                background: "#000",
-                border: "1px solid #555",
-                color: "#fff",
-                padding: "8px",
-                fontFamily: "monospace",
-                outline: "none",
-                borderRadius:"6px"
-              }}
-            />
+        setActiveLesson(pendingLessonRef.current);
+        setViewMode(pendingModeRef.current);
 
-            {/* دکمه ها */}
-            <div style={{
-              display:"flex",
-              justifyContent:"space-between",
-              marginTop:"16px"
-            }}>
+      } else {
 
-              <button
-                onClick={checkPassword}
-                style={{
-                  background:"#1f2937",
-                  border:"1px solid #555",
-                  color:"#fff",
-                  padding:"6px 14px",
-                  borderRadius:"6px",
-                  cursor:"pointer"
-                }}
-              >
-                Enter
-              </button>
+        setPassError(true);
 
-            </div>
+        setTimeout(() => {
+          setPassError(false);
+        }, 1200);
 
-          </div>
-        </div>
-      )}
+      }
+
+      setHiddenPassword("");
+    }
+  }}
+  style={{
+    position:"fixed",
+    opacity:0
+  }}
+/>
+
+{hiddenPassword.length > 0 && (
+  <div style={{
+    position: "fixed",
+    bottom: "12px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    color: "#666",
+    fontSize: "14px",
+    fontFamily: "monospace",
+    letterSpacing: "4px",
+    userSelect: "none",
+    pointerEvents: "none"
+  }}>
+    {"•".repeat(hiddenPassword.length)}
+  </div>
+)}
+
+{passError && (
+  <div style={{
+    position:"fixed",
+    bottom:"40px",
+    left:"50%",
+    transform:"translateX(-50%)",
+    color:"#ff4444",
+    fontSize:"12px",
+    fontFamily:"monospace",
+    opacity:0.8
+  }}>
+    access denied
+  </div>
+)}
 
     </div>
   );
