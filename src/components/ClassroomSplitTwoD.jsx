@@ -163,6 +163,9 @@ const getThemeStyles = (isDark, collapsed) => ({
     scrollBehavior: "smooth",
     background: isDark ? "#080808" : "#ffffff",
     padding: "40px 30px",
+    // پشتیبانی از فایرفاکس
+    scrollbarColor: isDark ? "#444 #080808" : "#cbd5e1 #ffffff",
+    scrollbarWidth: "thin",
   },
   panelHeader: {
     padding: "14px 16px",
@@ -192,6 +195,9 @@ const getThemeStyles = (isDark, collapsed) => ({
     flex: 1,
     overflowY: "auto",
     padding: "12px 8px",
+    // پشتیبانی از فایرفاکس
+    scrollbarColor: isDark ? "#444 #0a0a0a" : "#cbd5e1 #ffffff",
+    scrollbarWidth: "thin",
   },
 
   navItem: (active, color, collapsedMode = false) => ({
@@ -237,22 +243,27 @@ const getThemeStyles = (isDark, collapsed) => ({
     border: "none",
     textAlign: "right",
     cursor: "pointer",
-    marginBottom: 6,
-    padding: "11px 5px",
+    marginBottom: 4,
+    // ایجاد تورفتگی بر اساس عمق (هر مرحله 15 پیکسل)
+    padding: `10px ${12 + depth * 15}px 10px 8px`, 
     borderRadius: 10,
     background: active
       ? isDark
         ? "rgba(255,255,255,0.08)"
         : "#f0f9ff"
       : "transparent",
-    color: active ? color : isDark ? "#aaa" : "#475569",
+      
+    color: active
+      ? color
+      : (isDark ? "#aaa" : "#475569"),
+      
     display: "flex",
     alignItems: "center",
-    gap: 12,
+    gap: 10,
     transition: "0.2s",
-    fontSize: depth === 0 ? "0.96rem" : "0.9rem",
-    fontWeight: active ? 900 : 600,
-    lineHeight: 1.7,
+    fontSize: depth === 0 ? "0.92rem" : "0.85rem",
+    fontWeight: active ? 900 : (depth === 0 ? 700 : 500),
+    lineHeight: 1.6,
   }),
 
   contentWrapper: {
@@ -345,28 +356,45 @@ export default function ClassroomSplitTwoD({
 
   // Sync Scroll Logic
   useEffect(() => {
-    const contentContainer = document.getElementById("main-content-area");
-    if (!contentContainer) return;
+    const container = document.getElementById("main-content-area");
+    if (!container) return;
 
     const handleScroll = () => {
-      const scrollPos = contentContainer.scrollTop + 180;
       let currentId = null;
+      let closestTop = Infinity;
 
-      for (const id in contentRefs.current) {
-        const el = contentRefs.current[id];
-        if (el && el.offsetTop <= scrollPos) {
-          currentId = id;
+      Object.entries(contentRefs.current).forEach(([id, el]) => {
+        if (!el) return;
+
+        const rect = el.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+
+        // فاصله المان تا بالای کانتینر اسکرول
+        const distance = Math.abs(rect.top - containerRect.top - 120);
+
+        // فقط آیتم‌هایی که وارد محدوده دید شدند
+        if (rect.top <= containerRect.top + 150) {
+          if (distance < closestTop) {
+            closestTop = distance;
+            currentId = id;
+          }
         }
-      }
+      });
 
       if (currentId && currentId !== activeDetailId) {
         setActiveDetailId(currentId);
       }
     };
 
-    contentContainer.addEventListener("scroll", handleScroll);
-    return () => contentContainer.removeEventListener("scroll", handleScroll);
-  }, [activeUnit, activeDetailId]);
+    container.addEventListener("scroll", handleScroll);
+
+    // اجرای اولیه
+    handleScroll();
+
+    return () => {
+      container.removeEventListener("scroll", handleScroll);
+    };
+  }, [activeUnit]);
 
   const handleSectionClick = (idx) => {
     setActiveSectionIdx(idx);
@@ -414,6 +442,45 @@ export default function ClassroomSplitTwoD({
 
   return (
     <div style={styles.mainContainer}>
+      {/* 🚀 ساخت یک تگ استایل موقت برای مدیریت استایل اسکرول‌بار مرورگرهای Webkit بر اساس تم */}
+      <style>
+        {`
+          /* تنظیمات اسکرول بار وبکیت برای حالت لایت */
+          ${!isDark ? `
+            ::-webkit-scrollbar {
+              width: 8px;
+              height: 8px;
+            }
+            ::-webkit-scrollbar-track {
+              background: #f1f5f9 !important;
+            }
+            ::-webkit-scrollbar-thumb {
+              background: #cbd5e1 !important;
+              border-radius: 8px;
+            }
+            ::-webkit-scrollbar-thumb:hover {
+              background: #94a3b8 !important;
+            }
+          ` : `
+            /* تنظیمات اسکرول بار وبکیت برای حالت دارک */
+            ::-webkit-scrollbar {
+              width: 8px;
+              height: 8px;
+            }
+            ::-webkit-scrollbar-track {
+              background: #0f0f0f !important;
+            }
+            ::-webkit-scrollbar-thumb {
+              background: #444444 !important;
+              border-radius: 8px;
+            }
+            ::-webkit-scrollbar-thumb:hover {
+              background: #555555 !important;
+            }
+          `}
+        `}
+      </style>
+
       <div style={styles.topToolbar}>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           
@@ -629,29 +696,54 @@ export default function ClassroomSplitTwoD({
             <div style={styles.headerActiveTitle}>فصل‌ها</div>
           </div>
           <div style={styles.scrollArea}>
-            {detailItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => scrollToItem(item.id)}
-                style={styles.detailItem(activeDetailId === item.id, item.depth, lessonColor)}
-              >
-                <span
-                  style={{
-                    color: lessonColor,
-                    fontWeight: 950,
-                    fontSize: "0.85rem",
-                    direction: "ltr",
-                    textAlign: "left",
-                    flexShrink: 0,
-                  }}
+            {detailItems.map((item) => {
+              const isLevelZero = item.depth === 0;
+              const isActive = activeDetailId === item.id;
+
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => scrollToItem(item.id)}
+                  style={styles.detailItem(isActive, item.depth, lessonColor)}
                 >
-                  {item.number}
-                </span>
-                <span style={{ textAlign: "right", flex: 1 }}>{item.title}</span>
-              </button>
-            ))}
+                  <span
+                    style={{
+                      color: isActive
+                        ? lessonColor
+                        : isLevelZero
+                          ? (isDark ? "#ffffff" : "#0f172a")
+                          : (isDark ? "#888" : "#64748b"),
+
+                      fontWeight: isLevelZero ? 900 : 600,
+                      fontSize: "0.85rem",
+                      direction: "ltr",
+                      textAlign: "left",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {item.number}
+                  </span>
+
+                  <span
+                    style={{
+                      textAlign: "right",
+                      flex: 1,
+                      color: isActive
+                        ? lessonColor
+                        : isLevelZero
+                          ? (isDark ? "#ffffff" : "#0f172a")
+                          : (isDark ? "#aaa" : "#475569"),
+                      fontWeight: isActive ? 800 : (isLevelZero ? 700 : 500)
+                    }}
+                  >
+                    {item.title}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </aside>
+
 
         {/* محتوای اصلی */}
         <main id="main-content-area" style={styles.contentArea}>

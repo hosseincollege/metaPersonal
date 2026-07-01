@@ -237,72 +237,72 @@ export default function App() {
         ))}
       </div>
 
-<input
-  ref={hiddenInputRef}
-  type="password"
-  value={hiddenPassword}
-  onChange={(e)=>setHiddenPassword(e.target.value)}
-  onKeyDown={(e)=>{
+      <input
+        ref={hiddenInputRef}
+        type="password"
+        value={hiddenPassword}
+        onChange={(e)=>setHiddenPassword(e.target.value)}
+        onKeyDown={(e)=>{
 
-    if(e.key === "Enter"){
+          if(e.key === "Enter"){
 
-      if(hiddenPassword === "1234"){
+            if(hiddenPassword === "1234"){
 
-        setPassError(false);
+              setPassError(false);
 
-        setActiveLesson(pendingLessonRef.current);
-        setViewMode(pendingModeRef.current);
+              setActiveLesson(pendingLessonRef.current);
+              setViewMode(pendingModeRef.current);
 
-      } else {
+            } else {
 
-        setPassError(true);
+              setPassError(true);
 
-        setTimeout(() => {
-          setPassError(false);
-        }, 1200);
+              setTimeout(() => {
+                setPassError(false);
+              }, 1200);
 
-      }
+            }
 
-      setHiddenPassword("");
-    }
-  }}
-  style={{
-    position:"fixed",
-    opacity:0
-  }}
-/>
+            setHiddenPassword("");
+          }
+        }}
+        style={{
+          position:"fixed",
+          opacity:0
+        }}
+      />
 
-{hiddenPassword.length > 0 && (
-  <div style={{
-    position: "fixed",
-    bottom: "12px",
-    left: "50%",
-    transform: "translateX(-50%)",
-    color: "#666",
-    fontSize: "14px",
-    fontFamily: "monospace",
-    letterSpacing: "4px",
-    userSelect: "none",
-    pointerEvents: "none"
-  }}>
-    {"•".repeat(hiddenPassword.length)}
-  </div>
-)}
+      {hiddenPassword.length > 0 && (
+        <div style={{
+          position: "fixed",
+          bottom: "12px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          color: "#666",
+          fontSize: "14px",
+          fontFamily: "monospace",
+          letterSpacing: "4px",
+          userSelect: "none",
+          pointerEvents: "none"
+        }}>
+          {"•".repeat(hiddenPassword.length)}
+        </div>
+      )}
 
-{passError && (
-  <div style={{
-    position:"fixed",
-    bottom:"40px",
-    left:"50%",
-    transform:"translateX(-50%)",
-    color:"#ff4444",
-    fontSize:"12px",
-    fontFamily:"monospace",
-    opacity:0.8
-  }}>
-    access denied
-  </div>
-)}
+      {passError && (
+        <div style={{
+          position:"fixed",
+          bottom:"40px",
+          left:"50%",
+          transform:"translateX(-50%)",
+          color:"#ff4444",
+          fontSize:"12px",
+          fontFamily:"monospace",
+          opacity:0.8
+        }}>
+          access denied
+        </div>
+      )}
 
     </div>
   );
