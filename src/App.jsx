@@ -3,6 +3,9 @@ import LessonRoom from "./components/LessonRoom";
 import ClassroomSplitTwoD from "./components/ClassroomSplitTwoD";
 import SECTIONS from "./Section";
 
+
+const IS_PASSWORD_PROTECTED = false; //true,false
+
 const normalizeLesson = (raw, key, title, color) => ({
   key,
   title,
@@ -134,15 +137,13 @@ export default function App() {
   }, []);
 
   const handleSelectLesson = useCallback((lesson, mode) => {
-
-    if (lesson.key === "complex") {
+    if (IS_PASSWORD_PROTECTED && lesson.key === "complex") {
       pendingLessonRef.current = lesson;
       pendingModeRef.current = mode;
 
       if (hiddenInputRef.current) {
         hiddenInputRef.current.focus();
       }
-
       return;
     }
 
@@ -150,6 +151,39 @@ export default function App() {
     setViewMode(mode);
 
   }, []);
+
+  // افکت برای گوش دادن به دکمه‌های کیبورد (1 تا 5)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // اگر کاربر در حال تایپ رمز باشد (فوکوس روی اینپوت مخفی یا هر فیلد دیگری باشد) کاری انجام ندهد
+      if (
+        document.activeElement &&
+        (document.activeElement.tagName === "INPUT" ||
+          document.activeElement.tagName === "TEXTAREA")
+      ) {
+        return;
+      }
+
+      // فقط زمانی که درس فعالی باز نشده باشد، کلیدهای میانبر کار کنند
+      if (activeLesson !== null) return;
+
+      const key = e.key;
+      // اگر دکمه‌های بین 1 تا 5 فشرده شدند
+      if (key >= "1" && key <= "5") {
+        const index = parseInt(key, 10) - 1;
+        const targetLesson = normalizedLessons[index];
+        if (targetLesson) {
+          // درس مورد نظر را در حالت 2D باز می‌کند
+          handleSelectLesson(targetLesson, "2D");
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [activeLesson, normalizedLessons, handleSelectLesson]);
 
   if (activeLesson && viewMode === "3D") {
     return (
@@ -237,71 +271,67 @@ export default function App() {
         ))}
       </div>
 
-      <input
-        ref={hiddenInputRef}
-        type="password"
-        value={hiddenPassword}
-        onChange={(e)=>setHiddenPassword(e.target.value)}
-        onKeyDown={(e)=>{
+      {/* المنت‌های مربوط به فیلد مخفی پسورد فقط در صورت فعال بودن نمایش داده می‌شوند */}
+      {IS_PASSWORD_PROTECTED && (
+        <>
+          <input
+            ref={hiddenInputRef}
+            type="password"
+            value={hiddenPassword}
+            onChange={(e)=>setHiddenPassword(e.target.value)}
+            onKeyDown={(e)=>{
+              if(e.key === "Enter"){
+                if(hiddenPassword === "0"){
+                  setPassError(false);
+                  setActiveLesson(pendingLessonRef.current);
+                  setViewMode(pendingModeRef.current);
+                } else {
+                  setPassError(true);
+                  setTimeout(() => {
+                    setPassError(false);
+                  }, 1200);
+                }
+                setHiddenPassword("");
+              }
+            }}
+            style={{
+              position:"fixed",
+              opacity:0
+            }}
+          />
 
-          if(e.key === "Enter"){
+          {hiddenPassword.length > 0 && (
+            <div style={{
+              position: "fixed",
+              bottom: "12px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              color: "#666",
+              fontSize: "14px",
+              fontFamily: "monospace",
+              letterSpacing: "4px",
+              userSelect: "none",
+              pointerEvents: "none"
+            }}>
+              {"•".repeat(hiddenPassword.length)}
+            </div>
+          )}
 
-            if(hiddenPassword === "1234"){
-
-              setPassError(false);
-
-              setActiveLesson(pendingLessonRef.current);
-              setViewMode(pendingModeRef.current);
-
-            } else {
-
-              setPassError(true);
-
-              setTimeout(() => {
-                setPassError(false);
-              }, 1200);
-
-            }
-
-            setHiddenPassword("");
-          }
-        }}
-        style={{
-          position:"fixed",
-          opacity:0
-        }}
-      />
-
-      {hiddenPassword.length > 0 && (
-        <div style={{
-          position: "fixed",
-          bottom: "12px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          color: "#666",
-          fontSize: "14px",
-          fontFamily: "monospace",
-          letterSpacing: "4px",
-          userSelect: "none",
-          pointerEvents: "none"
-        }}>
-          {"•".repeat(hiddenPassword.length)}
-        </div>
-      )}
-
-      {passError && (
-        <div style={{
-          position:"fixed",
-          bottom:"40px",
-          left:"50%",
-          transform:"translateX(-50%)",
-          color:"#ff4444",
-          fontSize:"12px",
-          fontFamily:"monospace",
-          opacity:0.8
-        }}>
-          access denied
-        </div>
+          {passError && (
+            <div style={{
+              position:"fixed",
+              bottom:"40px",
+              left:"50%",
+              transform:"translateX(-50%)",
+              color:"#ff4444",
+              fontSize:"12px",
+              fontFamily:"monospace",
+              opacity:0.8
+            }}>
+              access denied
+            </div>
+          )}
+        </>
       )}
 
     </div>

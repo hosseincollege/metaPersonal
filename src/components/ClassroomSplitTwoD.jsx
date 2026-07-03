@@ -85,6 +85,7 @@ const getThemeStyles = (isDark, collapsed) => ({
     direction: "rtl",
     fontFamily: "'Vazirmatn', sans-serif",
     overflow: "hidden",
+    position: "relative",
   },
   topToolbar: {
     height: 64,
@@ -104,30 +105,12 @@ const getThemeStyles = (isDark, collapsed) => ({
     fontWeight: 900,
     textAlign: "right",
   },
-  iconButton: (active = false, activeColor = "#38bdf8") => ({
-    width: 38,
-    height: 38,
-    border: "none",
-    borderRadius: 12,
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    color: active ? activeColor : isDark ? "#999" : "#64748b",
-    background: active
-      ? isDark
-        ? "rgba(255,255,255,0.08)"
-        : "#f1f5f9"
-      : "transparent",
-    transition: "0.2s ease",
-  }),
   layoutGrid: {
     flex: 1,
     display: "flex",
     overflow: "hidden",
   },
 
-  // ستون اول و دوم تحت تاثیر collapsed هستند
   sidePanel: {
     width: collapsed ? 80 : 250,
     background: isDark ? "#0a0a0a" : "#ffffff",
@@ -145,7 +128,6 @@ const getThemeStyles = (isDark, collapsed) => ({
     transition: "0.3s cubic-bezier(0.4, 0, 0.2, 1)",
   },
 
-  // ستون سوم عرض ثابت دارد و فقط غیب/ظاهر می‌شود
   thirdColumnPanel: (visible) => ({
     width: visible ? 240 : 0,
     background: isDark ? "#0a0a0a" : "#ffffff",
@@ -163,7 +145,6 @@ const getThemeStyles = (isDark, collapsed) => ({
     scrollBehavior: "smooth",
     background: isDark ? "#080808" : "#ffffff",
     padding: "40px 30px",
-    // پشتیبانی از فایرفاکس
     scrollbarColor: isDark ? "#444 #080808" : "#cbd5e1 #ffffff",
     scrollbarWidth: "thin",
   },
@@ -195,21 +176,28 @@ const getThemeStyles = (isDark, collapsed) => ({
     flex: 1,
     overflowY: "auto",
     padding: "12px 8px",
-    // پشتیبانی از فایرفاکس
     scrollbarColor: isDark ? "#444 #0a0a0a" : "#cbd5e1 #ffffff",
     scrollbarWidth: "thin",
   },
 
-  navItem: (active, color, collapsedMode = false) => ({
+  navItem: (active, color, collapsedMode = false, isFocused = false) => ({
     padding: collapsedMode ? "12px 10px" : "12px 14px",
     borderRadius: 12,
     marginBottom: 8,
     cursor: "pointer",
+    userSelect: "none",
+    WebkitTapHighlightColor: "transparent",
     background: active
       ? isDark
         ? "rgba(255,255,255,0.07)"
         : "#f1f5f9"
+      : isFocused
+      ? isDark
+        ? "rgba(255,255,255,0.03)"
+        : "#f8fafc"
       : "transparent",
+    border: isFocused ? `1px solid ${color}aa` : "1px solid transparent",
+    boxShadow: isFocused ? `0 0 8px ${color}44` : "none",
     color: active ? (isDark ? "#ffffff" : "#0f172a") : isDark ? "#888" : "#64748b",
     fontWeight: active ? 850 : 600,
     transition: "0.2s",
@@ -238,31 +226,31 @@ const getThemeStyles = (isDark, collapsed) => ({
     textAlign: "right",
   },
 
-  detailItem: (active, depth, color) => ({
+  detailItem: (active, depth, color, isFocused = false) => ({
     width: "100%",
-    border: "none",
+    border: isFocused ? `1px solid ${color}aa` : "1px solid transparent",
+    boxShadow: isFocused ? `0 0 8px ${color}44` : "none",
     textAlign: "right",
     cursor: "pointer",
     marginBottom: 4,
-    // ایجاد تورفتگی بر اساس عمق (هر مرحله 15 پیکسل)
-    padding: `10px ${12 + depth * 15}px 10px 8px`, 
+    padding: `10px ${12 + depth * 15}px 10px 8px`,
     borderRadius: 10,
     background: active
       ? isDark
         ? "rgba(255,255,255,0.08)"
         : "#f0f9ff"
+      : isFocused
+      ? isDark
+        ? "rgba(255,255,255,0.03)"
+        : "#f8fafc"
       : "transparent",
-      
-    color: active
-      ? color
-      : (isDark ? "#aaa" : "#475569"),
-      
+    color: active ? color : isDark ? "#aaa" : "#475569",
     display: "flex",
     alignItems: "center",
     gap: 10,
     transition: "0.2s",
     fontSize: depth === 0 ? "0.92rem" : "0.85rem",
-    fontWeight: active ? 900 : (depth === 0 ? 700 : 500),
+    fontWeight: active ? 900 : depth === 0 ? 700 : 500,
     lineHeight: 1.6,
   }),
 
@@ -334,7 +322,20 @@ export default function ClassroomSplitTwoD({
   const [activeUnitIdx, setActiveUnitIdx] = useState(0);
   const [activeDetailId, setActiveDetailId] = useState(null);
 
+  // سیستم رمز
+  const [showKeypad, setShowKeypad] = useState(false);
+  const [pin, setPin] = useState("");
+  const [pendingAction, setPendingAction] = useState(null);
+  const [unlockedSections, setUnlockedSections] = useState([]);
+  const [passError, setPassError] = useState(false);
+
+  // نویگیشن کیبورد
+  const [focusedCol, setFocusedCol] = useState(0);
+  const [focusedIdx, setFocusedIdx] = useState({ 0: 0, 1: 0, 2: 0 });
+
   const contentRefs = useRef({});
+  const keypadRef = useRef(null);
+
   const isDark = theme === "dark";
   const styles = useMemo(() => getThemeStyles(isDark, collapsed), [isDark, collapsed]);
 
@@ -369,10 +370,8 @@ export default function ClassroomSplitTwoD({
         const rect = el.getBoundingClientRect();
         const containerRect = container.getBoundingClientRect();
 
-        // فاصله المان تا بالای کانتینر اسکرول
         const distance = Math.abs(rect.top - containerRect.top - 120);
 
-        // فقط آیتم‌هایی که وارد محدوده دید شدند
         if (rect.top <= containerRect.top + 150) {
           if (distance < closestTop) {
             closestTop = distance;
@@ -387,19 +386,51 @@ export default function ClassroomSplitTwoD({
     };
 
     container.addEventListener("scroll", handleScroll);
-
-    // اجرای اولیه
     handleScroll();
 
     return () => {
       container.removeEventListener("scroll", handleScroll);
     };
-  }, [activeUnit]);
+  }, [activeUnit, activeDetailId]);
 
+  // بستن کی‌پد با کلیک بیرون
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (keypadRef.current && !keypadRef.current.contains(event.target)) {
+        setShowKeypad(false);
+        setPin("");
+        setPendingAction(null);
+        setPassError(false);
+      }
+    };
+
+    if (showKeypad) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showKeypad]);
+
+  // هاب ورود به بخش‌ها با محافظ قفل رمز
   const handleSectionClick = (idx) => {
-    setActiveSectionIdx(idx);
-    setActiveUnitIdx(0);
-    setActiveDetailId(null);
+    const targetSection = sections[idx];
+
+    if (
+      targetSection &&
+      targetSection.title.includes("رویدادها") &&
+      !unlockedSections.includes(targetSection.id)
+    ) {
+      setPendingAction({ type: "section", idx, id: targetSection.id });
+      setShowKeypad(true);
+      setPin("");
+      setPassError(false);
+    } else {
+      setActiveSectionIdx(idx);
+      setActiveUnitIdx(0);
+      setActiveDetailId(null);
+    }
   };
 
   const handleUnitClick = (idx) => {
@@ -414,6 +445,132 @@ export default function ClassroomSplitTwoD({
       block: "start",
     });
   };
+
+  // مدیریت کی‌پد
+  const handlePinInput = (digit) => {
+    setPin((prev) => prev + String(digit));
+  };
+
+  const handlePinBackspace = () => {
+    setPin((prev) => prev.slice(0, -1));
+  };
+
+  const handlePinSubmit = () => {
+    if (pin === "001") {
+      if (pendingAction && pendingAction.type === "section") {
+        setUnlockedSections((prev) => [...prev, pendingAction.id]);
+        setActiveSectionIdx(pendingAction.idx);
+        setActiveUnitIdx(0);
+        setActiveDetailId(null);
+      }
+      setShowKeypad(false);
+      setPin("");
+      setPendingAction(null);
+      setPassError(false);
+    } else {
+      setPin("");
+      setPassError(true);
+      setTimeout(() => {
+        setPassError(false);
+      }, 1200);
+    }
+  };
+
+  // کیبورد فیزیکی و نویگیشن
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (showKeypad) {
+        if (/^[0-9]$/.test(e.key)) {
+          e.preventDefault();
+          handlePinInput(e.key);
+        } else if (e.key === "Backspace") {
+          e.preventDefault();
+          handlePinBackspace();
+        } else if (e.key === "Enter") {
+          e.preventDefault();
+          handlePinSubmit();
+        } else if (e.key === "Escape") {
+          e.preventDefault();
+          setShowKeypad(false);
+          setPin("");
+          setPendingAction(null);
+          setPassError(false);
+        }
+        return;
+      }
+
+      if (e.key === "0") {
+        e.preventDefault();
+        if (onBack) onBack();
+        return;
+      }
+
+      const getMaxItems = () => {
+        if (focusedCol === 0) return sections.length;
+        if (focusedCol === 1) return units.length;
+        if (focusedCol === 2) return detailItems.length;
+        return 0;
+      };
+
+      switch (e.key) {
+        case "ArrowRight":
+          e.preventDefault();
+          setFocusedCol((prev) => Math.max(0, prev - 1));
+          break;
+        case "ArrowLeft":
+          e.preventDefault();
+          setFocusedCol((prev) => Math.min(2, prev + 1));
+          break;
+        case "ArrowDown":
+          e.preventDefault();
+          setFocusedIdx((prev) => ({
+            ...prev,
+            [focusedCol]: Math.min(getMaxItems() - 1, prev[focusedCol] + 1),
+          }));
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          setFocusedIdx((prev) => ({
+            ...prev,
+            [focusedCol]: Math.max(0, prev[focusedCol] - 1),
+          }));
+          break;
+        case "Enter":
+          e.preventDefault();
+          const currentIdx = focusedIdx[focusedCol];
+          const maxIdx = getMaxItems();
+          if (currentIdx >= 0 && currentIdx < maxIdx) {
+            if (focusedCol === 0) {
+              handleSectionClick(currentIdx);
+            } else if (focusedCol === 1) {
+              handleUnitClick(currentIdx);
+            } else if (focusedCol === 2) {
+              const targetItem = detailItems[currentIdx];
+              if (targetItem) scrollToItem(targetItem.id);
+            }
+          }
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [
+    showKeypad,
+    pin,
+    pendingAction,
+    focusedCol,
+    focusedIdx,
+    sections,
+    units,
+    detailItems,
+    unlockedSections,
+    onBack,
+  ]);
 
   const renderContentRecursive = (items, depth = 0, parentNumber = "") => {
     return items.map((item, index) => {
@@ -442,10 +599,23 @@ export default function ClassroomSplitTwoD({
 
   return (
     <div style={styles.mainContainer}>
-      {/* 🚀 ساخت یک تگ استایل موقت برای مدیریت استایل اسکرول‌بار مرورگرهای Webkit بر اساس تم */}
       <style>
         {`
-          /* تنظیمات اسکرول بار وبکیت برای حالت لایت */
+          * {
+            box-sizing: border-box;
+          }
+
+          button, div, span {
+            -webkit-tap-highlight-color: transparent;
+          }
+
+          button:focus,
+          button:focus-visible,
+          div:focus,
+          div:focus-visible {
+            outline: none;
+          }
+
           ${!isDark ? `
             ::-webkit-scrollbar {
               width: 8px;
@@ -462,7 +632,6 @@ export default function ClassroomSplitTwoD({
               background: #94a3b8 !important;
             }
           ` : `
-            /* تنظیمات اسکرول بار وبکیت برای حالت دارک */
             ::-webkit-scrollbar {
               width: 8px;
               height: 8px;
@@ -483,12 +652,10 @@ export default function ClassroomSplitTwoD({
 
       <div style={styles.topToolbar}>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          
-          {/* ✅ دکمه خروج / بازگشت (قرمز و برجسته) */}
           {onBack && (
             <button
               onClick={onBack}
-              title="خروج"
+              title="خروج (کلید 0)"
               style={{
                 display: "flex",
                 justifyContent: "center",
@@ -499,9 +666,9 @@ export default function ClassroomSplitTwoD({
                 borderRadius: "8px",
                 border: "none",
                 cursor: "pointer",
-                background: "#ef4444", 
+                background: "#ef4444",
                 color: "#ffffff",
-                boxShadow: "0 2px 8px rgba(239, 68, 68, 0.4)", 
+                boxShadow: "0 2px 8px rgba(239, 68, 68, 0.4)",
               }}
             >
               <svg
@@ -519,7 +686,6 @@ export default function ClassroomSplitTwoD({
             </button>
           )}
 
-          {/* دکمه جمع کردن منو (خنثی) */}
           <button
             onClick={() => setCollapsed(!collapsed)}
             style={{
@@ -533,11 +699,19 @@ export default function ClassroomSplitTwoD({
               border: "none",
               cursor: "pointer",
               background: collapsed
-                ? (isDark ? "#3f3f46" : "#e4e4e7") 
-                : (isDark ? "#27272a" : "#ffffff"),
-              color: collapsed 
-                ? (isDark ? "#ffffff" : "#18181b") 
-                : (isDark ? "#a1a1aa" : "#52525b"),
+                ? isDark
+                  ? "#3f3f46"
+                  : "#e4e4e7"
+                : isDark
+                ? "#27272a"
+                : "#ffffff",
+              color: collapsed
+                ? isDark
+                  ? "#ffffff"
+                  : "#18181b"
+                : isDark
+                ? "#a1a1aa"
+                : "#52525b",
               boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
             }}
           >
@@ -565,7 +739,6 @@ export default function ClassroomSplitTwoD({
             </svg>
           </button>
 
-          {/* دکمه ستون سوم (خنثی) */}
           <button
             onClick={() => setIsThirdColumnVisible(!isThirdColumnVisible)}
             style={{
@@ -579,11 +752,19 @@ export default function ClassroomSplitTwoD({
               border: "none",
               cursor: "pointer",
               background: isThirdColumnVisible
-                ? (isDark ? "#3f3f46" : "#e4e4e7") 
-                : (isDark ? "#27272a" : "#ffffff"),
-              color: isThirdColumnVisible 
-                ? (isDark ? "#ffffff" : "#18181b") 
-                : (isDark ? "#a1a1aa" : "#52525b"),
+                ? isDark
+                  ? "#3f3f46"
+                  : "#e4e4e7"
+                : isDark
+                ? "#27272a"
+                : "#ffffff",
+              color: isThirdColumnVisible
+                ? isDark
+                  ? "#ffffff"
+                  : "#18181b"
+                : isDark
+                ? "#a1a1aa"
+                : "#52525b",
               boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
             }}
           >
@@ -602,7 +783,6 @@ export default function ClassroomSplitTwoD({
             </svg>
           </button>
 
-          {/* دکمه 3D (خنثی) */}
           <button
             onClick={onSwitchTo3D}
             title="نمای سه بعدی"
@@ -643,31 +823,250 @@ export default function ClassroomSplitTwoD({
       </div>
 
       <div style={styles.layoutGrid}>
-        {/* ستون اول: بخش‌ها (قابل جمع شدن) */}
+        {/* ستون اول */}
         <aside style={styles.sidePanel}>
           <div style={styles.panelHeader}>
             <span style={styles.headerLabel}>ستون اول</span>
-            <div style={{ ...styles.headerActiveTitle, color: lessonColor }}>
+            <div style={{ ...styles.headerActiveTitle, color: isDark ? "#fff" : "#111" }}>
               بخش‌ها
             </div>
           </div>
+
           <div style={styles.scrollArea}>
             {sections.map((s, i) => (
-              <div
-                key={s.id}
-                onClick={() => handleSectionClick(i)}
-                style={styles.navItem(activeSectionIdx === i, lessonColor, collapsed)}
-              >
-                <div style={styles.statusLight(activeSectionIdx === i, lessonColor)} />
-                <span style={styles.collapsedText}>
-                  {collapsed ? shortLabel(s.title, 2) : s.title}
-                </span>
+              <div key={s.id} style={{ position: "relative" }}>
+                <div
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSectionClick(i);
+                  }}
+                  style={styles.navItem(
+                    activeSectionIdx === i,
+                    lessonColor,
+                    collapsed,
+                    focusedCol === 0 && focusedIdx[0] === i
+                  )}
+                >
+                  <div style={styles.statusLight(activeSectionIdx === i, lessonColor)} />
+                  <span style={styles.collapsedText}>
+                    {collapsed ? shortLabel(s.title, 2) : s.title}
+                  </span>
+                </div>
+
+                {showKeypad && pendingAction?.id === s.id && (
+                  <div
+                    ref={keypadRef}
+                    onClick={(e) => e.stopPropagation()}
+                    style={{
+                      position: "absolute",
+                      top: "110%",
+                      right: collapsed ? "10px" : "20px",
+                      zIndex: 1000,
+                      background: isDark
+                        ? "rgba(10, 10, 10, 0.78)"
+                        : "rgba(255, 255, 255, 0.82)",
+                      backdropFilter: "blur(18px)",
+                      WebkitBackdropFilter: "blur(18px)",
+                      border: `1px solid ${
+                        isDark
+                          ? "rgba(255, 255, 255, 0.04)"
+                          : "rgba(0, 0, 0, 0.06)"
+                      }`,
+                      borderRadius: "22px",
+                      padding: "14px 12px",
+                      width: "150px",
+                      boxShadow: isDark
+                        ? "0 18px 38px rgba(0, 0, 0, 0.34)"
+                        : "0 18px 38px rgba(0, 0, 0, 0.10)",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: "10px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "7px",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        minHeight: "14px",
+                        minWidth: "50px",
+                      }}
+                    >
+                      {pin.length > 0 &&
+                        Array.from({ length: pin.length }).map((_, idx) => (
+                          <div
+                            key={idx}
+                            style={{
+                              width: "6px",
+                              height: "6px",
+                              borderRadius: "50%",
+                              background: isDark ? "#d4d4d4" : "#222",
+                              opacity: 0.95,
+                            }}
+                          />
+                        ))}
+                    </div>
+
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(3, 1fr)",
+                        gap: "8px",
+                        justifyItems: "center",
+                      }}
+                    >
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
+                        <button
+                          key={n}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handlePinInput(n);
+                          }}
+                          style={{
+                            width: "32px",
+                            height: "32px",
+                            borderRadius: "50%",
+                            border: `1px solid ${
+                              isDark
+                                ? "rgba(255,255,255,0.08)"
+                                : "rgba(0,0,0,0.08)"
+                            }`,
+                            background: isDark
+                              ? "rgba(255,255,255,0.02)"
+                              : "rgba(0,0,0,0.02)",
+                            color: isDark ? "#9ca3af" : "#4b5563",
+                            fontSize: "13px",
+                            fontFamily: "monospace",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            outline: "none",
+                            userSelect: "none",
+                          }}
+                        >
+                          {n}
+                        </button>
+                      ))}
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePinBackspace();
+                        }}
+                        style={{
+                          width: "32px",
+                          height: "32px",
+                          borderRadius: "50%",
+                          border: "none",
+                          background: "transparent",
+                          color: isDark ? "#6b7280" : "#9ca3af",
+                          fontSize: "10px",
+                          fontFamily: "monospace",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          outline: "none",
+                        }}
+                      >
+                        ⌫
+                      </button>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePinInput(0);
+                        }}
+                        style={{
+                          width: "32px",
+                          height: "32px",
+                          borderRadius: "50%",
+                          border: `1px solid ${
+                            isDark
+                              ? "rgba(255,255,255,0.08)"
+                              : "rgba(0,0,0,0.08)"
+                          }`,
+                          background: isDark
+                            ? "rgba(255,255,255,0.02)"
+                            : "rgba(0,0,0,0.02)",
+                          color: isDark ? "#9ca3af" : "#4b5563",
+                          fontSize: "13px",
+                          fontFamily: "monospace",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          outline: "none",
+                        }}
+                      >
+                        0
+                      </button>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePinSubmit();
+                        }}
+                        style={{
+                          width: "32px",
+                          height: "32px",
+                          borderRadius: "50%",
+                          border: `1px solid ${
+                            isDark
+                              ? "rgba(255,255,255,0.14)"
+                              : "rgba(0,0,0,0.14)"
+                          }`,
+                          background: isDark
+                            ? "rgba(255,255,255,0.05)"
+                            : "rgba(0,0,0,0.04)",
+                          color: isDark ? "#d1d5db" : "#111827",
+                          fontSize: "10px",
+                          fontFamily: "monospace",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          outline: "none",
+                        }}
+                      >
+                        OK
+                      </button>
+                    </div>
+
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: "4px",
+                        width: "100%",
+                        minHeight: "18px",
+                      }}
+                    >
+                      {passError && (
+                        <span
+                          style={{
+                            fontSize: "9px",
+                            color: "rgba(239,68,68,0.8)",
+                            fontFamily: "monospace",
+                            letterSpacing: "0.4px",
+                          }}
+                        >
+                          ACCESS DENIED
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
         </aside>
 
-        {/* ستون دوم: قسمت‌ها (قابل جمع شدن) */}
+        {/* ستون دوم */}
         <aside style={styles.middlePanel}>
           <div style={styles.panelHeader}>
             <span style={styles.headerLabel}>{activeSection?.title || "---"}</span>
@@ -678,7 +1077,12 @@ export default function ClassroomSplitTwoD({
               <div
                 key={u.id}
                 onClick={() => handleUnitClick(i)}
-                style={styles.navItem(activeUnitIdx === i, lessonColor, collapsed)}
+                style={styles.navItem(
+                  activeUnitIdx === i,
+                  lessonColor,
+                  collapsed,
+                  focusedCol === 1 && focusedIdx[1] === i
+                )}
               >
                 <div style={styles.statusLight(activeUnitIdx === i, lessonColor)} />
                 <span style={styles.collapsedText}>
@@ -689,31 +1093,35 @@ export default function ClassroomSplitTwoD({
           </div>
         </aside>
 
-        {/* ستون سوم: فصل‌ها (عرض ثابت) */}
+        {/* ستون سوم */}
         <aside style={styles.thirdColumnPanel(isThirdColumnVisible)}>
           <div style={styles.panelHeader}>
             <span style={styles.headerLabel}>{activeUnit?.title || "---"}</span>
             <div style={styles.headerActiveTitle}>فصل‌ها</div>
           </div>
           <div style={styles.scrollArea}>
-            {detailItems.map((item) => {
+            {detailItems.map((item, i) => {
               const isLevelZero = item.depth === 0;
               const isActive = activeDetailId === item.id;
+              const isFocused = focusedCol === 2 && focusedIdx[2] === i;
 
               return (
                 <button
                   key={item.id}
                   onClick={() => scrollToItem(item.id)}
-                  style={styles.detailItem(isActive, item.depth, lessonColor)}
+                  style={styles.detailItem(isActive, item.depth, lessonColor, isFocused)}
                 >
                   <span
                     style={{
                       color: isActive
                         ? lessonColor
                         : isLevelZero
-                          ? (isDark ? "#ffffff" : "#0f172a")
-                          : (isDark ? "#888" : "#64748b"),
-
+                        ? isDark
+                          ? "#ffffff"
+                          : "#0f172a"
+                        : isDark
+                        ? "#888"
+                        : "#64748b",
                       fontWeight: isLevelZero ? 900 : 600,
                       fontSize: "0.85rem",
                       direction: "ltr",
@@ -731,9 +1139,13 @@ export default function ClassroomSplitTwoD({
                       color: isActive
                         ? lessonColor
                         : isLevelZero
-                          ? (isDark ? "#ffffff" : "#0f172a")
-                          : (isDark ? "#aaa" : "#475569"),
-                      fontWeight: isActive ? 800 : (isLevelZero ? 700 : 500)
+                        ? isDark
+                          ? "#ffffff"
+                          : "#0f172a"
+                        : isDark
+                        ? "#aaa"
+                        : "#475569",
+                      fontWeight: isActive ? 800 : isLevelZero ? 700 : 500,
                     }}
                   >
                     {item.title}
@@ -743,7 +1155,6 @@ export default function ClassroomSplitTwoD({
             })}
           </div>
         </aside>
-
 
         {/* محتوای اصلی */}
         <main id="main-content-area" style={styles.contentArea}>
@@ -766,9 +1177,7 @@ export default function ClassroomSplitTwoD({
                 >
                   {activeUnit.title}
                 </h1>
-                {activeUnit.content && (
-                  <p style={styles.contentText}>{activeUnit.content}</p>
-                )}
+                {activeUnit.content && <p style={styles.contentText}>{activeUnit.content}</p>}
               </header>
 
               {renderContentRecursive(activeUnit.children)}
