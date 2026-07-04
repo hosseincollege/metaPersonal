@@ -569,7 +569,7 @@ export default {
       },
 
       {
-        title: "4- آزمون عملی",
+        title: "5- آزمون عملی",
         content: "آموزش گام‌به‌گام راه‌اندازی سناریوهای مختلف شبکه در محیط Packet Tracer.",
         subtopics: [
           {
