@@ -1,525 +1,208 @@
-// src/lessons/hiweb/4- دانشنامه.js
+  // src/lessons/hiweb/4- دانشنامه.js
 
 export default {
+
   // ================== فصل 4- دانشنامه ==================
-  section: "4- دانشنامه",
-  topics: [
-    {
-      title: "1- اسکریپت مودم SXT",
-      content:
-        "در این مرحله تنظیمات کامل RouterOS شامل interface lte ، ip firewall ، system script ، system scheduler ، tool netwatch و Queue Tree اعمال می‌شود تا ارتباط LTE برقرار، امنیت مدیریتی تضمین، مانیتورینگ SNMP فعال و مکانیزم‌های خودکار پایداری لینک، سوییچ سیم‌کارت، تهیه و ارسال Backup و مدیریت ترافیک اجرا شوند.",
-      subtopics: [
-        {
-          title: "interface lte apn و تنظیم LTE",
-          content: "تنظیمات APN، باندها و حالت شبکه برای فعال‌سازی LTE.",
-          details: [
-            {
-              title: "تعریف پروفایل APN",
-              content:
-                "در بخش interface lte apn پروفایل APN اپراتور تعریف می‌شود تا مودم بتواند به شبکه دیتای موبایل متصل گردد."
-            },
-            {
-              title: "تنظیم پارامترهای LTE",
-              content:
-                "در interface lte تنظیماتی مانند:\n- network-mode=lte\n- band=1,3,7\n- allow-roaming=yes\n\nاعمال می‌شود تا مودم روی باندهای مشخص فعال شده و امکان Roaming فراهم گردد."
-            }
-          ]
-        },
-        {
-          title: "snmp و Community Configuration",
-          content: "ایمن‌سازی SNMP و فعال‌سازی مانیتورینگ.",
-          details: [
-            {
-              title: "تنظیم دسترسی SNMP Community",
-              content:
-                "در بخش snmp community دسترسی پیش‌فرض محدود می‌شود (read-access=no) و Community جدید با addresses مشخص تعریف می‌گردد."
-            },
-            {
-              title: "فعال‌سازی Trap برای مانیتورینگ",
-              content:
-                "در snmp سرویس فعال شده و پارامترهای trap-community و trap-version=2 تنظیم می‌شوند تا مودم در سیستم NOC قابل مانیتور باشد."
-            }
-          ]
-        },
-        {
-          title: "ip address تنظیم IP داخلی",
-          content: "تعریف IP روی پورت مدیریتی مودم.",
-          details: [
-            {
-              title: "تعریف آدرس داخلی",
-              content:
-                "در بخش ip address یک IP برای interface=ether1 تنظیم می‌شود تا دسترسی مدیریتی داخلی بین مودم و تجهیزات برقرار گردد."
-            }
-          ]
-        },
-        {
-          title: "ip firewall nat تنظیم NAT و Port Access",
-          content: "ایجاد Masquerade و مدیریت پورت‌های مدیریتی.",
-          details: [
-            {
-              title: "قانون Masquerade",
-              content:
-                "در ip firewall nat قانون:\n- chain=srcnat\n- action=masquerade\n- out-interface=lte1\nایجاد می‌شود تا ترافیک داخلی به اینترنت ارسال گردد."
-            },
-            {
-              title: "قوانین dstnat",
-              content: "قوانین dstnat جهت انتقال پورت‌های مدیریتی، SNMP و سرویس‌های خاص تنظیم می‌شوند."
-            }
-          ]
-        },
-        {
-          title: "ip firewall address-list لیست Trusted",
-          content: "ثبت IPهای مجاز دسترسی.",
-          details: [
-            {
-              title: "تعریف Trusted Addresses",
-              content:
-                "در ip firewall address-list آدرس‌های NOC، VPN، LAN و WAN در لیست Trusted اضافه می‌شوند تا فقط این IPها به سرویس‌ها دسترسی داشته باشند."
-            }
-          ]
-        },
-        {
-          title: "ip firewall filter قوانین امنیتی",
-          content: "محدودسازی دسترسی مدیریتی.",
-          details: [
-            {
-              title: "تنظیم chain=input",
-              content:
-                "در ip firewall filter قوانین chain=input تعریف می‌شود تا فقط src-address-list=Trusted بتواند به dst-portهای مدیریتی دسترسی داشته باشد و بقیه Drop شوند."
-            }
-          ]
-        },
-        {
-          title: "ip service سخت‌سازی سرویس‌ها",
-          content: "غیرفعال‌سازی سرویس‌های غیرضروری.",
-          details: [
-            {
-              title: "سخت‌سازی سرویس‌ها",
-              content:
-                "در ip service:\n- پورت‌های SSH، Winbox و API تغییر داده می‌شوند.\n- سرویس‌های ftp و www غیرفعال می‌گردند.\nاین کار جهت افزایش امنیت انجام می‌شود."
-            }
-          ]
-        },
-        {
-          title: "system ntp client و Clock",
-          content: "تنظیم زمان دقیق دستگاه.",
-          details: [
-            {
-              title: "تنظیم NTP و Time Zone",
-              content:
-                "در system ntp client سرورهای NTP تعریف می‌شوند و در system clock منطقه زمانی تنظیم می‌گردد تا زمان لاگ‌ها صحیح باشد."
-            }
-          ]
-        },
-        {
-          title: "system scheduler و LTE Monitoring",
-          content: "پایش وضعیت LTE و رفع اختلال خودکار.",
-          details: [
-            {
-              title: "اسکریپت‌های پایش LTE",
-              content:
-                "با system scheduler اسکریپت‌های LTE-Check و LTE-Run-Check اجرا می‌شوند تا وضعیت running بودن interface lte بررسی شود. در صورت Down شدن، ریبوت یا Enable مجدد انجام می‌شود."
-            }
-          ]
-        },
-        {
-          title: "Auto SIM Switch با Ping Monitoring",
-          content: "جابجایی خودکار سیم‌کارت بر اساس Packet Loss.",
-          details: [
-            {
-              title: "مکانیزم Ping Monitoring",
-              content:
-                "اسکریپت Schedule-LTE-Automation با ping روی interface=lte1 میزان Packet Loss را بررسی می‌کند.\nدر صورت Loss زیاد:\n- با interface lte settings set sim-slot دستگاه بین سیم‌کارت‌های a و b جابه‌جا می‌شود."
-            }
-          ]
-        },
-        {
-          title: "tool netwatch مانیتورینگ لینک",
-          content: "پایش لحظه‌ای Host و اجرای اسکریپت‌های Up/Down.",
-          details: [
-            {
-              title: "Netwatch Actions",
-              content:
-                "در tool netwatch:\n- در صورت Down شدن: اسکریپت LTE-DOWN اجرا می‌شود.\n- در صورت Up شدن: اسکریپت LTE-UP اجرا می‌گردد."
-            }
-          ]
-        },
-        {
-          title: "system script Backup Automation",
-          content: "تعریف اسکریپت‌های تولید بکاپ.",
-          details: [
-            {
-              title: "اسکریپت‌های Mik-Backup",
-              content:
-                "در system script اسکریپت‌های Mik-Backup و Mik-Backup-RHCM ایجاد می‌شوند که با export و system backup save فایل‌های .rsc و .backup را تولید می‌کنند."
-            }
-          ]
-        },
-        {
-          title: "ارسال Backup با tool fetch (FTP Upload)",
-          content: "ارسال فایل بکاپ به سرور مرکزی.",
-          details: [
-            {
-              title: "ارسال و پاک‌سازی فایل",
-              content:
-                "با tool fetch mode=ftp upload=yes فایل‌های backup روی سرور آپلود، و سپس با file remove از حافظه حذف می‌شوند."
-            }
-          ]
-        },
-        {
-          title: "queue tree مدیریت پهنای باند LTE",
-          content: "اولویت‌دهی ترافیک مهم مثل ICMP.",
-          details: [
-            {
-              title: "Queue و Mangle",
-              content:
-                "در queue tree یک Parent روی lte1 تعریف می‌شود.\nدر ip firewall mangle با mark-packet=ICMP ترافیک Ping اولویت‌دهی می‌شود تا مانیتورینگ حتی در بار شبکه بالا پایدار باقی بماند."
-            }
-          ]
-        },
-        {
-          title: "system logging بهینه‌سازی لاگ",
-          content: "حذف لاگ‌های غیرضروری و مدیریت حافظه.",
-          details: [
-            {
-              title: "تنظیمات Logging",
-              content:
-                "در system logging مقدار disk-lines-per-file افزایش می‌یابد و با تنظیم topics=\"!lte,!gsm,!snmp,!ntp\" از ثبت لاگ‌های غیرضروری جلوگیری می‌شود."
-            }
-          ]
-        }
-      ]
-    },
 
-    // ========================== اسکریپت روتر 951 ==========================
+    section: "4- دانشنامه",
+    topics: [
 
-    {
-      title: "2- اسکریپت روتر 951",
-      content:
-        "در این مرحله روتر MikroTik سایت پیکربندی می‌شود تا ارتباط بین مودم LTE، تجهیزات محلی شامل کامپیوتر، دوربین و رادار برقرار شده و تونل‌های ارتباطی با سرورهای مرکزی ایجاد شوند. همچنین تنظیمات امنیتی، مانیتورینگ، مدیریت کاربران، پایش تجهیزات و تهیه نسخه پشتیبان به‌صورت خودکار از طریق قابلیت‌های RouterOS انجام می‌گیرد.",
-      subtopics: [
-        {
-          title: "interface ethernet نام‌گذاری اینترفیس‌ها",
-          content: "تعیین نقش هر پورت فیزیکی دستگاه.",
-          details: [
-            {
-              title: "نام‌گذاری پورت‌ها",
-              content:
-                "ether1 برای مودم LTE، ether2 برای کامپیوتر، ether3 برای دوربین، ether4 برای رادار و ether5 به‌عنوان پورت رزرو تعیین می‌شود."
-            }
-          ]
-        },
-        {
-          title: "interface bridge ایجاد Bridge شبکه تجهیزات",
-          content: "تجمیع تجهیزات لوکال در یک Bridge.",
-          details: [
-            {
-              title: "تعریف Bridge",
-              content:
-                "در interface bridge یک Bridge با نام Bridge-Camera ایجاد می‌شود و در interface bridge port پورت‌های تجهیزات اضافه می‌گردند."
-            }
-          ]
-        },
-        {
-          title: "ip address تنظیم آدرس‌های IP",
-          content: "تعریف IP روی اینترفیس‌های داخلی و WAN.",
-          details: [
-            {
-              title: "تعریف IP برای LTE و Bridge",
-              content:
-                "برای اینترفیس متصل به مودم LTE و همچنین Bridge داخلی تجهیزات، IPهای مربوطه اعمال می‌شوند."
-            }
-          ]
-        },
-        {
-          title: "ip route تنظیم مسیرهای استاتیک",
-          content: "تعریف مسیرهای اصلی و پشتیبان.",
-          details: [
-            {
-              title: "Static Routing",
-              content:
-                "مسیرهای مختلف برای دسترسی به سرورها و شبکه‌های دیگر تعریف می‌شوند. مسیرهای جایگزین با distance بالاتر برای redundancy استفاده می‌شوند."
-            }
-          ]
-        },
-        {
-          title: "interface l2tp-client ایجاد تونل‌های L2TP",
-          content: "ایجاد سه تونل ارتباطی.",
-          details: [
-            {
-              title: "تونل‌های اصلی، پشتیبان و مدیریتی",
-              content:
-                "دو تونل L2TP برای ارتباط اصلی و backup با شبکه مرکزی و یک تونل برای مدیریت روتر ایجاد می‌شود."
-            }
-          ]
-        },
-        {
-          title: "system identity تنظیم نام دستگاه",
-          content: "سازگار کردن نام سیستم با استاندارد پروژه.",
-          details: [
-            {
-              title: "فرمت نام استاندارد",
-              content:
-                "نام Router مطابق استاندارد شامل استان، نام پروژه و کد سایت تنظیم می‌شود."
-            }
-          ]
-        },
-        {
-          title: "ip dns تنظیم DNS",
-          content: "تنظیم DNSهای کاربردی.",
-          details: [
-            {
-              title: "تعریف DNS Server",
-              content:
-                "سرورهای DNS جهت تبدیل نام دامنه به IP برای اتصال سرویس‌ها تعریف می‌گردند."
-            }
-          ]
-        },
-        {
-          title: "ip firewall address-list تعریف لیست Trusted",
-          content: "ایمن‌سازی دسترسی مدیریتی.",
-          details: [
-            {
-              title: "Trusted Networks",
-              content:
-                "آدرس‌های IP مانیتورینگ، شبکه داخلی پروژه و اپراتور در لیست Trusted افزوده می‌شوند."
-            }
-          ]
-        },
-        {
-          title: "ip firewall filter قوانین امنیتی",
-          content: "محدود کردن پورت‌های مدیریتی.",
-          details: [
-            {
-              title: "قوانین ورودی",
-              content:
-                "فقط IPهای Trusted اجازه دسترسی به پورت‌های مدیریتی را دارند و باقی درخواست‌ها Drop می‌شوند."
-            }
-          ]
-        },
-        {
-          title: "ip firewall connection tracking بهینه‌سازی پردازش",
-          content: "افزایش عملکرد با غیرفعال‌سازی ConnTrack.",
-          details: [
-            {
-              title: "غیرفعال‌سازی ConnTrack",
-              content:
-                "در بخش ip firewall connection tracking این قابلیت غیرفعال می‌شود تا مصرف منابع کم شود و پردازش سریع‌تر گردد."
-            }
-          ]
-        },
-        {
-          title: "ip service مدیریت سرویس‌های مدیریتی",
-          content: "غیرفعال‌سازی سرویس‌های غیرضروری.",
-          details: [
-            {
-              title: "مدیریت سرویس‌ها",
-              content:
-                "سرویس ftp و www غیرفعال شده و ssh و api با پورت‌های اختصاصی فعال می‌مانند."
-            }
-          ]
-        },
-        {
-          title: "system ntp client و Clock",
-          content: "تنظیم ساعت و Time Zone.",
-          details: [
-            {
-              title: "تنظیم زمان",
-              content:
-                "NTP Client فعال شده و اسامی سرورها ثبت می‌شود. Time Zone مطابق منطقه پروژه تنظیم می‌گردد."
-            }
-          ]
-        },
-        {
-          title: "snmp فعال‌سازی مانیتورینگ",
-          content: "افزودن SNMP با محدودیت IP.",
-          details: [
-            {
-              title: "SNMP Configuration",
-              content:
-                "Communityهای SNMP تعریف می‌شوند، آدرس‌های مجاز تعیین می‌شود و سرویس SNMP فعال می‌گردد."
-            }
-          ]
-        },
-        {
-          title: "مدیریت کاربران و احراز هویت",
-          content: "ایمن‌سازی دسترسی Userها.",
-          details: [
-            {
-              title: "User + Radius",
-              content:
-                "دسترسی admin امن شده، گروه‌ها تعریف شده و احراز هویت برخی کاربران از طریق RADIUS انجام می‌شود."
-            }
-          ]
-        },
-        {
-          title: "system package بهینه‌سازی سیستم",
-          content: "غیرفعال‌سازی Packageهای غیرضروری.",
-          details: [
-            {
-              title: "Package Optimization",
-              content:
-                "پکیج‌هایی مثل mpls و hotspot جهت کاهش مصرف منابع و افزایش امنیت غیرفعال می‌شوند."
-            }
-          ]
-        },
-        {
-          title: "اسکریپت تشخیص پورت تجهیزات",
-          content: "شناسایی خودکار MAC دستگاه‌ها.",
-          details: [
-            {
-              title: "تشخیص پورت",
-              content:
-                "با بررسی ARP و Bridge Host و اسکریپت RouterOS مشخص می‌شود هر تجهیز روی کدام پورت قرار دارد."
-            }
-          ]
-        },
-        {
-          title: "system script ریست پورت تجهیزات",
-          content: "اسکریپت ریست هوشمند هر تجهیز.",
-          details: [
-            {
-              title: "Port Reset",
-              content:
-                "برای هر دستگاه اسکریپت ریست تعریف می‌شود که پورت را چند ثانیه Down کرده و سپس Up می‌کند."
-            }
-          ]
-        },
-        {
-          title: "tool netwatch پایش تجهیزات",
-          content: "پایش لحظه‌ای و اجرای اسکریپت ریست.",
-          details: [
-            {
-              title: "Netwatch Monitoring",
-              content:
-                "در صورت عدم پاسخ تجهیزات، اسکریپت ریست پورت مربوطه اجرا می‌شود."
-            }
-          ]
-        },
-        {
-          title: "system scheduler زمان‌بندی اسکریپت‌ها",
-          content: "اجرای دوره‌ای عملیات نگهداری.",
-          details: [
-            {
-              title: "Tasks Scheduling",
-              content:
-                "شامل اجرای اسکریپت‌های نگهداری، ریست شمارنده‌های اینترفیس، بروزرسانی متغیرهای سیستمی و سایر عملیات زمان‌بندی‌شده."
-            }
-          ]
-        },
-        {
-          title: "تهیه نسخه پشتیبان خودکار",
-          content: "ایجاد فایل‌های تنظیمات و بکاپ.",
-          details: [
-            {
-              title: "Backup Scripts",
-              content:
-                "روتر دوره‌ای export و system backup save را اجرا می‌کند تا فایل‌های .rsc و .backup تهیه شوند."
-            }
-          ]
-        },
-        {
-          title: "ارسال بکاپ به سرور مرکزی",
-          content: "آپلود FTP فایل بکاپ.",
-          details: [
-            {
-              title: "ارسال از طریق Fetch",
-              content:
-                "فایل‌ها از طریق tool fetch روی سرور مرکزی آپلود شده و پس از موفقیت حذف می‌شوند."
-            }
-          ]
-        }
-      ]
-    },
+      {
+        title: "1- اسکریپت مودم SXT",
+        content: "در این مرحله تنظیمات کامل RouterOS شامل interface lte ، ip firewall ، system script ، system scheduler ، tool netwatch و Queue Tree اعمال می‌شود تا ارتباط LTE برقرار، امنیت مدیریتی تضمین، مانیتورینگ SNMP فعال و مکانیزم‌های خودکار پایداری لینک، سوییچ سیم‌کارت، تهیه و ارسال Backup و مدیریت ترافیک اجرا شوند.",
+        subtopics: [
+          {
+            title: "interface lte apn و تنظیم LTE",
+            content: "در بخش interface lte apn پروفایل APN اپراتور تعریف شده و در interface lte تنظیماتی مانند network-mode=lte ، band=1,3,7 و allow-roaming=yes اعمال می‌شود تا مودم روی باندهای مشخص فعال شده و امکان Roaming فراهم گردد."
+          },
+          {
+            title: "snmp و Community Configuration",
+            content: "در بخش snmp community دسترسی پیش‌فرض محدود شده (read-access=no) و Community جدید با addresses مشخص تعریف می‌شود. سپس در snmp سرویس فعال شده و trap-community و trap-version=2 تنظیم می‌شود تا مودم در NOC مانیتور گردد."
+          },
+          {
+            title: "ip address تنظیم IP داخلی",
+            content: "در بخش ip address یک IP برای interface=ether1 تعریف می‌شود تا دسترسی مدیریتی داخلی بین مودم و تجهیزات شبکه برقرار شود."
+          },
+          {
+            title: "ip firewall nat تنظیم NAT و Port Access",
+            content: "در ip firewall nat قانون action=masquerade برای chain=srcnat و out-interface=lte1 ایجاد می‌شود تا ترافیک داخلی به اینترنت ارسال گردد. همچنین قوانین dstnat برای پورت‌های مدیریتی و SNMP تعریف می‌شوند."
+          },
+          {
+            title: "ip firewall address-list لیست Trusted",
+            content: "در ip firewall address-list آدرس‌های NOC، VPN، LAN و WAN در لیست Trusted ثبت می‌شوند تا فقط IPهای مجاز امکان دسترسی مدیریتی داشته باشند."
+          },
+          {
+            title: "ip firewall filter قوانین امنیتی",
+            content: "در ip firewall filter قوانین chain=input تعریف می‌شود تا فقط src-address-list=Trusted به dst-portهای مدیریتی دسترسی داشته باشند و سایر درخواست‌ها Drop شوند."
+          },
+          {
+            title: "ip service سخت‌سازی سرویس‌ها",
+            content: "در بخش ip service پورت‌های SSH، Winbox و API تغییر داده شده و سرویس‌هایی مانند ftp و www غیرفعال می‌شوند تا سطح امنیت افزایش یابد."
+          },
+          {
+            title: "system ntp client و Clock",
+            content: "در system ntp client سرویس NTP فعال و سرورهای زمان تعریف می‌شوند. سپس در system clock time-zone تنظیم می‌گردد تا لاگ‌ها و Scheduler به‌درستی کار کنند."
+          },
+          {
+            title: "system scheduler و LTE Monitoring",
+            content: "با استفاده از system scheduler اسکریپت‌های LTE-Check و LTE-Run-Check اجرا می‌شوند تا وضعیت running بودن interface lte بررسی شود و در صورت Down شدن، ریبوت یا Enable مجدد انجام گردد."
+          },
+          {
+            title: "Auto SIM Switch با Ping Monitoring",
+            content: "اسکریپت Schedule-LTE-Automation با دستور ping روی interface=lte1 میزان Packet Loss را بررسی می‌کند. در صورت Loss بالا یا قطع کامل ارتباط، با دستور interface lte settings set sim-slot بین a و b جابه‌جایی انجام می‌شود."
+          },
+          {
+            title: "tool netwatch مانیتورینگ لینک",
+            content: "در tool netwatch یک Host مشخص Ping می‌شود. در صورت Down شدن، اسکریپت LTE-DOWN فعال و Retry انجام می‌شود و در صورت Up شدن، LTE-UP اجرا می‌گردد."
+          },
+          {
+            title: "system script Backup Automation",
+            content: "در system script اسکریپت Mik-Backup و Mik-Backup-RHCM تعریف شده که با استفاده از export و system backup save فایل‌های .rsc و .backup تولید می‌کنند."
+          },
+          {
+            title: "ارسال Backup با tool fetch (FTP Upload)",
+            content: "فایل‌های Backup با دستور tool fetch mode=ftp upload=yes به سرور مرکزی ارسال شده و پس از ارسال موفق با file remove حذف می‌شوند."
+          },
+          {
+            title: "queue tree مدیریت پهنای باند LTE",
+            content: "در queue tree یک Parent روی lte1 تعریف شده و با استفاده از mark-packet=ICMP در ip firewall mangle ترافیک Ping اولویت‌دهی می‌شود تا حتی در ترافیک بالا مانیتورینگ پایدار بماند."
+          },
+          {
+            title: "system logging بهینه‌سازی لاگ",
+            content: "در system logging action مقدار disk-lines-per-file افزایش یافته و با تنظیم topics=\"!lte,!gsm,!snmp,!ntp\" از ذخیره لاگ‌های غیرضروری جلوگیری می‌شود تا حافظه مودم بهینه مصرف گردد."
+          }
+        ]
+      },
 
-    // ========================== مایکروویو ==========================
+      {
+        title: "2- اسکریپت روتر 951",
+        content: "در این مرحله روتر MikroTik سایت پیکربندی می‌شود تا ارتباط بین مودم LTE، تجهیزات محلی شامل کامپیوتر، دوربین و رادار برقرار شده و تونل‌های ارتباطی با سرورهای مرکزی ایجاد شوند. همچنین تنظیمات امنیتی، مانیتورینگ، مدیریت کاربران، پایش تجهیزات و تهیه نسخه پشتیبان به‌صورت خودکار از طریق قابلیت‌های RouterOS انجام می‌گیرد.",
+        subtopics: [
+          {
+            title: "interface ethernet نام‌گذاری اینترفیس‌ها",
+            content: "در ابتدای پیکربندی، پورت‌های فیزیکی روتر با استفاده از بخش interface ethernet بر اساس نوع اتصال نام‌گذاری می‌شوند. به‌عنوان مثال ether1 برای اتصال مودم LTE، ether2 برای کامپیوتر، ether3 برای دوربین، ether4 برای رادار و ether5 به‌عنوان پورت رزرو در نظر گرفته شده است."
+          },
+          {
+            title: "interface bridge ایجاد Bridge شبکه تجهیزات",
+            content: "در بخش interface bridge یک Bridge با نام Bridge-Camera ایجاد شده و در interface bridge port پورت‌های مربوط به تجهیزات محلی شامل کامپیوتر، دوربین، رادار و پورت رزرو به آن اضافه می‌شوند تا تمامی این تجهیزات در یک شبکه لایه دو مشترک قرار گیرند."
+          },
+          {
+            title: "ip address تنظیم آدرس‌های IP",
+            content: "در بخش ip address برای اینترفیس متصل به مودم LTE و همچنین Bridge داخلی تجهیزات آدرس‌های IP تعریف می‌شوند تا ارتباط بین شبکه محلی سایت و شبکه ارتباطی برقرار شود."
+          },
+          {
+            title: "ip route تنظیم مسیرهای استاتیک",
+            content: "در جدول مسیریابی ip route مسیرهای مختلف برای دسترسی به سرورها، شبکه‌های مدیریتی و سایر سایت‌ها تعریف شده است. برخی مسیرها دارای مسیر جایگزین با distance بالاتر هستند تا در صورت قطع مسیر اصلی، ارتباط از مسیر پشتیبان برقرار شود."
+          },
+          {
+            title: "interface l2tp-client ایجاد تونل‌های L2TP",
+            content: "در بخش interface l2tp-client سه تونل L2TP به سرورهای مرکزی ایجاد می‌شود. دو تونل برای ارتباط اصلی و پشتیبان با شبکه مرکزی استفاده شده و یک تونل نیز برای دسترسی مدیریتی به روتر در نظر گرفته شده است."
+          },
+          {
+            title: "system identity تنظیم نام دستگاه",
+            content: "نام دستگاه در بخش system identity بر اساس فرمت مشخص پروژه شامل استان، نام پروژه و کد سایت تنظیم می‌شود تا در سیستم‌های مانیتورینگ و مدیریت شبکه به‌راحتی قابل شناسایی باشد."
+          },
+          {
+            title: "ip dns تنظیم DNS",
+            content: "در بخش ip dns سرورهای DNS تعریف می‌شوند تا امکان تبدیل نام دامنه به آدرس IP برای ارتباط با سرورها فراهم گردد."
+          },
+          {
+            title: "ip firewall address-list تعریف لیست Trusted",
+            content: "در بخش ip firewall address-list مجموعه‌ای از آدرس‌های IP مربوط به مرکز مانیتورینگ، شبکه داخلی پروژه و شبکه اپراتور در لیست Trusted ثبت می‌شوند تا تنها این آدرس‌ها امکان دسترسی مدیریتی به روتر را داشته باشند."
+          },
+          {
+            title: "ip firewall filter قوانین امنیتی",
+            content: "در بخش ip firewall filter قوانینی تعریف شده است که اجازه دسترسی به پورت‌های مدیریتی تنها از طریق آدرس‌های موجود در لیست Trusted داده شود و سایر درخواست‌ها مسدود شوند."
+          },
+          {
+            title: "ip firewall connection tracking بهینه‌سازی پردازش ترافیک",
+            content: "در این سناریو قابلیت Connection Tracking در بخش ip firewall connection tracking غیرفعال شده است تا مصرف منابع پردازشی کاهش یافته و عملکرد روتر بهبود یابد."
+          },
+          {
+            title: "ip service مدیریت سرویس‌های مدیریتی",
+            content: "در بخش ip service برخی سرویس‌های مدیریتی مانند ftp و www غیرفعال شده و تنها سرویس‌های ضروری مانند ssh و api با پورت‌های تغییر یافته فعال باقی می‌مانند."
+          },
+          {
+            title: "system ntp client و Clock",
+            content: "در بخش system ntp client سرویس NTP فعال شده و سرورهای زمان تعریف می‌شوند. همچنین در system clock منطقه زمانی تنظیم می‌شود تا زمان سیستم دقیق باشد."
+          },
+          {
+            title: "snmp فعال‌سازی مانیتورینگ",
+            content: "در بخش snmp community و snmp سرویس SNMP فعال شده و Communityهای مشخص با محدودیت آدرس IP تعریف می‌شوند تا امکان مانیتورینگ از مرکز کنترل شبکه فراهم گردد."
+          },
+          {
+            title: "مدیریت کاربران و احراز هویت",
+            content: "در بخش user و radius دسترسی کاربر admin ایمن‌سازی شده و احراز هویت کاربران از طریق سرورهای RADIUS انجام می‌شود. همچنین گروه‌های کاربری با سطح دسترسی مشخص تعریف شده‌اند."
+          },
+          {
+            title: "system package بهینه‌سازی سیستم",
+            content: "در بخش system package برخی پکیج‌های غیرضروری مانند mpls و hotspot غیرفعال شده‌اند تا مصرف منابع سیستم کاهش یافته و سطح امنیت افزایش یابد."
+          },
+          {
+            title: "اسکریپت تشخیص پورت تجهیزات",
+            content: "با استفاده از اسکریپت‌های RouterOS و بررسی جدول ARP و Bridge Host، روتر به‌صورت خودکار آدرس MAC تجهیزات مانند کامپیوتر، دوربین و رادار را شناسایی کرده و مشخص می‌کند هر دستگاه به کدام پورت متصل است."
+          },
+          {
+            title: "system script ریست پورت تجهیزات",
+            content: "در بخش system script برای هر تجهیز یک اسکریپت تعریف شده است که در صورت نیاز پورت مربوط به آن دستگاه را برای چند ثانیه غیرفعال کرده و سپس مجدداً فعال می‌کند."
+          },
+          {
+            title: "tool netwatch پایش تجهیزات",
+            content: "در ابزار tool netwatch وضعیت ارتباط تجهیزات متصل به شبکه به‌صورت دوره‌ای بررسی می‌شود. در صورت عدم پاسخ‌گویی هر دستگاه، اسکریپت مربوط به ریست پورت آن اجرا می‌شود."
+          },
+          {
+            title: "system scheduler زمان‌بندی اسکریپت‌ها",
+            content: "با استفاده از system scheduler برخی اسکریپت‌ها در بازه‌های زمانی مشخص اجرا می‌شوند، از جمله به‌روزرسانی متغیرهای سیستمی، ریست شمارنده‌های اینترفیس و اجرای فرآیندهای نگهداری سیستم."
+          },
+          {
+            title: "تهیه نسخه پشتیبان خودکار",
+            content: "روتر به‌صورت دوره‌ای با استفاده از دستورات export و system backup save از تنظیمات خود فایل‌های پشتیبان تهیه می‌کند."
+          },
+          {
+            title: "ارسال بکاپ به سرور مرکزی",
+            content: "فایل‌های پشتیبان با استفاده از دستور tool fetch از طریق FTP به سرور مرکزی ارسال شده و پس از ارسال موفق از حافظه روتر حذف می‌شوند."
+          }
+        ]
+      },
+      {
+        title: "3- مایکروویو",
+        content:
+          "ارتباطات مایکروویو (Microwave) یک روش انتقال داده بی‌سیم در فرکانس‌های بالا است که برای ایجاد لینک‌های نقطه به نقطه (Point-to-Point) استفاده می‌شود. این سیستم‌ها به دلیل پهنای باند بالا و عدم نیاز به کابل‌کشی بین دو نقطه، در شبکه‌های زیرساختی و اتصال دکل‌ها بسیار کاربرد دارند. فرکانس‌های مایکروویو معمولاً در محدوده ۳ گیگاهرتز تا ۳۰۰ گیگاهرتز قرار دارند و برای برقراری ارتباط، وجود دید مستقیم (Line of Sight - LoS) بین دو آنتن الزامی است.",
+        subtopics: [
+          {
+            title: "طیف فرکانسی و اصول انتشار",
+            content:
+              "رادیوهای مایکروویو در باندهای فرکانسی مختلفی کار می‌کنند که بسته به فاصله و ظرفیت مورد نیاز انتخاب می‌شوند:\n\n- باندهای پایین (مثل 6GHz تا 11GHz): برای مسافت‌های طولانی (تا ۵۰ کیلومتر) با پایداری بالا در برابر باران.\n- باندهای بالا (مثل 18GHz تا 80GHz یا E-Band): برای مسافت‌های کوتاه (زیر ۵ کیلومتر) اما با پهنای باند بسیار بالا (چند گیگابیت).\n\nنکات کلیدی در انتشار:\n1) Line of Sight (LoS): مسیر بین دو آنتن باید کاملاً باز باشد.\n2) منطقه فرنل (Fresnel Zone): فضای بیضی‌شکل اطراف مسیر دید مستقیم که نباید توسط موانع اشغال شود.\n3) تداخل فرکانسی: استفاده از فرکانس‌های مشابه در یک منطقه باعث ایجاد نویز و کاهش کیفیت لینک می‌شود."
+          },
+          {
+            title: "روند اجرایی و نصب رادیو",
+            content:
+              "نصب یک لینک مایکروویو شامل مراحل فیزیکی و دقیق است:\n\n1) نصب پایه (Mounting): نصب مستحکم براکت‌ها روی دکل.\n2) نصب آنتن و رادیو: قرار دادن آنتن (Dish) و اتصال واحد رادیویی (ODU).\n3) کابل‌کشی (Cabling): استفاده از کابل شبکه Outdoor (معمولاً SFTP) یا فیبر نوری از دکل تا داخل اتاق تجهیزات.\n4) تنظیم جهت (Alignment/Panning): حساس‌ترین مرحله که در آن دو آنتن باید دقیقاً روبروی هم قرار گیرند.\n\nدر مرحله Alignment، نصاب با استفاده از ولت‌متر یا نرم‌افزار داخلی رادیو، مقدار RSSI (قدرت سیگنال دریافتی) را به بهترین عدد ممکن (نزدیک به طراحی) می‌رساند."
+          },
+          {
+            title: "عیب‌یابی و پشتیبانی لینک مایکروویو",
+            content:
+              "در صورت بروز اختلال در لینک، موارد زیر بررسی می‌شوند:\n\n- بررسی RSSI: اگر سیگنال ضعیف شده باشد، احتمالاً جهت آنتن‌ها به دلیل باد یا لرزش دکل تغییر کرده است.\n- تداخل (Interference): بررسی طیف فرکانسی برای اطمینان از عدم وجود نویز محیطی.\n- محو شدگی (Fading): اثرات جوی مثل باران شدید که در باندهای بالا باعث قطعی موقت می‌شود.\n- سلامت کابل و کانکتور: ورود آب به کانکتورها یا خرابی کابل شبکه روی دکل از عوامل رایج قطعی است.\n- پایداری منبع تغذیه (PoE): اطمینان از رسیدن ولتاژ کافی به رادیو در بالای دکل."
+          }
+        ]
+      },
+      {
+        title: "4- فیبر نوری",
+        content:
+          "فیبر نوری تکنولوژی انتقال اطلاعات به صورت پالس‌های نوری از طریق تارهای شیشه‌ای بسیار نازک است. برخلاف مسی، فیبر نوری در برابر تداخلات الکترومغناطیسی کاملاً مقاوم است و افت سیگنال بسیار ناچیزی در مسافت‌های طولانی دارد. در شبکه‌های مدرن، از فیبر نوری هم برای اتصال دکل‌ها (Backhaul) و هم برای رساندن اینترنت پرسرعت به منازل (FTTH) استفاده می‌شود.",
+        subtopics: [
+          {
+            title: "تجهیزات و مفاهیم اجرایی",
+            content:
+              "برای اجرای شبکه فیبر نوری از تجهیزات زیر استفاده می‌شود:\n\n- کابل فیبر نوری: شامل هسته (Core)، کلدینگ و روکش محافظ.\n- OLT: دستگاه مرکزی در مخابرات که سرویس را توزیع می‌کند.\n- ONT/ONU: مودم مخصوص فیبر نوری در سمت مشترک.\n- FAT/Closure: باکس‌های توزیع و مفصل‌بندی در سطح شهر یا ساختمان.\n\nمفاهیم مهم:\n- Single Mode (SM): برای مسافت‌های طولانی (رنگ زرد).\n- Multi Mode (MM): برای دیتاسنترها و مسافت‌های کوتاه (رنگ نارنجی یا آبی فیروزه‌ای)."
+          },
+          {
+            title: "عملیات فیوژن و تست شبکه",
+            content:
+              "اتصال تارهای فیبر نوری از طریق دستگاه فیوژن (Splicer) انجام می‌شود که با ایجاد قوس الکتریکی، دو تار را به هم جوش می‌دهد.\n\nپارامترهای تست کیفیت:\n- تست با دستگاه OTDR: برای مشاهده طول مسیر، محل شکستگی و میزان افت در کل طول مسیر.\n- تست با Power Meter: برای اندازه‌گیری دقیق توان خروجی نوری (بر حسب dBm).\n\nافت استاندارد در هر مفصل فیوژن معمولاً زیر 0.02dB در نظر گرفته می‌شود. اگر افت کلی مسیر از حد مجاز فراتر رود، سرویس دچار قطعی یا افت سرعت شدید می‌شود."
+          }
+        ]
+      }
 
-    {
-      title: "3- مایکروویو",
-      content:
-        "ارتباطات مایکروویو (Microwave) یک روش انتقال داده بی‌سیم در فرکانس‌های بالا است که برای ایجاد لینک‌های نقطه به نقطه (Point-to-Point) استفاده می‌شود.",
-      subtopics: [
-        {
-          title: "طیف فرکانسی و اصول انتشار",
-          content: "معرفی فرکانس‌ها، Line of Sight و منطقه فرنل.",
-          details: [
-            {
-              title: "باندهای فرکانسی",
-              content:
-                "- باند 6 تا 11GHz برای مسافت‌های طولانی\n- باند 18 تا 80GHz برای مسافت کوتاه با ظرفیت بالا"
-            },
-            {
-              title: "اصول انتشار",
-              content:
-                "سه اصل کلیدی:\n1) LOS\n2) Fresnel Zone\n3) جلوگیری از تداخل فرکانسی"
-            }
-          ]
-        },
-        {
-          title: "روند اجرایی و نصب رادیو",
-          content: "مراحل Mounting تا Alignment.",
-          details: [
-            {
-              title: "مراحل نصب",
-              content:
-                "1) نصب Mount\n2) نصب آنتن و رادیو\n3) کابل‌کشی SFTP یا فیبر\n4) تنظیم دقیق جهت با RSSI"
-            }
-          ]
-        },
-        {
-          title: "عیب‌یابی و پشتیبانی لینک",
-          content: "بررسی RSSI، تداخل و Fading.",
-          details: [
-            {
-              title: "مراحل عیب‌یابی",
-              content:
-                "- بررسی RSSI\n- بررسی تداخل\n- بررسی اثر باران\n- بررسی کابل‌ها و PoE"
-            }
-          ]
-        }
-      ]
-    },
-
-    // ========================== فیبر نوری ==========================
-
-    {
-      title: "4- فیبر نوری",
-      content:
-        "فیبر نوری تکنولوژی انتقال اطلاعات به صورت پالس‌های نوری است. در شبکه‌های مدرن، از فیبر هم برای Backhaul و هم برای FTTH استفاده می‌شود.",
-      subtopics: [
-        {
-          title: "تجهیزات و مفاهیم اجرایی",
-          content: "معرفی کابل، OLT، ONT و باکس‌های FAT/Closure.",
-          details: [
-            {
-              title: "تجهیزات اصلی",
-              content:
-                "- کابل فیبر نوری\n- OLT\n- ONT/ONU\n- FAT/Closure"
-            },
-            {
-              title: "انواع تار نوری",
-              content:
-                "Single Mode (طولانی)\nMulti Mode (کوتاه)"
-            }
-          ]
-        },
-        {
-          title: "عملیات فیوژن و تست شبکه",
-          content: "فیوژن، OTDR و پاورمتر.",
-          details: [
-            {
-              title: "فیوژن",
-              content:
-                "اتصال تارها با قوس الکتریکی توسط دستگاه Splicer."
-            },
-            {
-              title: "تست مسیر",
-              content:
-                "OTDR برای مشاهده مسیر و شکستگی.\nPower Meter برای اندازه‌گیری dBm.\nافت استاندارد هر فیوژن زیر 0.02dB."
-            }
-          ]
-        }
-      ]
-    }
-  ]
-};
+    ]
+  };
