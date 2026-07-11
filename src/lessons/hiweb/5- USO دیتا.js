@@ -6,7 +6,7 @@ export default {
   section: "5- USO دیتا",
   topics: [
     {
-      title: "1- FSMF",
+      title: "1- FSMF-پردازش مرکزی",
       content:
         "FSMF (Flexi System Module) ماژول پردازش مرکزی - مغز متفکر سایت (Baseband). پردازش تمام ترافیک دیتا و مدیریت ارتباطات.",
       subtopics: [
@@ -71,7 +71,7 @@ export default {
     },
 
     {
-      title: "2- FPRA",
+      title: "2- FPRA-واحد تغذیه",
       content: "FPRA (Flexi Power Rectifier) - واحد تغذیه - تأمین‌کننده برق کل سایت. تبدیل برق شهر به ولتاژ DC.",
       subtopics: [
         {
@@ -127,7 +127,7 @@ export default {
     },
 
     {
-      title: "3- FMFA",
+      title: "3- FMFA-کیت نصب",
       content: "FMFA (Flexi Mounting Kit) - کیت نصب - اسکلت و فریم مکانیکی برای استقرار تجهیزات.",
       subtopics: [
         {
@@ -163,7 +163,7 @@ export default {
     },
 
     {
-      title: "4- FRMA",
+      title: "4- FRMA-ماژول رادیویی",
       content: "FRMA (Flexi RF Module A) - ماژول رادیویی - رادیوی باند 800MHz نسل استاندارد (پیکربندی 3TX/6RX).",
       subtopics: [
         {
@@ -219,7 +219,7 @@ export default {
     },
 
     {
-      title: "5- FRMF",
+      title: "5- FRMF-ماژول رادیویی",
       content: "FRMF (Flexi RF Module F) - ماژول رادیویی - رادیوی باند 800MHz نسل پیشرفته (پیکربندی 6TX/6RX).",
       subtopics: [
         {
@@ -274,7 +274,7 @@ export default {
       ]
     },
     {
-      title: "6- FPFC",
+      title: "6- FPFC-فیلتر و ترکیب‌کننده",
       content: "FPFC (Flexi Platform Filter Combiner) - ماژول فیلتر و ترکیب‌کننده - جهت مدیریت سیگنال‌های RF و تجمیع باندها.",
       subtopics: [
         {
@@ -326,7 +326,7 @@ export default {
     },
 
     {
-      title: "7- Commissioning",
+      title: "7- Commissioning-کانفیگ",
       content: "کانفیگ نرم‌افزاری و راه‌اندازی - اتصال به سایت و فعال‌سازی.",
       subtopics: [
         {
