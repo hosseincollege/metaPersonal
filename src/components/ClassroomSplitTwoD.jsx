@@ -666,9 +666,9 @@ export default function ClassroomSplitTwoD({
                 borderRadius: "8px",
                 border: "none",
                 cursor: "pointer",
-                background: "#ef4444",
+                background: lessonColor,
                 color: "#ffffff",
-                boxShadow: "0 2px 8px rgba(239, 68, 68, 0.4)",
+                boxShadow: `0 2px 8px ${lessonColor}66`,
               }}
             >
               <svg
