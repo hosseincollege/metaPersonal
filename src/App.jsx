@@ -152,10 +152,9 @@ export default function App() {
 
   }, []);
 
-  // افکت برای گوش دادن به دکمه‌های کیبورد (1 تا 5)
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // اگر کاربر در حال تایپ رمز باشد (فوکوس روی اینپوت مخفی یا هر فیلد دیگری باشد) کاری انجام ندهد
+      // اگر کاربر در حال تایپ داخل input یا textarea باشد، میانبرها غیرفعال باشند
       if (
         document.activeElement &&
         (document.activeElement.tagName === "INPUT" ||
@@ -168,12 +167,14 @@ export default function App() {
       if (activeLesson !== null) return;
 
       const key = e.key;
-      // اگر دکمه‌های بین 1 تا 5 فشرده شدند
-      if (key >= "1" && key <= "5") {
+
+      // اگر یکی از کلیدهای 1 تا 9 زده شد
+      if (/^[1-9]$/.test(key)) {
         const index = parseInt(key, 10) - 1;
         const targetLesson = normalizedLessons[index];
+
+        // فقط اگر آن درس وجود داشت واردش شود
         if (targetLesson) {
-          // درس مورد نظر را در حالت 2D باز می‌کند
           handleSelectLesson(targetLesson, "2D");
         }
       }
@@ -184,6 +185,7 @@ export default function App() {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [activeLesson, normalizedLessons, handleSelectLesson]);
+
 
   if (activeLesson && viewMode === "3D") {
     return (

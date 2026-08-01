@@ -181,24 +181,28 @@ const getThemeStyles = (isDark, collapsed) => ({
   },
 
   navItem: (active, color, collapsedMode = false, isFocused = false) => ({
+    width: "100%",
     padding: collapsedMode ? "12px 10px" : "12px 14px",
     borderRadius: 12,
     marginBottom: 8,
     cursor: "pointer",
-    userSelect: "none",
+    userSelect: "text",
+    WebkitUserSelect: "text",
     WebkitTapHighlightColor: "transparent",
     background: active
       ? isDark
-        ? "rgba(255,255,255,0.07)"
-        : "#f1f5f9"
+        ? "rgba(255,255,255,0.05)"
+        : "#f8fafc"
       : isFocused
       ? isDark
         ? "rgba(255,255,255,0.03)"
-        : "#f8fafc"
+        : "#f1f5f9"
       : "transparent",
-    border: isFocused ? `1px solid ${color}aa` : "1px solid transparent",
-    boxShadow: isFocused ? `0 0 8px ${color}44` : "none",
-    color: active ? (isDark ? "#ffffff" : "#0f172a") : isDark ? "#888" : "#64748b",
+    border: isFocused
+      ? `1px solid ${color}`
+      : "1px solid transparent",
+    boxShadow: isFocused ? `0 0 0 1px ${color}22, 0 0 10px ${color}18` : "none",
+    color: active ? color : isDark ? "#ffffff" : "#0f172a",
     fontWeight: active ? 850 : 600,
     transition: "0.2s",
     fontSize: collapsedMode ? "0.82rem" : "0.92rem",
@@ -206,6 +210,7 @@ const getThemeStyles = (isDark, collapsed) => ({
     alignItems: "center",
     gap: collapsedMode ? 8 : 12,
     lineHeight: 1.7,
+    textAlign: "right",
   }),
 
   statusLight: (active, color) => ({
@@ -222,33 +227,39 @@ const getThemeStyles = (isDark, collapsed) => ({
     flex: 1,
     overflow: "hidden",
     whiteSpace: "nowrap",
-    textOverflow: "clip",
+    textOverflow: "ellipsis",
     textAlign: "right",
+    userSelect: "text",
+    WebkitUserSelect: "text",
   },
 
   detailItem: (active, depth, color, isFocused = false) => ({
     width: "100%",
-    border: isFocused ? `1px solid ${color}aa` : "1px solid transparent",
-    boxShadow: isFocused ? `0 0 8px ${color}44` : "none",
+    appearance: "none",
+    WebkitAppearance: "none",
+    backgroundClip: "padding-box",
+    outline: "none",
     textAlign: "right",
     cursor: "pointer",
-    marginBottom: 4,
+    marginBottom: 6,
     padding: `10px ${12 + depth * 15}px 10px 8px`,
     borderRadius: 10,
+    border: isFocused
+      ? `1px solid ${color}`
+      : "1px solid transparent",
     background: active
-      ? isDark
-        ? "rgba(255,255,255,0.08)"
-        : "#f0f9ff"
+      ? `${color}12`
       : isFocused
       ? isDark
         ? "rgba(255,255,255,0.03)"
         : "#f8fafc"
       : "transparent",
-    color: active ? color : isDark ? "#aaa" : "#475569",
+    boxShadow: isFocused ? `0 0 0 1px ${color}22, 0 0 8px ${color}18` : "none",
+    color: active ? color : isDark ? "#ffffff" : "#0f172a",
     display: "flex",
     alignItems: "center",
     gap: 10,
-    transition: "0.2s",
+    transition: "all 0.2s ease",
     fontSize: depth === 0 ? "0.92rem" : "0.85rem",
     fontWeight: active ? 900 : depth === 0 ? 700 : 500,
     lineHeight: 1.6,
@@ -1115,13 +1126,9 @@ export default function ClassroomSplitTwoD({
                     style={{
                       color: isActive
                         ? lessonColor
-                        : isLevelZero
-                        ? isDark
-                          ? "#ffffff"
-                          : "#0f172a"
                         : isDark
-                        ? "#888"
-                        : "#64748b",
+                        ? "#ffffff"
+                        : "#0f172a",
                       fontWeight: isLevelZero ? 900 : 600,
                       fontSize: "0.85rem",
                       direction: "ltr",
@@ -1138,12 +1145,8 @@ export default function ClassroomSplitTwoD({
                       flex: 1,
                       color: isActive
                         ? lessonColor
-                        : isLevelZero
-                        ? isDark
-                          ? "#ffffff"
-                          : "#0f172a"
                         : isDark
-                        ? "#aaa"
+                        ? "#ffffff"
                         : "#475569",
                       fontWeight: isActive ? 800 : isLevelZero ? 700 : 500,
                     }}
