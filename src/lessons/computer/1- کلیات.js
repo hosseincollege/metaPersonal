@@ -18,10 +18,22 @@ export default {
 
             details: [
               {
-                title: "پورتها",
+                title: "پورت های لوکال",
                 content:
                   "frontend - http://localhost:3005 \n"+
                   "backend - http://localhost:3006"
+              },
+              {
+                title: "ورسل",
+                content:
+                  "frontend - http://localhost:3005 \n"+
+                  "backend - https://erp-front-opal.vercel.app/"
+              },
+              {
+                title: "گیت هاب",
+                content:
+                  "frontend - https://github.com/hosseincollege/erp-front \n"+
+                  "backend - https://github.com/hosseincollege/erp-back"
               },
               {
                 title: "ERP و CRM چیست و این نرم‌افزار چه کاری انجام می‌دهد؟",
