@@ -6,7 +6,30 @@ export default {
   section: "5- USO دیتا",
   topics: [
     {
-      title: "1- FSMF-پردازش مرکزی",
+      title: "1- معرفی",
+      content:
+        "این تجهیزات نوکیا برای راه‌اندازی سایت‌های USO دیتا استفاده می‌شوند و هدف اصلی آن‌ها ارائه اینترنت و سرویس دیتا است. این سایت‌ها برای تماس تلفنی یا پیامک طراحی نشده‌اند و صرفاً جهت تبادل دیتا کاربرد دارند.",
+      subtopics: [
+        {
+          title: "کاربرد و وضعیت سیم‌کارت",
+          content:
+            "با هر سیم‌کارتی که سرویس دیتای فعال داشته باشد می‌توان از اینترنت این سایت استفاده کرد، اما امکان تماس صوتی و SMS روی آن وجود ندارد.",
+          details: [
+            {
+              title: "سرویس دیتا",
+              content: "فقط برای اتصال به اینترنت و انتقال داده استفاده می‌شود."
+            },
+            {
+              title: "تماس و پیامک",
+              content: "روی این تجهیزات تماس تلفنی و پیامک پشتیبانی نمی‌شود."
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      title: "2- FSMF-پردازش مرکزی",
       content:
         "FSMF (Flexi System Module) ماژول پردازش مرکزی - مغز متفکر سایت (Baseband). پردازش تمام ترافیک دیتا و مدیریت ارتباطات.",
       subtopics: [
@@ -71,7 +94,7 @@ export default {
     },
 
     {
-      title: "2- FPRA-واحد تغذیه",
+      title: "3- FPRA-واحد تغذیه",
       content: "FPRA (Flexi Power Rectifier) - واحد تغذیه - تأمین‌کننده برق کل سایت. تبدیل برق شهر به ولتاژ DC.",
       subtopics: [
         {
@@ -127,7 +150,7 @@ export default {
     },
 
     {
-      title: "3- FMFA-کیت نصب",
+      title: "4- FMFA-کیت نصب",
       content: "FMFA (Flexi Mounting Kit) - کیت نصب - اسکلت و فریم مکانیکی برای استقرار تجهیزات.",
       subtopics: [
         {
@@ -163,7 +186,7 @@ export default {
     },
 
     {
-      title: "4- FRMA-ماژول رادیویی",
+      title: "5- FRMA-ماژول رادیویی",
       content: "FRMA (Flexi RF Module A) - ماژول رادیویی - رادیوی باند 800MHz نسل استاندارد (پیکربندی 3TX/6RX).",
       subtopics: [
         {
@@ -219,7 +242,7 @@ export default {
     },
 
     {
-      title: "5- FRMF-ماژول رادیویی",
+      title: "6- FRMF-ماژول رادیویی",
       content: "FRMF (Flexi RF Module F) - ماژول رادیویی - رادیوی باند 800MHz نسل پیشرفته (پیکربندی 6TX/6RX).",
       subtopics: [
         {
@@ -274,7 +297,7 @@ export default {
       ]
     },
     {
-      title: "6- FPFC-فیلتر و ترکیب‌کننده",
+      title: "7- FPFC-فیلتر و ترکیب‌کننده",
       content: "FPFC (Flexi Platform Filter Combiner) - ماژول فیلتر و ترکیب‌کننده - جهت مدیریت سیگنال‌های RF و تجمیع باندها.",
       subtopics: [
         {
@@ -326,7 +349,7 @@ export default {
     },
 
     {
-      title: "7- Commissioning-کانفیگ",
+      title: "8- Commissioning-کانفیگ",
       content: "کانفیگ نرم‌افزاری و راه‌اندازی - اتصال به سایت و فعال‌سازی.",
       subtopics: [
         {
