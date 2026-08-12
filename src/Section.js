@@ -6,7 +6,6 @@ import computer from "./lessons/computer/index";
 import complex from "./lessons/complex/index";
 import quranThought from "./lessons/quranThought";
 import uniother from "./lessons/uniother/index";
-import hihi from "./lessons/hihi/index";
 
 // ======================
 // LESSONS
@@ -18,7 +17,6 @@ const SECTIONS = [
   { key: "complex", title: "4. مجتمع", color: "#ff7043", raw: complex },
   { key: "quran", title: "5. طرح کلی اندیشه اسلامی", color: "#19d219", raw: quranThought },
   { key: "uniother", title: "6. سایر دروس", color: "#eabe0d", raw: uniother },
-  { key: "hihi", title: "7. های های", color: "#d4ff00", raw: hihi },
 ];
 
 export default SECTIONS;
