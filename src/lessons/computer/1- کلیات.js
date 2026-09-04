@@ -26,8 +26,8 @@ export default {
               {
                 title: "ورسل",
                 content:
-                  "frontend - http://localhost:3005 \n"+
-                  "backend - https://erp-front-opal.vercel.app/"
+                  "frontend - https://erp-front-opal.vercel.app/ \n"+
+                  "backend - https://erp-back-sigma.vercel.app/"
               },
               {
                 title: "گیت هاب",
