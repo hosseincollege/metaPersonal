@@ -982,7 +982,7 @@ export default function ClassroomSplitTwoD({
               fontSize: "1.15rem",
               fontWeight: 900,
               whiteSpace: "nowrap",
-              color: isDark ? "#38bdf8" : "#0284c7",
+              color: lessonColor,
               userSelect: "none",
             }}
           >
