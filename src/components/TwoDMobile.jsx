@@ -1,587 +1,1063 @@
-// components/TwoDMobile.jsx
-import React, { useState, useEffect, useMemo, useRef } from "react";
-import {
-  BookOpen,
-  ChevronRight,
-  ChevronLeft,
-  Sun,
-  Moon,
-  Box,
-  Menu,
-  X,
-  Lock,
-  Unlock
-} from "lucide-react";
+import React, { useMemo, useRef, useState, useEffect } from "react";
 
-// توابع پردازش متن و داده
-const pickText = (...args) => {
-  for (const item of args) {
-    if (typeof item === "string" && item.trim()) return item;
-    if (item && typeof item === "object") {
-      const val = item.title || item.name || item.text || item.label || item.value;
-      if (typeof val === "string" && val.trim()) return val;
-    }
+// توابع کمکی یکسان با نسخه دسکتاپ
+const pickText = (...values) => {
+  for (const value of values) {
+    if (typeof value === "string" && value.trim()) return value.trim();
   }
   return "";
 };
 
-const detectDir = (text) => {
-  if (!text || typeof text !== "string") return "rtl";
-  const rtlChars = /[\u0600-\u06FF\u0750-\u077F\u0590-\u05FF\uFE70-\uFEFF]/;
-  return rtlChars.test(text) ? "rtl" : "ltr";
+const detectDir = (text = "") => {
+  const rtlRegex = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/;
+  return rtlRegex.test(text) ? "rtl" : "ltr";
 };
 
-const normalizeRecursive = (nodes, parentLevel = 0) => {
-  if (!nodes || !Array.isArray(nodes)) return [];
-  return nodes.map((node, index) => {
-    const title = pickText(node.title, node.name, node.text, `بخش ${index + 1}`);
-    const content = pickText(node.content, node.description, node.body, "");
-    const rawChildren = node.children || node.sections || node.units || node.subsections || [];
-    const normalizedChildren = normalizeRecursive(rawChildren, parentLevel + 1);
+const normalizeRecursive = (items, path = "root") => {
+  if (!Array.isArray(items)) return [];
+  return items.map((item, index) => {
+    const id = `${path}-${index}`;
+    const children = normalizeRecursive(
+      [
+        ...(Array.isArray(item.chapters) ? item.chapters : []),
+        ...(Array.isArray(item.sections) ? item.sections : []),
+        ...(Array.isArray(item.units) ? item.units : []),
+        ...(Array.isArray(item.topics) ? item.topics : []),
+        ...(Array.isArray(item.subtopics) ? item.subtopics : []),
+        ...(Array.isArray(item.details) ? item.details : []),
+        ...(Array.isArray(item.items) ? item.items : []),
+        ...(Array.isArray(item.children) ? item.children : []),
+      ],
+      id
+    );
 
     return {
-      ...node,
-      id: node.id || `node-${parentLevel}-${index}-${Math.random().toString(36).substr(2, 5)}`,
-      title,
-      content,
-      isLocked: !!node.isLocked || !!node.password,
-      password: node.password || (node.isLocked ? "1234" : null),
-      children: normalizedChildren,
+      id,
+      title: pickText(
+        item.title,
+        item.chapterTitle,
+        item.sectionTitle,
+        item.unitTitle,
+        item.topicTitle,
+        item.subtopicTitle,
+        item.name
+      ),
+      content: pickText(
+        item.content,
+        item.description,
+        item.body,
+        item.text,
+        item.chapterContent,
+        item.sectionContent,
+        item.unitContent,
+        item.topicContent,
+        item.subtopicContent
+      ),
+      color: item.color || item.accentColor || item.themeColor || null,
+      children,
     };
   });
 };
 
-const flattenTree = (nodes, depth = 0, parentPath = "") => {
-  let flat = [];
-  nodes.forEach((node, idx) => {
-    const currentNumber = parentPath ? `${parentPath}.${idx + 1}` : `${idx + 1}`;
-    flat.push({ ...node, depth, displayNumber: currentNumber });
-    if (node.children && node.children.length > 0) {
-      flat = flat.concat(flattenTree(node.children, depth + 1, currentNumber));
-    }
+const flattenTree = (items, depth = 0, parentNumber = "") => {
+  if (!Array.isArray(items)) return [];
+  return items.flatMap((item, index) => {
+    const number = parentNumber ? `${parentNumber}.${index + 1}` : `${index + 1}`;
+    const current = { ...item, depth, number };
+    return [current, ...flattenTree(item.children || [], depth + 1, number)];
   });
-  return flat;
 };
 
 export default function TwoDMobile({
-  lesson = {},
+  lesson,
   onBack,
   onSwitchTo3D,
   theme = "dark",
   onToggleTheme,
 }) {
-  const isDark = theme === "dark";
-  const lessonColor = lesson?.color || "#3b82f6";
-  const lessonTitle = pickText(lesson?.title, lesson?.name, "کلاس درس");
-
-  // ساختار درختی و مسطح سرفصل‌ها
-  const rawSections = lesson?.chapters || lesson?.sections || lesson?.units || [];
-  const normalizedTree = useMemo(() => normalizeRecursive(rawSections), [rawSections]);
-  const flatSections = useMemo(() => flattenTree(normalizedTree), [normalizedTree]);
-
-  // وضعیت‌ها (States)
-  const [activeIndex, setActiveIndex] = useState(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [unlockedSections, setUnlockedSections] = useState({});
-  const [pinInput, setPinInput] = useState("");
-  const [pinError, setPinError] = useState(false);
-  const [showKeypad, setShowKeypad] = useState(false);
+  const [drawerTab, setDrawerTab] = useState("sections"); // "sections" | "units" | "topics"
+  const [activeSectionIdx, setActiveSectionIdx] = useState(0);
+  const [activeUnitIdx, setActiveUnitIdx] = useState(0);
+  const [activeDetailId, setActiveDetailId] = useState(null);
 
-  const activeItem = flatSections[activeIndex] || flatSections[0] || null;
-  const isItemLocked = activeItem?.isLocked && !unlockedSections[activeItem.id];
+  // تم سه‌حالته
+  const normalizeThemeMode = (value) => {
+    return ["dark", "light", "system"].includes(value) ? value : "dark";
+  };
 
-  const contentRef = useRef(null);
+  const [themeMode, setThemeMode] = useState(() => normalizeThemeMode(theme));
+  const [systemIsDark, setSystemIsDark] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
 
   useEffect(() => {
-    if (contentRef.current) {
-      contentRef.current.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  }, [activeIndex]);
+    setThemeMode(normalizeThemeMode(theme));
+  }, [theme]);
 
-  const handleSelectSection = (index) => {
-    setActiveIndex(index);
-    setDrawerOpen(false);
-    setShowKeypad(false);
-    setPinInput("");
-    setPinError(false);
-  };
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
 
-  const handleUnlock = () => {
-    if (activeItem && (pinInput === activeItem.password || pinInput === "1234")) {
-      setUnlockedSections((prev) => ({ ...prev, [activeItem.id]: true }));
-      setShowKeypad(false);
-      setPinInput("");
-      setPinError(false);
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleSystemThemeChange = (event) => setSystemIsDark(event.matches);
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", handleSystemThemeChange);
     } else {
-      setPinError(true);
+      mediaQuery.addListener(handleSystemThemeChange);
+    }
+
+    return () => {
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener("change", handleSystemThemeChange);
+      } else {
+        mediaQuery.removeListener(handleSystemThemeChange);
+      }
+    };
+  }, []);
+
+  const handleThemeCycle = () => {
+    const nextTheme =
+      themeMode === "dark"
+        ? "light"
+        : themeMode === "light"
+        ? "system"
+        : "dark";
+
+    setThemeMode(nextTheme);
+    if (onToggleTheme) onToggleTheme(nextTheme);
+  };
+
+  const isDark = themeMode === "system" ? systemIsDark : themeMode === "dark";
+
+  // سیستم رمز
+  const [showKeypad, setShowKeypad] = useState(false);
+  const [pin, setPin] = useState("");
+  const [pendingAction, setPendingAction] = useState(null);
+  const [unlockedSections, setUnlockedSections] = useState([]);
+  const [passError, setPassError] = useState(false);
+
+  const contentRefs = useRef({});
+  const keypadRef = useRef(null);
+
+  const lessonColor =
+    lesson?.color || lesson?.accentColor || lesson?.themeColor || "#22c55e";
+
+  const sections = useMemo(
+    () =>
+      normalizeRecursive(
+        Array.isArray(lesson) ? lesson : lesson?.sections || lesson?.chapters || []
+      ),
+    [lesson]
+  );
+
+  const activeSection = sections[activeSectionIdx] || null;
+  const units = activeSection?.children || [];
+  const activeUnit = units[activeUnitIdx] || null;
+  const detailItems = useMemo(
+    () => flattenTree(activeUnit?.children || []),
+    [activeUnit]
+  );
+
+  // سینک اسکرول
+  useEffect(() => {
+    const container = document.getElementById("mobile-content-area");
+    if (!container) return;
+
+    const handleScroll = () => {
+      let currentId = null;
+      let closestTop = Infinity;
+
+      Object.entries(contentRefs.current).forEach(([id, el]) => {
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        const distance = Math.abs(rect.top - containerRect.top - 80);
+
+        if (rect.top <= containerRect.top + 120) {
+          if (distance < closestTop) {
+            closestTop = distance;
+            currentId = id;
+          }
+        }
+      });
+
+      if (currentId && currentId !== activeDetailId) {
+        setActiveDetailId(currentId);
+      }
+    };
+
+    container.addEventListener("scroll", handleScroll, { passive: true });
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [activeUnit, activeDetailId]);
+
+  // کنترل رمز
+  const handleSectionSelect = (idx) => {
+    const targetSection = sections[idx];
+    if (
+      targetSection &&
+      targetSection.title.includes("رویدادها") &&
+      !unlockedSections.includes(targetSection.id)
+    ) {
+      setPendingAction({ type: "section", idx, id: targetSection.id });
+      setShowKeypad(true);
+      setPin("");
+      setPassError(false);
+    } else {
+      setActiveSectionIdx(idx);
+      setActiveUnitIdx(0);
+      setActiveDetailId(null);
+      setDrawerTab("units");
     }
   };
 
-  const handleNext = () => {
-    if (activeIndex < flatSections.length - 1) {
-      setActiveIndex((prev) => prev + 1);
+  const handleUnitSelect = (idx) => {
+    setActiveUnitIdx(idx);
+    setActiveDetailId(null);
+    setDrawerTab("topics");
+  };
+
+  const scrollToDetailItem = (id) => {
+    setActiveDetailId(id);
+    setDrawerOpen(false);
+    setTimeout(() => {
+      contentRefs.current[id]?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 150);
+  };
+
+  const handlePinInput = (digit) => setPin((prev) => prev + String(digit));
+  const handlePinBackspace = () => setPin((prev) => prev.slice(0, -1));
+  const handlePinSubmit = () => {
+    if (pin === "001") {
+      if (pendingAction && pendingAction.type === "section") {
+        setUnlockedSections((prev) => [...prev, pendingAction.id]);
+        setActiveSectionIdx(pendingAction.idx);
+        setActiveUnitIdx(0);
+        setActiveDetailId(null);
+        setDrawerTab("units");
+      }
+      setShowKeypad(false);
+      setPin("");
+      setPendingAction(null);
+      setPassError(false);
+    } else {
+      setPin("");
+      setPassError(true);
+      setTimeout(() => setPassError(false), 1200);
     }
   };
 
-  const handlePrev = () => {
-    if (activeIndex > 0) {
-      setActiveIndex((prev) => prev - 1);
-    }
-  };
+  // بستن کیپد با کلیک خارج
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (keypadRef.current && !keypadRef.current.contains(event.target)) {
+        setShowKeypad(false);
+        setPin("");
+        setPendingAction(null);
+        setPassError(false);
+      }
+    };
+    if (showKeypad) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showKeypad]);
 
-  // استایل‌های پویا بر اساس تم
-  const bgMain = isDark ? "#0f172a" : "#f8fafc";
-  const bgCard = isDark ? "#1e293b" : "#ffffff";
-  const textPrimary = isDark ? "#f8fafc" : "#0f172a";
-  const textSecondary = isDark ? "#94a3b8" : "#64748b";
-  const borderColor = isDark ? "#334155" : "#e2e8f0";
+  // رندر سلسله‌مراتبی محتوا
+  const renderContentRecursive = (items, depth = 0, parentNumber = "") => {
+    return items.map((item, index) => {
+      const number = parentNumber ? `${parentNumber}.${index + 1}` : `${index + 1}`;
+
+      return (
+        <section
+          key={item.id}
+          ref={(el) => (contentRefs.current[item.id] = el)}
+          dir={detectDir((item.title || "") + " " + (item.content || ""))}
+          style={{
+            scrollMarginTop: 75,
+            marginBottom: 32,
+            paddingTop: 20,
+            borderTop:
+              depth === 0
+                ? `2px solid ${lessonColor}`
+                : `1px solid ${isDark ? "#222" : "#e5e7eb"}`,
+            paddingRight: depth > 0 ? 14 : 0,
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "baseline",
+              gap: 10,
+              marginBottom: 12,
+            }}
+          >
+            <span
+              style={{
+                color: lessonColor,
+                fontWeight: 900,
+                fontSize: depth === 0 ? "1rem" : "0.9rem",
+                direction: "ltr",
+                flexShrink: 0,
+              }}
+            >
+              {number}
+            </span>
+            <h2
+              style={{
+                margin: 0,
+                color: depth === 0 ? lessonColor : isDark ? "#fff" : "#0f172a",
+                fontSize: depth === 0 ? "1.25rem" : "1.02rem",
+                fontWeight: 800,
+                lineHeight: 1.5,
+              }}
+            >
+              {item.title}
+            </h2>
+          </div>
+
+          {item.content && (
+            <p
+              style={{
+                fontSize: "0.98rem",
+                lineHeight: "2",
+                color: isDark ? "#d1d5db" : "#334155",
+                textAlign: "justify",
+                marginTop: 8,
+                whiteSpace: "pre-line",
+              }}
+            >
+              {item.content}
+            </p>
+          )}
+
+          {item.children?.length > 0 &&
+            renderContentRecursive(item.children, depth + 1, number)}
+        </section>
+      );
+    });
+  };
 
   return (
     <div
       style={{
-        backgroundColor: bgMain,
-        color: textPrimary,
+        width: "100vw",
         height: "100vh",
+        backgroundColor: isDark ? "#080808" : "#f8fafc",
         display: "flex",
         flexDirection: "column",
-        overflow: "hidden",
+        color: isDark ? "#f8fafc" : "#0f172a",
         direction: "rtl",
-        fontFamily: "system-ui, -apple-system, sans-serif",
+        fontFamily: "'Vazirmatn', sans-serif",
+        overflow: "hidden",
+        position: "relative",
       }}
     >
-      {/* هدر بالا */}
+      {/* استایل سراسری */}
+      <style>{`
+        * { box-sizing: border-box; }
+        button, div, span { -webkit-tap-highlight-color: transparent; }
+        button:focus, div:focus { outline: none; }
+      `}</style>
+
+      {/* نوار بالای صفحه موبایل */}
       <header
         style={{
+          height: 56,
+          padding: "0 12px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "12px 16px",
-          backgroundColor: bgCard,
-          borderBottom: `1px solid ${borderColor}`,
-          zIndex: 20,
+          background: isDark ? "#0f0f0f" : "#ffffff",
+          borderBottom: isDark ? "1px solid #222" : "1px solid #e2e8f0",
+          zIndex: 30,
+          flexShrink: 0,
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+          {/* دکمه تم */}
           <button
-            onClick={() => setDrawerOpen(true)}
-            aria-label="سرفصل‌ها"
+            onClick={handleThemeCycle}
+            aria-label="تغییر تم"
             style={{
-              background: "none",
+              width: 34,
+              height: 34,
+              borderRadius: 8,
               border: "none",
-              color: textPrimary,
               cursor: "pointer",
+              background: isDark ? "#27272a" : "#f1f5f9",
+              color:
+                themeMode === "dark"
+                  ? "#818cf8"
+                  : themeMode === "light"
+                  ? "#f59e0b"
+                  : "#38bdf8",
               display: "flex",
               alignItems: "center",
-              padding: "4px",
+              justifyContent: "center",
             }}
           >
-            <Menu size={22} />
+            {themeMode === "dark" && (
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
+            )}
+            {themeMode === "light" && (
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="5" />
+                <line x1="12" y1="1" x2="12" y2="3" />
+                <line x1="12" y1="21" x2="12" y2="23" />
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                <line x1="1" y1="12" x2="3" y2="12" />
+                <line x1="21" y1="12" x2="23" y2="12" />
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+              </svg>
+            )}
+            {themeMode === "system" && (
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2" />
+                <line x1="8" y1="21" x2="16" y2="21" />
+                <line x1="12" y1="17" x2="12" y2="21" />
+              </svg>
+            )}
           </button>
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <span style={{ fontSize: "14px", fontWeight: "700", color: lessonColor }}>
-              {lessonTitle}
-            </span>
-            <span style={{ fontSize: "11px", color: textSecondary }}>
-              متاورس شخصی
-            </span>
-          </div>
-        </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          {/* سوییچ به سه‌بعدی */}
           {onSwitchTo3D && (
             <button
               onClick={onSwitchTo3D}
-              title="سه‌بعدی"
+              aria-label="نمای سه بعدی"
               style={{
-                background: "none",
-                border: `1px solid ${borderColor}`,
-                borderRadius: "8px",
-                color: textPrimary,
-                padding: "6px",
+                width: 34,
+                height: 34,
+                borderRadius: 8,
+                border: "none",
                 cursor: "pointer",
+                background: isDark ? "#27272a" : "#f1f5f9",
+                color: isDark ? "#a1a1aa" : "#475569",
                 display: "flex",
                 alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              <Box size={18} />
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 3l10 6v6l-10 6-10-6V9z" />
+                <path d="M22 9l-10 6-10-6" />
+              </svg>
             </button>
           )}
 
-          {onToggleTheme && (
-            <button
-              onClick={onToggleTheme}
-              aria-label="تغییر تم"
-              style={{
-                background: "none",
-                border: `1px solid ${borderColor}`,
-                borderRadius: "8px",
-                color: textPrimary,
-                padding: "6px",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              {isDark ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-          )}
-
+          {/* دکمه بازگشت */}
           {onBack && (
             <button
               onClick={onBack}
-              title="بازگشت"
+              aria-label="بازگشت"
               style={{
-                background: "none",
-                border: `1px solid ${borderColor}`,
-                borderRadius: "8px",
-                color: textPrimary,
-                padding: "6px",
+                width: 34,
+                height: 34,
+                borderRadius: 8,
+                border: "none",
                 cursor: "pointer",
+                background: lessonColor,
+                color: "#ffffff",
                 display: "flex",
                 alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              <ChevronRight size={18} />
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
             </button>
           )}
         </div>
+
+        {/* عنوان درس در نوار بالا */}
+        <div
+          style={{
+            flex: 1,
+            textAlign: "center",
+            padding: "0 8px",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            fontWeight: 800,
+            fontSize: "0.95rem",
+            color: lessonColor,
+          }}
+        >
+          {lesson?.title || "کلاس آموزشی"}
+        </div>
+
+        {/* دکمه منو/سرفصل‌ها */}
+        <button
+          onClick={() => setDrawerOpen(true)}
+          aria-label="فهرست سرفصل‌ها"
+          style={{
+            padding: "6px 12px",
+            borderRadius: 8,
+            border: "none",
+            cursor: "pointer",
+            background: isDark ? "#27272a" : "#f1f5f9",
+            color: isDark ? "#ffffff" : "#0f172a",
+            fontWeight: 700,
+            fontSize: "0.82rem",
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+          فهرست
+        </button>
       </header>
+
+      {/* بخش هدر کوچک زیر نوار: نمایش موقعیت جاری */}
+      <div
+        style={{
+          padding: "8px 16px",
+          background: isDark ? "#141414" : "#f1f5f9",
+          borderBottom: isDark ? "1px solid #222" : "1px solid #e2e8f0",
+          fontSize: "0.82rem",
+          display: "flex",
+          alignItems: "center",
+          gap: 6,
+          overflowX: "auto",
+          whiteSpace: "nowrap",
+        }}
+      >
+        <span style={{ color: lessonColor, fontWeight: 700 }}>
+          {activeSection?.title || "بخش"}
+        </span>
+        <span style={{ color: "#888" }}>/</span>
+        <span style={{ color: isDark ? "#ddd" : "#334155", fontWeight: 600 }}>
+          {activeUnit?.title || "قسمت"}
+        </span>
+      </div>
 
       {/* محتوای اصلی */}
       <main
-        ref={contentRef}
+        id="mobile-content-area"
         style={{
           flex: 1,
           overflowY: "auto",
-          padding: "16px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "14px",
+          padding: "20px 16px 80px 16px",
+          background: isDark ? "#080808" : "#ffffff",
+          WebkitOverflowScrolling: "touch",
         }}
       >
-        {activeItem ? (
-          <>
-            <div
+        {activeUnit ? (
+          <div>
+            <header
               style={{
-                backgroundColor: bgCard,
-                borderRadius: "12px",
-                padding: "16px",
-                border: `1px solid ${borderColor}`,
+                marginBottom: 28,
+                borderBottom: `1px solid ${isDark ? "#222" : "#eee"}`,
+                paddingBottom: 16,
               }}
             >
-              <div
+              <h1
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  marginBottom: "8px",
+                  fontSize: "1.45rem",
+                  fontWeight: 900,
+                  marginBottom: 12,
+                  color: isDark ? "#ffffff" : "#0f172a",
                 }}
               >
-                <span
+                {activeUnit.title}
+              </h1>
+              {activeUnit.content && (
+                <p
                   style={{
-                    fontSize: "12px",
-                    fontWeight: "600",
-                    color: lessonColor,
-                    backgroundColor: `${lessonColor}18`,
-                    padding: "3px 8px",
-                    borderRadius: "6px",
+                    fontSize: "0.98rem",
+                    lineHeight: "2",
+                    color: isDark ? "#d1d5db" : "#475569",
+                    textAlign: "justify",
                   }}
                 >
-                  بخش {activeItem.displayNumber}
-                </span>
-                {activeItem.isLocked && (
-                  <span
-                    style={{
-                      color: isItemLocked ? "#ef4444" : "#10b981",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "4px",
-                      fontSize: "12px",
-                    }}
-                  >
-                    {isItemLocked ? <Lock size={14} /> : <Unlock size={14} />}
-                    {isItemLocked ? "قفل" : "باز"}
-                  </span>
-                )}
-              </div>
-
-              <h2
-                style={{
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                  margin: "4px 0",
-                  direction: detectDir(activeItem.title),
-                }}
-              >
-                {activeItem.title}
-              </h2>
-            </div>
-
-            {/* بخش قفل یا نمایش متن */}
-            {isItemLocked ? (
-              <div
-                style={{
-                  backgroundColor: bgCard,
-                  borderRadius: "12px",
-                  padding: "24px",
-                  textAlign: "center",
-                  border: `1px dashed ${borderColor}`,
-                }}
-              >
-                <Lock size={38} color="#f59e0b" style={{ margin: "0 auto 12px" }} />
-                <h3 style={{ fontSize: "15px", fontWeight: "600", marginBottom: "6px" }}>
-                  این بخش قفل است
-                </h3>
-                <p style={{ fontSize: "13px", color: textSecondary, marginBottom: "16px" }}>
-                  رمز عبور را وارد کنید.
+                  {activeUnit.content}
                 </p>
+              )}
+            </header>
 
-                {!showKeypad ? (
-                  <button
-                    onClick={() => setShowKeypad(true)}
-                    style={{
-                      backgroundColor: lessonColor,
-                      color: "#fff",
-                      border: "none",
-                      padding: "10px 20px",
-                      borderRadius: "8px",
-                      fontWeight: "600",
-                      cursor: "pointer",
-                      fontSize: "13px",
-                    }}
-                  >
-                    ورود رمز
-                  </button>
-                ) : (
-                  <div style={{ maxWidth: "240px", margin: "0 auto" }}>
-                    <input
-                      type="password"
-                      value={pinInput}
-                      onChange={(e) => setPinInput(e.target.value)}
-                      placeholder="رمز..."
-                      style={{
-                        width: "100%",
-                        padding: "10px",
-                        textAlign: "center",
-                        borderRadius: "8px",
-                        border: `1px solid ${pinError ? "#ef4444" : borderColor}`,
-                        backgroundColor: bgMain,
-                        color: textPrimary,
-                        fontSize: "16px",
-                        marginBottom: "8px",
-                        outline: "none",
-                        boxSizing: "border-box",
-                      }}
-                    />
-                    {pinError && (
-                      <p style={{ color: "#ef4444", fontSize: "12px", marginBottom: "8px" }}>
-                        رمز اشتباه است.
-                      </p>
-                    )}
-                    <button
-                      onClick={handleUnlock}
-                      style={{
-                        width: "100%",
-                        backgroundColor: lessonColor,
-                        color: "#fff",
-                        border: "none",
-                        padding: "10px",
-                        borderRadius: "8px",
-                        fontWeight: "600",
-                        cursor: "pointer",
-                        fontSize: "13px",
-                      }}
-                    >
-                      تأیید
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div
-                style={{
-                  backgroundColor: bgCard,
-                  borderRadius: "12px",
-                  padding: "16px",
-                  border: `1px solid ${borderColor}`,
-                  lineHeight: "1.85",
-                  fontSize: "14px",
-                  color: textPrimary,
-                  direction: detectDir(activeItem.content || ""),
-                  whiteSpace: "pre-wrap",
-                }}
-              >
-                {activeItem.content || "محتوایی برای این بخش ثبت نشده است."}
-              </div>
-            )}
-          </>
+            {renderContentRecursive(activeUnit.children)}
+          </div>
         ) : (
-          <div style={{ textAlign: "center", padding: "40px 16px", color: textSecondary }}>
-            محتوایی یافت نشد.
+          <div
+            style={{
+              display: "grid",
+              placeItems: "center",
+              height: "60vh",
+              color: "#888",
+            }}
+          >
+            لطفاً یک بخش را از دکمه «فهرست» انتخاب کنید.
           </div>
         )}
       </main>
 
-      {/* نوار پایین (قبلی / بعدی) */}
+      {/* نوار ناوبری پایین صفحه (قسمت قبلی / بعدی) */}
       <footer
         style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: 52,
+          background: isDark ? "rgba(15,15,15,0.92)" : "rgba(255,255,255,0.92)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+          borderTop: isDark ? "1px solid #222" : "1px solid #e2e8f0",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "10px 16px",
-          backgroundColor: bgCard,
-          borderTop: `1px solid ${borderColor}`,
+          padding: "0 12px",
+          zIndex: 25,
         }}
       >
         <button
-          onClick={handlePrev}
-          disabled={activeIndex === 0}
+          disabled={activeUnitIdx === 0}
+          onClick={() => {
+            setActiveUnitIdx((prev) => Math.max(0, prev - 1));
+            document.getElementById("mobile-content-area")?.scrollTo({ top: 0, behavior: "smooth" });
+          }}
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "4px",
-            background: "none",
-            border: `1px solid ${borderColor}`,
-            padding: "8px 12px",
-            borderRadius: "8px",
-            color: activeIndex === 0 ? textSecondary : textPrimary,
-            cursor: activeIndex === 0 ? "not-allowed" : "pointer",
-            opacity: activeIndex === 0 ? 0.4 : 1,
-            fontSize: "13px",
+            padding: "6px 12px",
+            borderRadius: 8,
+            border: "none",
+            background: activeUnitIdx === 0 ? "transparent" : (isDark ? "#27272a" : "#f1f5f9"),
+            color: activeUnitIdx === 0 ? "#555" : (isDark ? "#fff" : "#0f172a"),
+            fontSize: "0.82rem",
+            fontWeight: 700,
+            cursor: activeUnitIdx === 0 ? "default" : "pointer",
           }}
         >
-          <ChevronRight size={16} />
-          قبلی
+          ← قسمت قبلی
         </button>
 
-        <span style={{ fontSize: "12px", color: textSecondary }}>
-          {flatSections.length > 0 ? `${activeIndex + 1} از ${flatSections.length}` : ""}
-        </span>
-
         <button
-          onClick={handleNext}
-          disabled={activeIndex >= flatSections.length - 1}
+          onClick={() => setDrawerOpen(true)}
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "4px",
-            background: "none",
-            border: `1px solid ${borderColor}`,
-            padding: "8px 12px",
-            borderRadius: "8px",
-            color: activeIndex >= flatSections.length - 1 ? textSecondary : textPrimary,
-            cursor: activeIndex >= flatSections.length - 1 ? "not-allowed" : "pointer",
-            opacity: activeIndex >= flatSections.length - 1 ? 0.4 : 1,
-            fontSize: "13px",
+            border: "none",
+            background: "transparent",
+            color: lessonColor,
+            fontWeight: 800,
+            fontSize: "0.85rem",
+            cursor: "pointer",
           }}
         >
-          بعدی
-          <ChevronLeft size={16} />
+          سرفصل‌ها ({detailItems.length})
+        </button>
+
+        <button
+          disabled={activeUnitIdx >= units.length - 1}
+          onClick={() => {
+            setActiveUnitIdx((prev) => Math.min(units.length - 1, prev + 1));
+            document.getElementById("mobile-content-area")?.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          style={{
+            padding: "6px 12px",
+            borderRadius: 8,
+            border: "none",
+            background: activeUnitIdx >= units.length - 1 ? "transparent" : (isDark ? "#27272a" : "#f1f5f9"),
+            color: activeUnitIdx >= units.length - 1 ? "#555" : (isDark ? "#fff" : "#0f172a"),
+            fontSize: "0.82rem",
+            fontWeight: 700,
+            cursor: activeUnitIdx >= units.length - 1 ? "default" : "pointer",
+          }}
+        >
+          قسمت بعدی →
         </button>
       </footer>
 
-      {/* منوی کشویی سرفصل‌ها */}
+      {/* منوی کشویی Drawer موبایل */}
       {drawerOpen && (
         <div
           style={{
             position: "fixed",
             inset: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            zIndex: 50,
+            zIndex: 100,
             display: "flex",
+            justifyContent: "flex-end",
+            background: "rgba(0,0,0,0.55)",
+            backdropFilter: "blur(4px)",
           }}
           onClick={() => setDrawerOpen(false)}
         >
           <div
+            onClick={(e) => e.stopPropagation()}
             style={{
-              width: "80%",
-              maxWidth: "320px",
+              width: "82vw",
+              maxWidth: 340,
               height: "100%",
-              backgroundColor: bgCard,
+              background: isDark ? "#0f0f0f" : "#ffffff",
+              borderLeft: isDark ? "1px solid #222" : "1px solid #e2e8f0",
               display: "flex",
               flexDirection: "column",
-              boxShadow: "0 0 20px rgba(0,0,0,0.3)",
+              boxShadow: "-4px 0 24px rgba(0,0,0,0.3)",
             }}
-            onClick={(e) => e.stopPropagation()}
           >
+            {/* هدر دراور */}
             <div
               style={{
+                padding: "16px",
+                borderBottom: isDark ? "1px solid #222" : "1px solid #e2e8f0",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                padding: "16px",
-                borderBottom: `1px solid ${borderColor}`,
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <BookOpen size={18} color={lessonColor} />
-                <span style={{ fontWeight: "bold", fontSize: "14px" }}>سرفصل‌ها</span>
-              </div>
+              <span style={{ fontWeight: 900, fontSize: "1rem", color: lessonColor }}>
+                سرفصل‌ها و مباحث
+              </span>
               <button
                 onClick={() => setDrawerOpen(false)}
                 style={{
-                  background: "none",
                   border: "none",
-                  color: textPrimary,
+                  background: isDark ? "#27272a" : "#f1f5f9",
+                  color: isDark ? "#aaa" : "#555",
+                  width: 28,
+                  height: 28,
+                  borderRadius: 6,
                   cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
-                <X size={20} />
+                ✕
               </button>
             </div>
 
-            <div style={{ flex: 1, overflowY: "auto", padding: "10px" }}>
-              {flatSections.map((item, idx) => {
-                const isSelected = idx === activeIndex;
-                const locked = item.isLocked && !unlockedSections[item.id];
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => handleSelectSection(idx)}
-                    style={{
-                      width: "100%",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      padding: "10px 12px",
-                      marginBottom: "6px",
-                      borderRadius: "8px",
-                      border: isSelected ? `1px solid ${lessonColor}` : "1px solid transparent",
-                      backgroundColor: isSelected ? `${lessonColor}15` : "transparent",
-                      color: isSelected ? lessonColor : textPrimary,
-                      cursor: "pointer",
-                      textAlign: "right",
-                      fontSize: "13px",
-                      paddingRight: `${12 + (item.depth || 0) * 12}px`,
-                      boxSizing: "border-box",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "6px",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <span style={{ opacity: 0.6, fontSize: "11px" }}>
-                        {item.displayNumber}
-                      </span>
-                      <span
+            {/* تب‌های درون دراور */}
+            <div
+              style={{
+                display: "flex",
+                borderBottom: isDark ? "1px solid #222" : "1px solid #e2e8f0",
+                background: isDark ? "#0a0a0a" : "#f8fafc",
+              }}
+            >
+              {[
+                { key: "sections", label: "بخش‌ها" },
+                { key: "units", label: "قسمت‌ها" },
+                { key: "topics", label: "فصل‌ها" },
+              ].map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setDrawerTab(tab.key)}
+                  style={{
+                    flex: 1,
+                    padding: "10px 4px",
+                    border: "none",
+                    background: "transparent",
+                    borderBottom:
+                      drawerTab === tab.key
+                        ? `2px solid ${lessonColor}`
+                        : "2px solid transparent",
+                    color:
+                      drawerTab === tab.key
+                        ? lessonColor
+                        : isDark
+                        ? "#9ca3af"
+                        : "#64748b",
+                    fontWeight: drawerTab === tab.key ? 800 : 600,
+                    fontSize: "0.82rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* محتوای تب‌های دراور */}
+            <div style={{ flex: 1, overflowY: "auto", padding: "12px 10px" }}>
+              {drawerTab === "sections" && (
+                <div>
+                  {sections.map((s, i) => {
+                    const isActive = activeSectionIdx === i;
+                    return (
+                      <div
+                        key={s.id}
+                        onClick={() => handleSectionSelect(i)}
                         style={{
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
+                          padding: "12px 14px",
+                          borderRadius: 10,
+                          marginBottom: 6,
+                          background: isActive
+                            ? (isDark ? "rgba(255,255,255,0.06)" : "#f1f5f9")
+                            : "transparent",
+                          color: isActive ? lessonColor : (isDark ? "#f1f5f9" : "#0f172a"),
+                          fontWeight: isActive ? 800 : 600,
+                          fontSize: "0.88rem",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 10,
+                          cursor: "pointer",
                         }}
                       >
-                        {item.title}
-                      </span>
-                    </div>
-                    {locked && <Lock size={12} color="#f59e0b" />}
-                  </button>
-                );
-              })}
+                        <div
+                          style={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: "50%",
+                            background: isActive ? lessonColor : (isDark ? "#333" : "#cbd5e1"),
+                          }}
+                        />
+                        <span style={{ flex: 1 }}>{s.title}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {drawerTab === "units" && (
+                <div>
+                  <div
+                    style={{
+                      fontSize: "0.75rem",
+                      color: "#888",
+                      marginBottom: 8,
+                      padding: "0 6px",
+                    }}
+                  >
+                    بخش فعلی: {activeSection?.title}
+                  </div>
+                  {units.map((u, i) => {
+                    const isActive = activeUnitIdx === i;
+                    return (
+                      <div
+                        key={u.id}
+                        onClick={() => handleUnitSelect(i)}
+                        style={{
+                          padding: "12px 14px",
+                          borderRadius: 10,
+                          marginBottom: 6,
+                          background: isActive
+                            ? (isDark ? "rgba(255,255,255,0.06)" : "#f1f5f9")
+                            : "transparent",
+                          color: isActive ? lessonColor : (isDark ? "#f1f5f9" : "#0f172a"),
+                          fontWeight: isActive ? 800 : 600,
+                          fontSize: "0.88rem",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 10,
+                          cursor: "pointer",
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: "50%",
+                            background: isActive ? lessonColor : (isDark ? "#333" : "#cbd5e1"),
+                          }}
+                        />
+                        <span style={{ flex: 1 }}>{u.title}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {drawerTab === "topics" && (
+                <div>
+                  <div
+                    style={{
+                      fontSize: "0.75rem",
+                      color: "#888",
+                      marginBottom: 8,
+                      padding: "0 6px",
+                    }}
+                  >
+                    قسمت فعلی: {activeUnit?.title}
+                  </div>
+                  {detailItems.map((item) => {
+                    const isActive = activeDetailId === item.id;
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => scrollToDetailItem(item.id)}
+                        style={{
+                          width: "100%",
+                          textAlign: "right",
+                          border: "none",
+                          padding: `10px ${10 + item.depth * 10}px`,
+                          borderRadius: 8,
+                          marginBottom: 4,
+                          background: isActive ? `${lessonColor}18` : "transparent",
+                          color: isActive ? lessonColor : (isDark ? "#e2e8f0" : "#334155"),
+                          fontWeight: isActive ? 800 : (item.depth === 0 ? 700 : 500),
+                          fontSize: item.depth === 0 ? "0.86rem" : "0.8rem",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                          cursor: "pointer",
+                        }}
+                      >
+                        <span
+                          style={{
+                            color: isActive ? lessonColor : "#888",
+                            fontSize: "0.8rem",
+                            direction: "ltr",
+                          }}
+                        >
+                          {item.number}
+                        </span>
+                        <span style={{ flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                          {item.title}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* سیستم قفل رمز پین در صورت نیاز */}
+      {showKeypad && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 200,
+            background: "rgba(0,0,0,0.65)",
+            backdropFilter: "blur(6px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onClick={() => setShowKeypad(false)}
+        >
+          <div
+            ref={keypadRef}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: isDark ? "#141414" : "#ffffff",
+              border: `1px solid ${isDark ? "#333" : "#e2e8f0"}`,
+              borderRadius: 20,
+              padding: 20,
+              width: 220,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 12,
+              boxShadow: "0 20px 40px rgba(0,0,0,0.4)",
+            }}
+          >
+            <span style={{ fontSize: "0.85rem", fontWeight: 700, color: lessonColor }}>
+              رمز عبور بخش
+            </span>
+
+            {/* نقطه‌های پین */}
+            <div style={{ display: "flex", gap: 8, height: 16, alignItems: "center" }}>
+              {Array.from({ length: 3 }).map((_, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: "50%",
+                    background: idx < pin.length ? lessonColor : (isDark ? "#333" : "#cbd5e1"),
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* دکمه‌های عددی */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3, 1fr)",
+                gap: 10,
+              }}
+            >
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
+                <button
+                  key={n}
+                  onClick={() => handlePinInput(n)}
+                  style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: "50%",
+                    border: `1px solid ${isDark ? "#2a2a2a" : "#e2e8f0"}`,
+                    background: isDark ? "#1f1f1f" : "#f8fafc",
+                    color: isDark ? "#fff" : "#0f172a",
+                    fontSize: "1rem",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                  }}
+                >
+                  {n}
+                </button>
+              ))}
+
+              <button
+                onClick={handlePinBackspace}
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: "50%",
+                  border: "none",
+                  background: "transparent",
+                  color: isDark ? "#888" : "#666",
+                  fontSize: "1rem",
+                  cursor: "pointer",
+                }}
+              >
+                ⌫
+              </button>
+
+              <button
+                onClick={() => handlePinInput(0)}
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: "50%",
+                  border: `1px solid ${isDark ? "#2a2a2a" : "#e2e8f0"}`,
+                  background: isDark ? "#1f1f1f" : "#f8fafc",
+                  color: isDark ? "#fff" : "#0f172a",
+                  fontSize: "1rem",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                }}
+              >
+                0
+              </button>
+
+              <button
+                onClick={handlePinSubmit}
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: "50%",
+                  border: "none",
+                  background: lessonColor,
+                  color: "#fff",
+                  fontSize: "0.85rem",
+                  fontWeight: 800,
+                  cursor: "pointer",
+                }}
+              >
+                تایید
+              </button>
+            </div>
+
+            {passError && (
+              <span style={{ fontSize: "0.78rem", color: "#ef4444", fontWeight: 700 }}>
+                رمز نامعتبر است
+              </span>
+            )}
           </div>
         </div>
       )}
