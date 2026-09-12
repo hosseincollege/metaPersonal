@@ -8,6 +8,7 @@ import React, {
 
 import LessonRoom from "./components/LessonRoom";
 import ClassroomSplitTwoD from "./components/ClassroomSplitTwoD";
+import TwoDMobile from "./components/TwoDMobile";
 import SECTIONS from "./Section";
 
 const IS_PASSWORD_PROTECTED = false; // true, false
@@ -295,7 +296,18 @@ export default function App() {
 
   // صفحه دوبعدی
   if (activeLesson && viewMode === "2D") {
-    return (
+    const isMobile =
+      typeof window !== "undefined" && window.innerWidth < 768;
+
+    return isMobile ? (
+      <TwoDMobile
+        lesson={activeLesson}
+        onBack={handleBack}
+        onSwitchTo3D={() => setViewMode("3D")}
+        theme={themeMode}
+        onToggleTheme={handleChildThemeChange}
+      />
+    ) : (
       <ClassroomSplitTwoD
         lesson={activeLesson}
         onBack={handleBack}
