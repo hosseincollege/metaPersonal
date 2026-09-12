@@ -97,6 +97,7 @@ const getThemeStyles = (isDark, collapsed) => ({
     borderBottom: isDark ? "1px solid #222" : "1px solid #e2e8f0",
     zIndex: 20,
     flexDirection: "row",
+    position: "relative",
   },
   toolbarTitle: {
     flex: 1,
@@ -326,12 +327,73 @@ export default function ClassroomSplitTwoD({
   onBack,
   onSwitchTo3D,
   theme = "dark",
+  onToggleTheme,
 }) {
   const [collapsed, setCollapsed] = useState(false);
   const [isThirdColumnVisible, setIsThirdColumnVisible] = useState(true);
   const [activeSectionIdx, setActiveSectionIdx] = useState(0);
   const [activeUnitIdx, setActiveUnitIdx] = useState(0);
   const [activeDetailId, setActiveDetailId] = useState(null);
+
+  // مدیریت تم سه‌حالته: dark / light / system
+  const normalizeThemeMode = (value) => {
+    return ["dark", "light", "system"].includes(value) ? value : "dark";
+  };
+
+  const [themeMode, setThemeMode] = useState(() =>
+    normalizeThemeMode(theme)
+  );
+
+  const [systemIsDark, setSystemIsDark] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
+
+  useEffect(() => {
+    setThemeMode(normalizeThemeMode(theme));
+  }, [theme]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+    const handleSystemThemeChange = (event) => {
+      setSystemIsDark(event.matches);
+    };
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", handleSystemThemeChange);
+    } else {
+      mediaQuery.addListener(handleSystemThemeChange);
+    }
+
+    return () => {
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener("change", handleSystemThemeChange);
+      } else {
+        mediaQuery.removeListener(handleSystemThemeChange);
+      }
+    };
+  }, []);
+
+  const handleThemeCycle = () => {
+    const nextTheme =
+      themeMode === "dark"
+        ? "light"
+        : themeMode === "light"
+        ? "system"
+        : "dark";
+
+    setThemeMode(nextTheme);
+
+    if (onToggleTheme) {
+      onToggleTheme(nextTheme);
+    }
+  };
+
+  const isDark =
+    themeMode === "system" ? systemIsDark : themeMode === "dark";
 
   // سیستم رمز
   const [showKeypad, setShowKeypad] = useState(false);
@@ -347,7 +409,6 @@ export default function ClassroomSplitTwoD({
   const contentRefs = useRef({});
   const keypadRef = useRef(null);
 
-  const isDark = theme === "dark";
   const styles = useMemo(() => getThemeStyles(isDark, collapsed), [isDark, collapsed]);
 
   const lessonColor =
@@ -663,6 +724,67 @@ export default function ClassroomSplitTwoD({
 
       <div style={styles.topToolbar}>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          {/* دکمه تغییر تم سه‌حالته */}
+          <button
+            onClick={handleThemeCycle}
+            title={
+              themeMode === "dark"
+                ? "تم تاریک — کلیک برای تم روشن"
+                : themeMode === "light"
+                ? "تم روشن — کلیک برای تم سیستم"
+                : "تم سیستم — کلیک برای تم تاریک"
+            }
+            aria-label="تغییر حالت تم"
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "32px",
+              height: "32px",
+              padding: 0,
+              borderRadius: "8px",
+              border: "none",
+              cursor: "pointer",
+              background: isDark ? "#27272a" : "#ffffff",
+              color:
+                themeMode === "dark"
+                  ? "#818cf8"
+                  : themeMode === "light"
+                  ? "#f59e0b"
+                  : "#38bdf8",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+            }}
+          >
+            {themeMode === "dark" && (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
+            )}
+
+            {themeMode === "light" && (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="5" />
+                <line x1="12" y1="1" x2="12" y2="3" />
+                <line x1="12" y1="21" x2="12" y2="23" />
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                <line x1="1" y1="12" x2="3" y2="12" />
+                <line x1="21" y1="12" x2="23" y2="12" />
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+              </svg>
+            )}
+
+            {themeMode === "system" && (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2" />
+                <line x1="8" y1="21" x2="16" y2="21" />
+                <line x1="12" y1="17" x2="12" y2="21" />
+              </svg>
+            )}
+          </button>
+
+          {/* دکمه بازگشت */}
           {onBack && (
             <button
               onClick={onBack}
@@ -827,6 +949,46 @@ export default function ClassroomSplitTwoD({
             </svg>
           </button>
         </div>
+
+        {/* دکمه وسط: متاورس شخصی */}
+        <button
+          onClick={onBack}
+          title="بازگشت به صفحه اصلی"
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: "50%",
+            transform: "translate(-50%, -50%)",
+            background: "transparent",
+            border: "none",
+            outline: "none",
+            cursor: "pointer",
+            padding: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 10,
+            transition: "opacity 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.opacity = "0.8";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.opacity = "1";
+          }}
+        >
+          <span
+            style={{
+              fontSize: "1.15rem",
+              fontWeight: 900,
+              whiteSpace: "nowrap",
+              color: isDark ? "#38bdf8" : "#0284c7",
+              userSelect: "none",
+            }}
+          >
+            متاورس شخصی
+          </span>
+        </button>
 
         <h2 style={{ ...styles.toolbarTitle, color: lessonColor }}>
           {lesson?.title || "کلاس آموزشی"}
