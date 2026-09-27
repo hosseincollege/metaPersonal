@@ -1,10 +1,15 @@
 // src/lessons/university/index.js
 
-import section0 from "./0- ترم 4043";
-import section1 from "./1- اندیشه اسلامی 2";
-import section2 from "./2- مهارت‌های مسئله‌یابی";
-import section3 from "./3- کارورزی 1";
-import section4 from "./کنکور ارشد";
+import section0 from "./0- ترم 4051";
+import section1 from "./1- نصب و راه‌اندازی VoIP";
+import section2 from "./2- بلاک چین";
+import section3 from "./3- معماری و طراحی شبکه";
+import section4 from "./4- اصول و فنون مذاکره";
+import section5 from "./5- کنترل پروژه";
+import section6 from "./6- ورزش ۱";
+import section7 from "./7- پروژه شبکه‌های رایانه‌ای";
+import section8 from "./8- کارورزی 2";
+import section9 from "./کنکور ارشد";
 
 export default [
   section0,
@@ -12,4 +17,9 @@ export default [
   section2,
   section3,
   section4,
+  section5,
+  section6,
+  section7,
+  section8,
+  section9,
 ];
