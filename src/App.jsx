@@ -7,7 +7,7 @@ import React, {
 } from "react";
 
 import LessonRoom from "./components/LessonRoom";
-import ClassroomSplitTwoD from "./components/ClassroomSplitTwoD";
+import ClassroomSplitTwoD from "./components/TwoD/index.jsx";
 import TwoDMobile from "./components/TwoDMobile";
 import SECTIONS from "./Section";
 

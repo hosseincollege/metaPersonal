@@ -13,6 +13,12 @@ const detectDir = (text = "") => {
   return rtlRegex.test(text) ? "rtl" : "ltr";
 };
 
+const shortLabel = (text = "", max = 3) => {
+  const clean = String(text || "").trim();
+  if (!clean) return "";
+  return clean.slice(0, max);
+};
+
 const normalizeRecursive = (items, path = "root") => {
   if (!Array.isArray(items)) return [];
   return items.map((item, index) => {
@@ -81,7 +87,7 @@ export default function TwoDMobile({
   const [activeUnitIdx, setActiveUnitIdx] = useState(0);
   const [activeDetailId, setActiveDetailId] = useState(null);
 
-  // تم سه‌حالته
+  // سیستم تم سه‌حالته: dark / light / system
   const normalizeThemeMode = (value) => {
     return ["dark", "light", "system"].includes(value) ? value : "dark";
   };
@@ -160,7 +166,7 @@ export default function TwoDMobile({
     [activeUnit]
   );
 
-  // سینک اسکرول
+  // سینک اسکرول هوشمند
   useEffect(() => {
     const container = document.getElementById("mobile-content-area");
     if (!container) return;
@@ -175,7 +181,7 @@ export default function TwoDMobile({
         const containerRect = container.getBoundingClientRect();
         const distance = Math.abs(rect.top - containerRect.top - 80);
 
-        if (rect.top <= containerRect.top + 120) {
+        if (rect.top <= containerRect.top + 130) {
           if (distance < closestTop) {
             closestTop = distance;
             currentId = id;
@@ -189,10 +195,11 @@ export default function TwoDMobile({
     };
 
     container.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
     return () => container.removeEventListener("scroll", handleScroll);
   }, [activeUnit, activeDetailId]);
 
-  // کنترل رمز
+  // کنترل باز شدن بخش‌ها با رمز
   const handleSectionSelect = (idx) => {
     const targetSection = sections[idx];
     if (
@@ -276,14 +283,14 @@ export default function TwoDMobile({
           ref={(el) => (contentRefs.current[item.id] = el)}
           dir={detectDir((item.title || "") + " " + (item.content || ""))}
           style={{
-            scrollMarginTop: 75,
-            marginBottom: 32,
-            paddingTop: 20,
+            scrollMarginTop: 80,
+            marginBottom: 36,
+            paddingTop: 24,
             borderTop:
               depth === 0
                 ? `2px solid ${lessonColor}`
-                : `1px solid ${isDark ? "#222" : "#e5e7eb"}`,
-            paddingRight: depth > 0 ? 14 : 0,
+                : `1px solid ${isDark ? "#222" : "#eee"}`,
+            paddingRight: depth > 0 ? 16 : 0,
           }}
         >
           <div
@@ -291,15 +298,16 @@ export default function TwoDMobile({
               display: "flex",
               alignItems: "baseline",
               gap: 10,
-              marginBottom: 12,
+              marginBottom: 14,
             }}
           >
             <span
               style={{
                 color: lessonColor,
-                fontWeight: 900,
-                fontSize: depth === 0 ? "1rem" : "0.9rem",
+                fontWeight: 950,
+                fontSize: depth === 0 ? "1.05rem" : "0.95rem",
                 direction: "ltr",
+                opacity: 0.9,
                 flexShrink: 0,
               }}
             >
@@ -308,9 +316,9 @@ export default function TwoDMobile({
             <h2
               style={{
                 margin: 0,
-                color: depth === 0 ? lessonColor : isDark ? "#fff" : "#0f172a",
-                fontSize: depth === 0 ? "1.25rem" : "1.02rem",
-                fontWeight: 800,
+                color: depth === 0 ? lessonColor : isDark ? "#fff" : "#111",
+                fontSize: depth === 0 ? "1.3rem" : "1.05rem",
+                fontWeight: 900,
                 lineHeight: 1.5,
               }}
             >
@@ -321,11 +329,11 @@ export default function TwoDMobile({
           {item.content && (
             <p
               style={{
-                fontSize: "0.98rem",
-                lineHeight: "2",
-                color: isDark ? "#d1d5db" : "#334155",
+                fontSize: "1rem",
+                lineHeight: "2.1",
+                color: isDark ? "#cfcfcf" : "#333",
                 textAlign: "justify",
-                marginTop: 8,
+                marginTop: 10,
                 whiteSpace: "pre-line",
               }}
             >
@@ -355,48 +363,62 @@ export default function TwoDMobile({
         position: "relative",
       }}
     >
-      {/* استایل سراسری */}
       <style>{`
         * { box-sizing: border-box; }
         button, div, span { -webkit-tap-highlight-color: transparent; }
         button:focus, div:focus { outline: none; }
+        ${
+          !isDark
+            ? `
+          ::-webkit-scrollbar { width: 6px; height: 6px; }
+          ::-webkit-scrollbar-track { background: #f1f5f9 !important; }
+          ::-webkit-scrollbar-thumb { background: #cbd5e1 !important; border-radius: 6px; }
+        `
+            : `
+          ::-webkit-scrollbar { width: 6px; height: 6px; }
+          ::-webkit-scrollbar-track { background: #0f0f0f !important; }
+          ::-webkit-scrollbar-thumb { background: #444444 !important; border-radius: 6px; }
+        `
+        }
       `}</style>
 
-      {/* نوار بالای صفحه موبایل */}
+      {/* نوار بالایی هماهنگ با دسکتاپ */}
       <header
         style={{
-          height: 56,
-          padding: "0 12px",
+          height: 60,
+          padding: "0 14px",
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
           background: isDark ? "#0f0f0f" : "#ffffff",
           borderBottom: isDark ? "1px solid #222" : "1px solid #e2e8f0",
           zIndex: 30,
           flexShrink: 0,
+          position: "relative",
         }}
       >
         <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-          {/* دکمه تم */}
+          {/* دکمه تم سه‌حالته */}
           <button
             onClick={handleThemeCycle}
             aria-label="تغییر تم"
             style={{
-              width: 34,
-              height: 34,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              width: 32,
+              height: 32,
+              padding: 0,
               borderRadius: 8,
               border: "none",
               cursor: "pointer",
-              background: isDark ? "#27272a" : "#f1f5f9",
+              background: isDark ? "#27272a" : "#ffffff",
               color:
                 themeMode === "dark"
                   ? "#818cf8"
                   : themeMode === "light"
                   ? "#f59e0b"
                   : "#38bdf8",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
             }}
           >
             {themeMode === "dark" && (
@@ -432,16 +454,18 @@ export default function TwoDMobile({
               onClick={onSwitchTo3D}
               aria-label="نمای سه بعدی"
               style={{
-                width: 34,
-                height: 34,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: 32,
+                height: 32,
+                padding: 0,
                 borderRadius: 8,
                 border: "none",
                 cursor: "pointer",
-                background: isDark ? "#27272a" : "#f1f5f9",
-                color: isDark ? "#a1a1aa" : "#475569",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                background: isDark ? "#27272a" : "#ffffff",
+                color: isDark ? "#a1a1aa" : "#52525b",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
               }}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -457,16 +481,18 @@ export default function TwoDMobile({
               onClick={onBack}
               aria-label="بازگشت"
               style={{
-                width: 34,
-                height: 34,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: 32,
+                height: 32,
+                padding: 0,
                 borderRadius: 8,
                 border: "none",
                 cursor: "pointer",
                 background: lessonColor,
                 color: "#ffffff",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                boxShadow: `0 2px 8px ${lessonColor}66`,
               }}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
@@ -476,71 +502,110 @@ export default function TwoDMobile({
           )}
         </div>
 
-        {/* عنوان درس در نوار بالا */}
-        <div
+        {/* دکمه وسط: متاورس شخصی */}
+        <button
+          onClick={onBack}
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: "50%",
+            transform: "translate(-50%, -50%)",
+            background: "transparent",
+            border: "none",
+            outline: "none",
+            cursor: "pointer",
+            padding: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 10,
+          }}
+        >
+          <span
+            style={{
+              fontSize: "1rem",
+              fontWeight: 900,
+              whiteSpace: "nowrap",
+              color: lessonColor,
+            }}
+          >
+            متاورس شخصی
+          </span>
+        </button>
+
+        {/* عنوان درس در سمت چپ */}
+        <h2
           style={{
             flex: 1,
-            textAlign: "center",
-            padding: "0 8px",
+            margin: 0,
+            fontSize: "0.95rem",
+            fontWeight: 900,
+            textAlign: "left",
+            color: lessonColor,
             overflow: "hidden",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
-            fontWeight: 800,
-            fontSize: "0.95rem",
-            color: lessonColor,
           }}
         >
           {lesson?.title || "کلاس آموزشی"}
+        </h2>
+      </header>
+
+      {/* نوار وضعیت موقعیت کاربر */}
+      <div
+        style={{
+          padding: "8px 14px",
+          background: isDark ? "#0c0c0c" : "#f1f5f9",
+          borderBottom: isDark ? "1px solid #1f1f1f" : "1px solid #e2e8f0",
+          fontSize: "0.8rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          zIndex: 20,
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 6, overflow: "hidden" }}>
+          <span style={{ color: lessonColor, fontWeight: 800, whiteSpace: "nowrap" }}>
+            {activeSection?.title || "بخش"}
+          </span>
+          <span style={{ color: "#777" }}>/</span>
+          <span
+            style={{
+              color: isDark ? "#e2e8f0" : "#334155",
+              fontWeight: 700,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {activeUnit?.title || "قسمت"}
+          </span>
         </div>
 
-        {/* دکمه منو/سرفصل‌ها */}
         <button
           onClick={() => setDrawerOpen(true)}
-          aria-label="فهرست سرفصل‌ها"
           style={{
-            padding: "6px 12px",
+            padding: "5px 10px",
             borderRadius: 8,
-            border: "none",
-            cursor: "pointer",
-            background: isDark ? "#27272a" : "#f1f5f9",
+            border: `1px solid ${isDark ? "#2a2a2a" : "#cbd5e1"}`,
+            background: isDark ? "#1a1a1a" : "#ffffff",
             color: isDark ? "#ffffff" : "#0f172a",
-            fontWeight: 700,
-            fontSize: "0.82rem",
+            fontWeight: 800,
+            fontSize: "0.78rem",
             display: "flex",
             alignItems: "center",
-            gap: 6,
+            gap: 5,
+            cursor: "pointer",
+            flexShrink: 0,
           }}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="3" y1="12" x2="21" y2="12" />
             <line x1="3" y1="6" x2="21" y2="6" />
             <line x1="3" y1="18" x2="21" y2="18" />
           </svg>
-          فهرست
+          فهرست سرفصل‌ها
         </button>
-      </header>
-
-      {/* بخش هدر کوچک زیر نوار: نمایش موقعیت جاری */}
-      <div
-        style={{
-          padding: "8px 16px",
-          background: isDark ? "#141414" : "#f1f5f9",
-          borderBottom: isDark ? "1px solid #222" : "1px solid #e2e8f0",
-          fontSize: "0.82rem",
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-          overflowX: "auto",
-          whiteSpace: "nowrap",
-        }}
-      >
-        <span style={{ color: lessonColor, fontWeight: 700 }}>
-          {activeSection?.title || "بخش"}
-        </span>
-        <span style={{ color: "#888" }}>/</span>
-        <span style={{ color: isDark ? "#ddd" : "#334155", fontWeight: 600 }}>
-          {activeUnit?.title || "قسمت"}
-        </span>
       </div>
 
       {/* محتوای اصلی */}
@@ -549,25 +614,27 @@ export default function TwoDMobile({
         style={{
           flex: 1,
           overflowY: "auto",
-          padding: "20px 16px 80px 16px",
+          padding: "24px 16px 85px 16px",
           background: isDark ? "#080808" : "#ffffff",
           WebkitOverflowScrolling: "touch",
+          scrollBehavior: "smooth",
         }}
       >
         {activeUnit ? (
-          <div>
+          <div style={{ maxWidth: 800, margin: "0 auto" }}>
             <header
               style={{
-                marginBottom: 28,
+                marginBottom: 32,
                 borderBottom: `1px solid ${isDark ? "#222" : "#eee"}`,
-                paddingBottom: 16,
+                paddingBottom: 20,
               }}
             >
               <h1
                 style={{
-                  fontSize: "1.45rem",
+                  fontSize: "1.6rem",
                   fontWeight: 900,
-                  marginBottom: 12,
+                  marginBottom: 14,
+                  lineHeight: 1.45,
                   color: isDark ? "#ffffff" : "#0f172a",
                 }}
               >
@@ -576,9 +643,9 @@ export default function TwoDMobile({
               {activeUnit.content && (
                 <p
                   style={{
-                    fontSize: "0.98rem",
-                    lineHeight: "2",
-                    color: isDark ? "#d1d5db" : "#475569",
+                    fontSize: "1.02rem",
+                    lineHeight: "2.2",
+                    color: isDark ? "#cfcfcf" : "#333",
                     textAlign: "justify",
                   }}
                 >
@@ -595,30 +662,31 @@ export default function TwoDMobile({
               display: "grid",
               placeItems: "center",
               height: "60vh",
-              color: "#888",
+              color: "#555",
+              fontSize: "0.95rem",
             }}
           >
-            لطفاً یک بخش را از دکمه «فهرست» انتخاب کنید.
+            لطفاً یک بخش را انتخاب کنید.
           </div>
         )}
       </main>
 
-      {/* نوار ناوبری پایین صفحه (قسمت قبلی / بعدی) */}
+      {/* نوار پایین صفحه */}
       <footer
         style={{
           position: "fixed",
           bottom: 0,
           left: 0,
           right: 0,
-          height: 52,
+          height: 56,
           background: isDark ? "rgba(15,15,15,0.92)" : "rgba(255,255,255,0.92)",
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
           borderTop: isDark ? "1px solid #222" : "1px solid #e2e8f0",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "0 12px",
+          padding: "0 14px",
           zIndex: 25,
         }}
       >
@@ -629,11 +697,11 @@ export default function TwoDMobile({
             document.getElementById("mobile-content-area")?.scrollTo({ top: 0, behavior: "smooth" });
           }}
           style={{
-            padding: "6px 12px",
-            borderRadius: 8,
+            padding: "8px 12px",
+            borderRadius: 10,
             border: "none",
-            background: activeUnitIdx === 0 ? "transparent" : (isDark ? "#27272a" : "#f1f5f9"),
-            color: activeUnitIdx === 0 ? "#555" : (isDark ? "#fff" : "#0f172a"),
+            background: activeUnitIdx === 0 ? "transparent" : isDark ? "#27272a" : "#f1f5f9",
+            color: activeUnitIdx === 0 ? "#555" : isDark ? "#fff" : "#0f172a",
             fontSize: "0.82rem",
             fontWeight: 700,
             cursor: activeUnitIdx === 0 ? "default" : "pointer",
@@ -643,17 +711,22 @@ export default function TwoDMobile({
         </button>
 
         <button
-          onClick={() => setDrawerOpen(true)}
+          onClick={() => {
+            setDrawerTab("topics");
+            setDrawerOpen(true);
+          }}
           style={{
             border: "none",
-            background: "transparent",
+            background: `${lessonColor}18`,
             color: lessonColor,
-            fontWeight: 800,
-            fontSize: "0.85rem",
+            fontWeight: 850,
+            fontSize: "0.82rem",
+            padding: "6px 12px",
+            borderRadius: 8,
             cursor: "pointer",
           }}
         >
-          سرفصل‌ها ({detailItems.length})
+          فصل‌ها ({detailItems.length})
         </button>
 
         <button
@@ -663,11 +736,12 @@ export default function TwoDMobile({
             document.getElementById("mobile-content-area")?.scrollTo({ top: 0, behavior: "smooth" });
           }}
           style={{
-            padding: "6px 12px",
-            borderRadius: 8,
+            padding: "8px 12px",
+            borderRadius: 10,
             border: "none",
-            background: activeUnitIdx >= units.length - 1 ? "transparent" : (isDark ? "#27272a" : "#f1f5f9"),
-            color: activeUnitIdx >= units.length - 1 ? "#555" : (isDark ? "#fff" : "#0f172a"),
+            background:
+              activeUnitIdx >= units.length - 1 ? "transparent" : isDark ? "#27272a" : "#f1f5f9",
+            color: activeUnitIdx >= units.length - 1 ? "#555" : isDark ? "#fff" : "#0f172a",
             fontSize: "0.82rem",
             fontWeight: 700,
             cursor: activeUnitIdx >= units.length - 1 ? "default" : "pointer",
@@ -677,7 +751,7 @@ export default function TwoDMobile({
         </button>
       </footer>
 
-      {/* منوی کشویی Drawer موبایل */}
+      {/* منوی دراور مدرن هماهنگ با دسکتاپ */}
       {drawerOpen && (
         <div
           style={{
@@ -686,22 +760,22 @@ export default function TwoDMobile({
             zIndex: 100,
             display: "flex",
             justifyContent: "flex-end",
-            background: "rgba(0,0,0,0.55)",
-            backdropFilter: "blur(4px)",
+            background: "rgba(0,0,0,0.6)",
+            backdropFilter: "blur(6px)",
           }}
           onClick={() => setDrawerOpen(false)}
         >
           <div
             onClick={(e) => e.stopPropagation()}
             style={{
-              width: "82vw",
-              maxWidth: 340,
+              width: "84vw",
+              maxWidth: 360,
               height: "100%",
-              background: isDark ? "#0f0f0f" : "#ffffff",
+              background: isDark ? "#0a0a0a" : "#ffffff",
               borderLeft: isDark ? "1px solid #222" : "1px solid #e2e8f0",
               display: "flex",
               flexDirection: "column",
-              boxShadow: "-4px 0 24px rgba(0,0,0,0.3)",
+              boxShadow: "-8px 0 32px rgba(0,0,0,0.35)",
             }}
           >
             {/* هدر دراور */}
@@ -712,20 +786,26 @@ export default function TwoDMobile({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
+                minHeight: 64,
               }}
             >
-              <span style={{ fontWeight: 900, fontSize: "1rem", color: lessonColor }}>
-                سرفصل‌ها و مباحث
-              </span>
+              <div>
+                <span style={{ fontSize: "0.68rem", color: "#777", fontWeight: 600, display: "block" }}>
+                  فهرست ناوبری
+                </span>
+                <div style={{ fontSize: "0.95rem", fontWeight: 900, color: lessonColor }}>
+                  {lesson?.title || "سرفصل‌ها"}
+                </div>
+              </div>
               <button
                 onClick={() => setDrawerOpen(false)}
                 style={{
                   border: "none",
-                  background: isDark ? "#27272a" : "#f1f5f9",
+                  background: isDark ? "#1f1f1f" : "#f1f5f9",
                   color: isDark ? "#aaa" : "#555",
-                  width: 28,
-                  height: 28,
-                  borderRadius: 6,
+                  width: 32,
+                  height: 32,
+                  borderRadius: 8,
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
@@ -736,25 +816,25 @@ export default function TwoDMobile({
               </button>
             </div>
 
-            {/* تب‌های درون دراور */}
+            {/* تب‌های سه لایه */}
             <div
               style={{
                 display: "flex",
                 borderBottom: isDark ? "1px solid #222" : "1px solid #e2e8f0",
-                background: isDark ? "#0a0a0a" : "#f8fafc",
+                background: isDark ? "#0d0d0d" : "#fcfcfc",
               }}
             >
               {[
-                { key: "sections", label: "بخش‌ها" },
-                { key: "units", label: "قسمت‌ها" },
-                { key: "topics", label: "فصل‌ها" },
+                { key: "sections", label: "۱. بخش‌ها" },
+                { key: "units", label: "۲. قسمت‌ها" },
+                { key: "topics", label: "۳. فصل‌ها" },
               ].map((tab) => (
                 <button
                   key={tab.key}
                   onClick={() => setDrawerTab(tab.key)}
                   style={{
                     flex: 1,
-                    padding: "10px 4px",
+                    padding: "12px 4px",
                     border: "none",
                     background: "transparent",
                     borderBottom:
@@ -767,7 +847,7 @@ export default function TwoDMobile({
                         : isDark
                         ? "#9ca3af"
                         : "#64748b",
-                    fontWeight: drawerTab === tab.key ? 800 : 600,
+                    fontWeight: drawerTab === tab.key ? 900 : 600,
                     fontSize: "0.82rem",
                     cursor: "pointer",
                   }}
@@ -777,8 +857,8 @@ export default function TwoDMobile({
               ))}
             </div>
 
-            {/* محتوای تب‌های دراور */}
-            <div style={{ flex: 1, overflowY: "auto", padding: "12px 10px" }}>
+            {/* محتوای دراور */}
+            <div style={{ flex: 1, overflowY: "auto", padding: "14px 10px" }}>
               {drawerTab === "sections" && (
                 <div>
                   {sections.map((s, i) => {
@@ -788,30 +868,38 @@ export default function TwoDMobile({
                         key={s.id}
                         onClick={() => handleSectionSelect(i)}
                         style={{
+                          width: "100%",
                           padding: "12px 14px",
-                          borderRadius: 10,
-                          marginBottom: 6,
+                          borderRadius: 12,
+                          marginBottom: 8,
+                          cursor: "pointer",
                           background: isActive
-                            ? (isDark ? "rgba(255,255,255,0.06)" : "#f1f5f9")
+                            ? isDark
+                              ? "rgba(255,255,255,0.05)"
+                              : "#f8fafc"
                             : "transparent",
-                          color: isActive ? lessonColor : (isDark ? "#f1f5f9" : "#0f172a"),
-                          fontWeight: isActive ? 800 : 600,
-                          fontSize: "0.88rem",
+                          color: isActive ? lessonColor : isDark ? "#ffffff" : "#0f172a",
+                          fontWeight: isActive ? 850 : 600,
+                          fontSize: "0.9rem",
                           display: "flex",
                           alignItems: "center",
-                          gap: 10,
-                          cursor: "pointer",
+                          gap: 12,
+                          lineHeight: 1.6,
                         }}
                       >
                         <div
                           style={{
-                            width: 8,
-                            height: 8,
+                            width: 10,
+                            height: 10,
                             borderRadius: "50%",
-                            background: isActive ? lessonColor : (isDark ? "#333" : "#cbd5e1"),
+                            background: isActive ? lessonColor : isDark ? "#2a2a2a" : "#e2e8f0",
+                            boxShadow: isActive ? `0 0 12px ${lessonColor}` : "none",
+                            flexShrink: 0,
                           }}
                         />
-                        <span style={{ flex: 1 }}>{s.title}</span>
+                        <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {s.title}
+                        </span>
                       </div>
                     );
                   })}
@@ -822,13 +910,14 @@ export default function TwoDMobile({
                 <div>
                   <div
                     style={{
-                      fontSize: "0.75rem",
-                      color: "#888",
-                      marginBottom: 8,
-                      padding: "0 6px",
+                      fontSize: "0.72rem",
+                      color: "#777",
+                      marginBottom: 10,
+                      padding: "0 8px",
+                      fontWeight: 600,
                     }}
                   >
-                    بخش فعلی: {activeSection?.title}
+                    بخش انتخاب‌شده: {activeSection?.title || "---"}
                   </div>
                   {units.map((u, i) => {
                     const isActive = activeUnitIdx === i;
@@ -837,30 +926,38 @@ export default function TwoDMobile({
                         key={u.id}
                         onClick={() => handleUnitSelect(i)}
                         style={{
+                          width: "100%",
                           padding: "12px 14px",
-                          borderRadius: 10,
-                          marginBottom: 6,
+                          borderRadius: 12,
+                          marginBottom: 8,
+                          cursor: "pointer",
                           background: isActive
-                            ? (isDark ? "rgba(255,255,255,0.06)" : "#f1f5f9")
+                            ? isDark
+                              ? "rgba(255,255,255,0.05)"
+                              : "#f8fafc"
                             : "transparent",
-                          color: isActive ? lessonColor : (isDark ? "#f1f5f9" : "#0f172a"),
-                          fontWeight: isActive ? 800 : 600,
-                          fontSize: "0.88rem",
+                          color: isActive ? lessonColor : isDark ? "#ffffff" : "#0f172a",
+                          fontWeight: isActive ? 850 : 600,
+                          fontSize: "0.9rem",
                           display: "flex",
                           alignItems: "center",
-                          gap: 10,
-                          cursor: "pointer",
+                          gap: 12,
+                          lineHeight: 1.6,
                         }}
                       >
                         <div
                           style={{
-                            width: 8,
-                            height: 8,
+                            width: 10,
+                            height: 10,
                             borderRadius: "50%",
-                            background: isActive ? lessonColor : (isDark ? "#333" : "#cbd5e1"),
+                            background: isActive ? lessonColor : isDark ? "#2a2a2a" : "#e2e8f0",
+                            boxShadow: isActive ? `0 0 12px ${lessonColor}` : "none",
+                            flexShrink: 0,
                           }}
                         />
-                        <span style={{ flex: 1 }}>{u.title}</span>
+                        <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {u.title}
+                        </span>
                       </div>
                     );
                   })}
@@ -871,15 +968,17 @@ export default function TwoDMobile({
                 <div>
                   <div
                     style={{
-                      fontSize: "0.75rem",
-                      color: "#888",
-                      marginBottom: 8,
-                      padding: "0 6px",
+                      fontSize: "0.72rem",
+                      color: "#777",
+                      marginBottom: 10,
+                      padding: "0 8px",
+                      fontWeight: 600,
                     }}
                   >
-                    قسمت فعلی: {activeUnit?.title}
+                    قسمت انتخاب‌شده: {activeUnit?.title || "---"}
                   </div>
                   {detailItems.map((item) => {
+                    const isLevelZero = item.depth === 0;
                     const isActive = activeDetailId === item.id;
                     return (
                       <button
@@ -887,31 +986,45 @@ export default function TwoDMobile({
                         onClick={() => scrollToDetailItem(item.id)}
                         style={{
                           width: "100%",
-                          textAlign: "right",
+                          appearance: "none",
                           border: "none",
-                          padding: `10px ${10 + item.depth * 10}px`,
-                          borderRadius: 8,
-                          marginBottom: 4,
-                          background: isActive ? `${lessonColor}18` : "transparent",
-                          color: isActive ? lessonColor : (isDark ? "#e2e8f0" : "#334155"),
-                          fontWeight: isActive ? 800 : (item.depth === 0 ? 700 : 500),
-                          fontSize: item.depth === 0 ? "0.86rem" : "0.8rem",
+                          outline: "none",
+                          textAlign: "right",
+                          cursor: "pointer",
+                          marginBottom: 6,
+                          padding: `10px ${12 + item.depth * 14}px 10px 8px`,
+                          borderRadius: 10,
+                          background: isActive ? `${lessonColor}12` : "transparent",
+                          color: isActive ? lessonColor : isDark ? "#ffffff" : "#0f172a",
                           display: "flex",
                           alignItems: "center",
-                          gap: 8,
-                          cursor: "pointer",
+                          gap: 10,
+                          fontSize: item.depth === 0 ? "0.9rem" : "0.84rem",
+                          fontWeight: isActive ? 900 : isLevelZero ? 700 : 500,
                         }}
                       >
                         <span
                           style={{
-                            color: isActive ? lessonColor : "#888",
-                            fontSize: "0.8rem",
+                            color: isActive ? lessonColor : isDark ? "#ffffff" : "#0f172a",
+                            fontWeight: isLevelZero ? 900 : 600,
+                            fontSize: "0.82rem",
                             direction: "ltr",
+                            textAlign: "left",
+                            flexShrink: 0,
                           }}
                         >
                           {item.number}
                         </span>
-                        <span style={{ flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        <span
+                          style={{
+                            textAlign: "right",
+                            flex: 1,
+                            color: isActive ? lessonColor : isDark ? "#ffffff" : "#475569",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
                           {item.title}
                         </span>
                       </button>
@@ -924,7 +1037,7 @@ export default function TwoDMobile({
         </div>
       )}
 
-      {/* سیستم قفل رمز پین در صورت نیاز */}
+      {/* سیستم رمز گلس‌مورفیک مشابه نسخه دسکتاپ */}
       {showKeypad && (
         <div
           style={{
@@ -932,7 +1045,7 @@ export default function TwoDMobile({
             inset: 0,
             zIndex: 200,
             background: "rgba(0,0,0,0.65)",
-            backdropFilter: "blur(6px)",
+            backdropFilter: "blur(8px)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -943,59 +1056,86 @@ export default function TwoDMobile({
             ref={keypadRef}
             onClick={(e) => e.stopPropagation()}
             style={{
-              background: isDark ? "#141414" : "#ffffff",
-              border: `1px solid ${isDark ? "#333" : "#e2e8f0"}`,
-              borderRadius: 20,
-              padding: 20,
-              width: 220,
+              background: isDark
+                ? "rgba(10, 10, 10, 0.85)"
+                : "rgba(255, 255, 255, 0.9)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              border: `1px solid ${
+                isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.08)"
+              }`,
+              borderRadius: "22px",
+              padding: "18px 14px",
+              width: "170px",
+              boxShadow: isDark
+                ? "0 18px 40px rgba(0, 0, 0, 0.45)"
+                : "0 18px 40px rgba(0, 0, 0, 0.12)",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              gap: 12,
-              boxShadow: "0 20px 40px rgba(0,0,0,0.4)",
+              gap: "12px",
             }}
           >
-            <span style={{ fontSize: "0.85rem", fontWeight: 700, color: lessonColor }}>
-              رمز عبور بخش
-            </span>
-
-            {/* نقطه‌های پین */}
-            <div style={{ display: "flex", gap: 8, height: 16, alignItems: "center" }}>
-              {Array.from({ length: 3 }).map((_, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: "50%",
-                    background: idx < pin.length ? lessonColor : (isDark ? "#333" : "#cbd5e1"),
-                  }}
-                />
-              ))}
+            {/* پین کد dots */}
+            <div
+              style={{
+                display: "flex",
+                gap: "7px",
+                justifyContent: "center",
+                alignItems: "center",
+                minHeight: "14px",
+                minWidth: "50px",
+              }}
+            >
+              {pin.length > 0 &&
+                Array.from({ length: pin.length }).map((_, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      width: "6px",
+                      height: "6px",
+                      borderRadius: "50%",
+                      background: isDark ? "#d4d4d4" : "#222",
+                      opacity: 0.95,
+                    }}
+                  />
+                ))}
             </div>
 
-            {/* دکمه‌های عددی */}
+            {/* صفحه کلید عددی */}
             <div
               style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(3, 1fr)",
-                gap: 10,
+                gap: "8px",
+                justifyItems: "center",
               }}
             >
               {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
                 <button
                   key={n}
-                  onClick={() => handlePinInput(n)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePinInput(n);
+                  }}
                   style={{
-                    width: 44,
-                    height: 44,
+                    width: "36px",
+                    height: "36px",
                     borderRadius: "50%",
-                    border: `1px solid ${isDark ? "#2a2a2a" : "#e2e8f0"}`,
-                    background: isDark ? "#1f1f1f" : "#f8fafc",
-                    color: isDark ? "#fff" : "#0f172a",
-                    fontSize: "1rem",
-                    fontWeight: 700,
+                    border: `1px solid ${
+                      isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"
+                    }`,
+                    background: isDark
+                      ? "rgba(255,255,255,0.04)"
+                      : "rgba(0,0,0,0.02)",
+                    color: isDark ? "#9ca3af" : "#4b5563",
+                    fontSize: "14px",
+                    fontFamily: "monospace",
                     cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    outline: "none",
                   }}
                 >
                   {n}
@@ -1003,61 +1143,109 @@ export default function TwoDMobile({
               ))}
 
               <button
-                onClick={handlePinBackspace}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePinBackspace();
+                }}
                 style={{
-                  width: 44,
-                  height: 44,
+                  width: "36px",
+                  height: "36px",
                   borderRadius: "50%",
                   border: "none",
                   background: "transparent",
-                  color: isDark ? "#888" : "#666",
-                  fontSize: "1rem",
+                  color: isDark ? "#6b7280" : "#9ca3af",
+                  fontSize: "11px",
+                  fontFamily: "monospace",
                   cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  outline: "none",
                 }}
               >
                 ⌫
               </button>
 
               <button
-                onClick={() => handlePinInput(0)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePinInput(0);
+                }}
                 style={{
-                  width: 44,
-                  height: 44,
+                  width: "36px",
+                  height: "36px",
                   borderRadius: "50%",
-                  border: `1px solid ${isDark ? "#2a2a2a" : "#e2e8f0"}`,
-                  background: isDark ? "#1f1f1f" : "#f8fafc",
-                  color: isDark ? "#fff" : "#0f172a",
-                  fontSize: "1rem",
-                  fontWeight: 700,
+                  border: `1px solid ${
+                    isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"
+                  }`,
+                  background: isDark
+                    ? "rgba(255,255,255,0.04)"
+                    : "rgba(0,0,0,0.02)",
+                  color: isDark ? "#9ca3af" : "#4b5563",
+                  fontSize: "14px",
+                  fontFamily: "monospace",
                   cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  outline: "none",
                 }}
               >
                 0
               </button>
 
               <button
-                onClick={handlePinSubmit}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePinSubmit();
+                }}
                 style={{
-                  width: 44,
-                  height: 44,
+                  width: "36px",
+                  height: "36px",
                   borderRadius: "50%",
-                  border: "none",
-                  background: lessonColor,
-                  color: "#fff",
-                  fontSize: "0.85rem",
-                  fontWeight: 800,
+                  border: `1px solid ${
+                    isDark ? "rgba(255,255,255,0.14)" : "rgba(0,0,0,0.14)"
+                  }`,
+                  background: isDark
+                    ? "rgba(255,255,255,0.08)"
+                    : "rgba(0,0,0,0.05)",
+                  color: isDark ? "#d1d5db" : "#111827",
+                  fontSize: "11px",
+                  fontFamily: "monospace",
                   cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  outline: "none",
                 }}
               >
-                تایید
+                OK
               </button>
             </div>
 
-            {passError && (
-              <span style={{ fontSize: "0.78rem", color: "#ef4444", fontWeight: 700 }}>
-                رمز نامعتبر است
-              </span>
-            )}
+            {/* ارور */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                width: "100%",
+                minHeight: "16px",
+              }}
+            >
+              {passError && (
+                <span
+                  style={{
+                    fontSize: "9px",
+                    color: "rgba(239,68,68,0.9)",
+                    fontFamily: "monospace",
+                    letterSpacing: "0.4px",
+                  }}
+                >
+                  ACCESS DENIED
+                </span>
+              )}
+            </div>
           </div>
         </div>
       )}
