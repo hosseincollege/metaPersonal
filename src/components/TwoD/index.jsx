@@ -399,16 +399,11 @@ export default function ClassroomSplitTwoD({
             border: none;
             cursor: pointer;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-          }
-
-          .toolbar-btn:hover {
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+            transition: background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
           }
 
           .toolbar-btn:active {
-            transform: scale(0.90);
+            transform: scale(0.92);
           }
 
           /* انیمیشن باز و بسته شدن آیتم‌های زیرمجموعه */
@@ -632,7 +627,7 @@ export default function ClassroomSplitTwoD({
             </svg>
           </button>
 
-          {/* دکمه سوئیچ نمایش سرفصل‌های اصلی / تمام جزئیات با انیمیشن چرخش نرم */}
+          {/* دکمه سوئیچ نمایش سرفصل‌های اصلی / تمام جزئیات با انیمیشن چرخش نرم آیکون هنگام کلیک */}
           <button
             onClick={() => setOnlySubtopics(!onlySubtopics)}
             className="toolbar-btn"
@@ -719,15 +714,6 @@ export default function ClassroomSplitTwoD({
             alignItems: "center",
             justifyContent: "center",
             zIndex: 10,
-            transition: "opacity 0.2s ease, transform 0.2s ease",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.opacity = "0.8";
-            e.currentTarget.style.transform = "translate(-50%, -50%) scale(1.03)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.opacity = "1";
-            e.currentTarget.style.transform = "translate(-50%, -50%) scale(1)";
           }}
         >
           <span
