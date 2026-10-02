@@ -8,7 +8,7 @@ import React, {
 
 import LessonRoom from "./components/LessonRoom";
 import ClassroomSplitTwoD from "./components/TwoD/index.jsx";
-import TwoDMobile from "./components/TwoDMobile";
+import TwoDMobile from "./components/TwoDMobile/index.jsx";
 import SECTIONS from "./Section";
 
 const IS_PASSWORD_PROTECTED = false; // true, false

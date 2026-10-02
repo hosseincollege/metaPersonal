@@ -1,5 +1,8 @@
 import React, { useMemo, useRef, useState, useEffect } from "react";
 
+// متغیر فعال/غیرفعال کردن رمز رویدادها (در صورت false بودن، رمز درخواست نمی‌شود)
+const REQUIRE_EVENTS_PIN = false; // true , false
+
 // توابع کمکی یکسان با نسخه دسکتاپ
 const pickText = (...values) => {
   for (const value of values) {
@@ -203,6 +206,7 @@ export default function TwoDMobile({
   const handleSectionSelect = (idx) => {
     const targetSection = sections[idx];
     if (
+      REQUIRE_EVENTS_PIN &&
       targetSection &&
       targetSection.title.includes("رویدادها") &&
       !unlockedSections.includes(targetSection.id)
