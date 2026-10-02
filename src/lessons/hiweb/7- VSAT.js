@@ -99,7 +99,7 @@ export default {
       ]
     },
     {
-      title: "5- FWGP (Small Cells)",
+      title: "5- FWGP (Small Cell)",
       content:
         "تجهیز Nokia Solutions and Networks مدل Flexi Zone 2100، یک Small Cell رادیویی با توان RF برابر 5 وات است. این تجهیز برای ارائه یا تقویت پوشش شبکه سلولی در محیط‌های کم‌پوشش یا پرتراکم استفاده می‌شود.",
       subtopics: [
