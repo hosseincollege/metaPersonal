@@ -1,4 +1,5 @@
-// KeypadModal.jsx
+// File: E:\metaPersonal\src\components\TwoDMobile\KeypadModal.jsx
+
 import React, { useRef, useEffect } from "react";
 
 export default function KeypadModal({
@@ -13,15 +14,19 @@ export default function KeypadModal({
 }) {
   const keypadRef = useRef(null);
 
-  // بستن کیپد با کلیک خارج
+  // بستن کی‌پد با کلیک خارج از محدوده
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (keypadRef.current && !keypadRef.current.contains(event.target)) {
         onClose();
       }
     };
-    if (showKeypad) document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    if (showKeypad) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, [showKeypad, onClose]);
 
   if (!showKeypad) return null;
@@ -34,44 +39,118 @@ export default function KeypadModal({
         zIndex: 200,
         background: "rgba(0,0,0,0.65)",
         backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        animation: "modalFadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards",
       }}
       onClick={onClose}
     >
+      <style>{`
+        @keyframes modalFadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @keyframes keypadScaleIn {
+          from { opacity: 0; transform: scale(0.92) translateY(10px); }
+          to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        @keyframes shakeError {
+          0%, 100% { transform: translateX(0); }
+          20%, 60% { transform: translateX(-5px); }
+          40%, 80% { transform: translateX(5px); }
+        }
+
+        .keypad-num-btn {
+          width: 38px;
+          height: 38px;
+          border-radius: 50%;
+          border: 1px solid ${isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"};
+          background: ${isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)"};
+          color: ${isDark ? "#d1d5db" : "#374151"};
+          font-size: 14px;
+          font-family: monospace;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          outline: none;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .keypad-num-btn:hover {
+          background: ${isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)"};
+          transform: translateY(-1px);
+        }
+
+        .keypad-num-btn:active {
+          transform: scale(0.88);
+        }
+
+        .keypad-submit-btn {
+          width: 38px;
+          height: 38px;
+          border-radius: 50%;
+          border: 1px solid ${isDark ? "rgba(255,255,255,0.16)" : "rgba(0,0,0,0.16)"};
+          background: ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.06)"};
+          color: ${isDark ? "#f3f4f6" : "#111827"};
+          font-size: 11px;
+          font-weight: bold;
+          font-family: monospace;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          outline: none;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .keypad-submit-btn:hover {
+          background: ${isDark ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.12)"};
+          transform: translateY(-1px);
+        }
+
+        .keypad-submit-btn:active {
+          transform: scale(0.88);
+        }
+      `}</style>
+
       <div
         ref={keypadRef}
         onClick={(e) => e.stopPropagation()}
         style={{
           background: isDark
-            ? "rgba(10, 10, 10, 0.85)"
-            : "rgba(255, 255, 255, 0.9)",
+            ? "rgba(18, 18, 18, 0.88)"
+            : "rgba(255, 255, 255, 0.92)",
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
           border: `1px solid ${
             isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.08)"
           }`,
-          borderRadius: "22px",
-          padding: "18px 14px",
-          width: "170px",
+          borderRadius: "24px",
+          padding: "20px 16px",
+          width: "185px",
           boxShadow: isDark
-            ? "0 18px 40px rgba(0, 0, 0, 0.45)"
-            : "0 18px 40px rgba(0, 0, 0, 0.12)",
+            ? "0 20px 45px rgba(0, 0, 0, 0.55)"
+            : "0 20px 45px rgba(0, 0, 0, 0.14)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: "12px",
+          gap: "14px",
+          animation: "keypadScaleIn 0.26s cubic-bezier(0.4, 0, 0.2, 1) forwards",
         }}
       >
         {/* پین کد dots */}
         <div
           style={{
             display: "flex",
-            gap: "7px",
+            gap: "8px",
             justifyContent: "center",
             alignItems: "center",
-            minHeight: "14px",
+            minHeight: "16px",
             minWidth: "50px",
           }}
         >
@@ -80,11 +159,13 @@ export default function KeypadModal({
               <div
                 key={idx}
                 style={{
-                  width: "6px",
-                  height: "6px",
+                  width: "7px",
+                  height: "7px",
                   borderRadius: "50%",
-                  background: isDark ? "#d4d4d4" : "#222",
+                  background: isDark ? "#ffffff" : "#111111",
                   opacity: 0.95,
+                  transform: "scale(1)",
+                  transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                 }}
               />
             ))}
@@ -95,7 +176,7 @@ export default function KeypadModal({
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(3, 1fr)",
-            gap: "8px",
+            gap: "10px",
             justifyItems: "center",
           }}
         >
@@ -106,25 +187,7 @@ export default function KeypadModal({
                 e.stopPropagation();
                 handlePinInput(n);
               }}
-              style={{
-                width: "36px",
-                height: "36px",
-                borderRadius: "50%",
-                border: `1px solid ${
-                  isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"
-                }`,
-                background: isDark
-                  ? "rgba(255,255,255,0.04)"
-                  : "rgba(0,0,0,0.02)",
-                color: isDark ? "#9ca3af" : "#4b5563",
-                fontSize: "14px",
-                fontFamily: "monospace",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                outline: "none",
-              }}
+              className="keypad-num-btn"
             >
               {n}
             </button>
@@ -135,20 +198,12 @@ export default function KeypadModal({
               e.stopPropagation();
               handlePinBackspace();
             }}
+            className="keypad-num-btn"
             style={{
-              width: "36px",
-              height: "36px",
-              borderRadius: "50%",
               border: "none",
               background: "transparent",
-              color: isDark ? "#6b7280" : "#9ca3af",
-              fontSize: "11px",
-              fontFamily: "monospace",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              outline: "none",
+              color: isDark ? "#9ca3af" : "#6b7280",
+              fontSize: "13px",
             }}
           >
             ⌫
@@ -159,25 +214,7 @@ export default function KeypadModal({
               e.stopPropagation();
               handlePinInput(0);
             }}
-            style={{
-              width: "36px",
-              height: "36px",
-              borderRadius: "50%",
-              border: `1px solid ${
-                isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"
-              }`,
-              background: isDark
-                ? "rgba(255,255,255,0.04)"
-                : "rgba(0,0,0,0.02)",
-              color: isDark ? "#9ca3af" : "#4b5563",
-              fontSize: "14px",
-              fontFamily: "monospace",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              outline: "none",
-            }}
+            className="keypad-num-btn"
           >
             0
           </button>
@@ -187,31 +224,13 @@ export default function KeypadModal({
               e.stopPropagation();
               handlePinSubmit();
             }}
-            style={{
-              width: "36px",
-              height: "36px",
-              borderRadius: "50%",
-              border: `1px solid ${
-                isDark ? "rgba(255,255,255,0.14)" : "rgba(0,0,0,0.14)"
-              }`,
-              background: isDark
-                ? "rgba(255,255,255,0.08)"
-                : "rgba(0,0,0,0.05)",
-              color: isDark ? "#d1d5db" : "#111827",
-              fontSize: "11px",
-              fontFamily: "monospace",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              outline: "none",
-            }}
+            className="keypad-submit-btn"
           >
             OK
           </button>
         </div>
 
-        {/* ارور */}
+        {/* نمایش خطا */}
         <div
           style={{
             display: "flex",
@@ -224,10 +243,12 @@ export default function KeypadModal({
           {passError && (
             <span
               style={{
-                fontSize: "9px",
-                color: "rgba(239,68,68,0.9)",
+                fontSize: "10px",
+                color: "rgba(239, 68, 68, 0.95)",
                 fontFamily: "monospace",
-                letterSpacing: "0.4px",
+                fontWeight: "bold",
+                letterSpacing: "0.5px",
+                animation: "shakeError 0.4s ease-in-out",
               }}
             >
               ACCESS DENIED

@@ -1,3 +1,5 @@
+// File: E:\metaPersonal\src\components\TwoD\styles.js
+
 export const getThemeStyles = (isDark, collapsed) => ({
   mainContainer: {
     width: "100vw",
@@ -61,7 +63,8 @@ export const getThemeStyles = (isDark, collapsed) => ({
     flexDirection: "column",
     overflow: "hidden",
     opacity: visible ? 1 : 0,
-    transition: "0.3s ease",
+    transform: visible ? "translateX(0)" : "translateX(12px)",
+    transition: "width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
   }),
 
   contentArea: {
@@ -129,7 +132,7 @@ export const getThemeStyles = (isDark, collapsed) => ({
     boxShadow: isFocused ? `0 0 0 1px ${color}22, 0 0 10px ${color}18` : "none",
     color: active ? color : isDark ? "#ffffff" : "#0f172a",
     fontWeight: active ? 850 : 600,
-    transition: "0.2s",
+    transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
     fontSize: collapsedMode ? "0.82rem" : "0.92rem",
     display: "flex",
     alignItems: "center",
@@ -144,7 +147,7 @@ export const getThemeStyles = (isDark, collapsed) => ({
     borderRadius: "50%",
     background: active ? color : isDark ? "#2a2a2a" : "#e2e8f0",
     boxShadow: active ? `0 0 12px ${color}` : "none",
-    transition: "0.4s",
+    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
     flexShrink: 0,
   }),
 
@@ -156,6 +159,7 @@ export const getThemeStyles = (isDark, collapsed) => ({
     textAlign: "right",
     userSelect: "text",
     WebkitUserSelect: "text",
+    transition: "opacity 0.2s ease",
   },
 
   detailItem: (active, depth, color, isFocused = false) => ({
@@ -184,7 +188,7 @@ export const getThemeStyles = (isDark, collapsed) => ({
     display: "flex",
     alignItems: "center",
     gap: 10,
-    transition: "all 0.2s ease",
+    transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
     fontSize: depth === 0 ? "0.92rem" : "0.85rem",
     fontWeight: active ? 900 : depth === 0 ? 700 : 500,
     lineHeight: 1.6,
@@ -202,6 +206,7 @@ export const getThemeStyles = (isDark, collapsed) => ({
     paddingTop: 35,
     borderTop: depth === 0 ? `2px solid ${color}` : `1px solid ${isDark ? "#222" : "#eee"}`,
     paddingRight: depth > 0 ? 30 : 0,
+    transition: "border-color 0.3s ease",
   }),
 
   contentTitleRow: {

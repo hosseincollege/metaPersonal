@@ -1,3 +1,5 @@
+// File: E:\metaPersonal\src\components\TwoD\utils.js
+
 // توابع کمکی برای پردازش متن و تشخیص جهت
 export const pickText = (...values) => {
   for (const value of values) {
@@ -20,7 +22,7 @@ export const shortLabel = (text = "", max = 3) => {
 export const normalizeRecursive = (items, path = "root") => {
   if (!Array.isArray(items)) return [];
   return items.map((item, index) => {
-    const id = `${path}-${index}`;
+    const id = item.id ? String(item.id) : `${path}-${index}`;
     const children = normalizeRecursive(
       [
         ...(Array.isArray(item.chapters) ? item.chapters : []),

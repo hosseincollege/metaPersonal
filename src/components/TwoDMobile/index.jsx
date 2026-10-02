@@ -1,4 +1,5 @@
-// index.jsx (یا TwoDMobile.jsx)
+// File: E:\metaPersonal\src\components\TwoDMobile\index.jsx
+
 import React, { useMemo, useRef, useState, useEffect } from "react";
 import { normalizeRecursive, flattenTree, detectDir } from "./utils";
 import KeypadModal from "./KeypadModal";
@@ -19,6 +20,7 @@ export default function TwoDMobile({
   const [activeSectionIdx, setActiveSectionIdx] = useState(0);
   const [activeUnitIdx, setActiveUnitIdx] = useState(0);
   const [activeDetailId, setActiveDetailId] = useState(null);
+  const [onlySubtopics, setOnlySubtopics] = useState(false);
 
   // سیستم تم سه‌حالته: dark / light / system
   const normalizeThemeMode = (value) => {
@@ -293,6 +295,15 @@ export default function TwoDMobile({
         * { box-sizing: border-box; }
         button, div, span { -webkit-tap-highlight-color: transparent; }
         button:focus, div:focus { outline: none; }
+
+        .mobile-btn-interactive {
+          transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease, opacity 0.2s ease;
+        }
+
+        .mobile-btn-interactive:active {
+          transform: scale(0.92);
+        }
+
         ${
           !isDark
             ? `
@@ -327,6 +338,7 @@ export default function TwoDMobile({
           <button
             onClick={handleThemeCycle}
             aria-label="تغییر تم"
+            className="mobile-btn-interactive"
             style={{
               display: "flex",
               justifyContent: "center",
@@ -355,7 +367,7 @@ export default function TwoDMobile({
             {themeMode === "light" && (
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="5" />
-                <line x1="12" y1="1" x2="12" y2="3" />
+                <line x1="12" y1="2" x2="12" y2="3" />
                 <line x1="12" y1="21" x2="12" y2="23" />
                 <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
                 <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
@@ -379,6 +391,7 @@ export default function TwoDMobile({
             <button
               onClick={onSwitchTo3D}
               aria-label="نمای سه بعدی"
+              className="mobile-btn-interactive"
               style={{
                 display: "flex",
                 justifyContent: "center",
@@ -406,6 +419,7 @@ export default function TwoDMobile({
             <button
               onClick={onBack}
               aria-label="بازگشت"
+              className="mobile-btn-interactive"
               style={{
                 display: "flex",
                 justifyContent: "center",
@@ -431,6 +445,7 @@ export default function TwoDMobile({
         {/* دکمه وسط: متاورس شخصی */}
         <button
           onClick={onBack}
+          className="mobile-btn-interactive"
           style={{
             position: "absolute",
             left: "50%",
@@ -510,6 +525,7 @@ export default function TwoDMobile({
 
         <button
           onClick={() => setDrawerOpen(true)}
+          className="mobile-btn-interactive"
           style={{
             padding: "5px 10px",
             borderRadius: 8,
@@ -622,6 +638,7 @@ export default function TwoDMobile({
             setActiveUnitIdx((prev) => Math.max(0, prev - 1));
             document.getElementById("mobile-content-area")?.scrollTo({ top: 0, behavior: "smooth" });
           }}
+          className="mobile-btn-interactive"
           style={{
             padding: "8px 12px",
             borderRadius: 10,
@@ -641,6 +658,7 @@ export default function TwoDMobile({
             setDrawerTab("topics");
             setDrawerOpen(true);
           }}
+          className="mobile-btn-interactive"
           style={{
             border: "none",
             background: `${lessonColor}18`,
@@ -661,6 +679,7 @@ export default function TwoDMobile({
             setActiveUnitIdx((prev) => Math.min(units.length - 1, prev + 1));
             document.getElementById("mobile-content-area")?.scrollTo({ top: 0, behavior: "smooth" });
           }}
+          className="mobile-btn-interactive"
           style={{
             padding: "8px 12px",
             borderRadius: 10,
@@ -697,6 +716,8 @@ export default function TwoDMobile({
         detailItems={detailItems}
         activeDetailId={activeDetailId}
         scrollToDetailItem={scrollToDetailItem}
+        onlySubtopics={onlySubtopics}
+        setOnlySubtopics={setOnlySubtopics}
       />
 
       {/* کامپوننت سیستم رمز گلس‌مورفیک */}

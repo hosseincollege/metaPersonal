@@ -1,3 +1,5 @@
+// File: E:\metaPersonal\src\components\TwoD\index.jsx
+
 import React, { useMemo, useRef, useState, useEffect } from "react";
 import {
   pickText,
@@ -15,10 +17,11 @@ export default function ClassroomSplitTwoD({
   onSwitchTo3D,
   theme = "dark",
   onToggleTheme,
-  isLockEnabled = false, // true , false  پراپ کنترل فعال/غیرفعال بودن رمز رویدادها
+  isLockEnabled = false,
 }) {
   const [collapsed, setCollapsed] = useState(false);
   const [isThirdColumnVisible, setIsThirdColumnVisible] = useState(true);
+  const [onlySubtopics, setOnlySubtopics] = useState(false);
   const [activeSectionIdx, setActiveSectionIdx] = useState(0);
   const [activeUnitIdx, setActiveUnitIdx] = useState(0);
   const [activeDetailId, setActiveDetailId] = useState(null);
@@ -113,7 +116,11 @@ export default function ClassroomSplitTwoD({
   const activeSection = sections[activeSectionIdx] || null;
   const units = activeSection?.children || [];
   const activeUnit = units[activeUnitIdx] || null;
-  const detailItems = useMemo(() => flattenTree(activeUnit?.children || []), [activeUnit]);
+  
+  // تمام آیتم‌ها را همیشه نگه می‌داریم تا ترنزیشن خروج به صورت انیمیشنی اجرا شود
+  const detailItems = useMemo(() => {
+    return flattenTree(activeUnit?.children || []);
+  }, [activeUnit]);
 
   // Sync Scroll Logic
   useEffect(() => {
@@ -266,10 +273,12 @@ export default function ClassroomSplitTwoD({
         return;
       }
 
+      const visibleDetails = onlySubtopics ? detailItems.filter(i => i.depth === 0) : detailItems;
+
       const getMaxItems = () => {
         if (focusedCol === 0) return sections.length;
         if (focusedCol === 1) return units.length;
-        if (focusedCol === 2) return detailItems.length;
+        if (focusedCol === 2) return visibleDetails.length;
         return 0;
       };
 
@@ -306,7 +315,7 @@ export default function ClassroomSplitTwoD({
             } else if (focusedCol === 1) {
               handleUnitClick(currentIdx);
             } else if (focusedCol === 2) {
-              const targetItem = detailItems[currentIdx];
+              const targetItem = visibleDetails[currentIdx];
               if (targetItem) scrollToItem(targetItem.id);
             }
           }
@@ -329,6 +338,7 @@ export default function ClassroomSplitTwoD({
     sections,
     units,
     detailItems,
+    onlySubtopics,
     unlockedSections,
     onBack,
     isLockEnabled,
@@ -378,6 +388,57 @@ export default function ClassroomSplitTwoD({
             outline: none;
           }
 
+          .toolbar-btn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+          }
+
+          .toolbar-btn:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+          }
+
+          .toolbar-btn:active {
+            transform: scale(0.90);
+          }
+
+          /* انیمیشن باز و بسته شدن آیتم‌های زیرمجموعه */
+          .subtopic-item-wrapper {
+            display: grid;
+            transition: grid-template-rows 0.32s cubic-bezier(0.4, 0, 0.2, 1), 
+                        opacity 0.25s ease, 
+                        transform 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+                        margin 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+          }
+
+          .subtopic-item-wrapper.is-open {
+            grid-template-rows: 1fr;
+            opacity: 1;
+            transform: translateY(0);
+            margin-bottom: 6px;
+          }
+
+          .subtopic-item-wrapper.is-hidden {
+            grid-template-rows: 0fr;
+            opacity: 0;
+            transform: translateY(-8px);
+            margin-bottom: 0;
+            pointer-events: none;
+          }
+
+          .subtopic-item-inner {
+            overflow: hidden;
+          }
+
           ${!isDark ? `
             ::-webkit-scrollbar {
               width: 8px;
@@ -417,6 +478,7 @@ export default function ClassroomSplitTwoD({
           {/* دکمه تغییر تم سه‌حالته */}
           <button
             onClick={handleThemeCycle}
+            className="toolbar-btn"
             title={
               themeMode === "dark"
                 ? "تم تاریک — کلیک برای تم روشن"
@@ -426,15 +488,6 @@ export default function ClassroomSplitTwoD({
             }
             aria-label="تغییر حالت تم"
             style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "32px",
-              height: "32px",
-              padding: 0,
-              borderRadius: "8px",
-              border: "none",
-              cursor: "pointer",
               background: isDark ? "#27272a" : "#ffffff",
               color:
                 themeMode === "dark"
@@ -442,7 +495,6 @@ export default function ClassroomSplitTwoD({
                   : themeMode === "light"
                   ? "#f59e0b"
                   : "#38bdf8",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
             }}
           >
             {themeMode === "dark" && (
@@ -478,17 +530,9 @@ export default function ClassroomSplitTwoD({
           {onBack && (
             <button
               onClick={onBack}
+              className="toolbar-btn"
               title="خروج (کلید 0)"
               style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                width: "32px",
-                height: "32px",
-                padding: 0,
-                borderRadius: "8px",
-                border: "none",
-                cursor: "pointer",
                 background: lessonColor,
                 color: "#ffffff",
                 boxShadow: `0 2px 8px ${lessonColor}66`,
@@ -511,16 +555,8 @@ export default function ClassroomSplitTwoD({
 
           <button
             onClick={() => setCollapsed(!collapsed)}
+            className="toolbar-btn"
             style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "32px",
-              height: "32px",
-              padding: 0,
-              borderRadius: "8px",
-              border: "none",
-              cursor: "pointer",
               background: collapsed
                 ? isDark
                   ? "#3f3f46"
@@ -535,7 +571,6 @@ export default function ClassroomSplitTwoD({
                 : isDark
                 ? "#a1a1aa"
                 : "#52525b",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
             }}
           >
             <svg
@@ -564,16 +599,8 @@ export default function ClassroomSplitTwoD({
 
           <button
             onClick={() => setIsThirdColumnVisible(!isThirdColumnVisible)}
+            className="toolbar-btn"
             style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "32px",
-              height: "32px",
-              padding: 0,
-              borderRadius: "8px",
-              border: "none",
-              cursor: "pointer",
               background: isThirdColumnVisible
                 ? isDark
                   ? "#3f3f46"
@@ -588,7 +615,6 @@ export default function ClassroomSplitTwoD({
                 : isDark
                 ? "#a1a1aa"
                 : "#52525b",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
             }}
           >
             <svg
@@ -606,22 +632,57 @@ export default function ClassroomSplitTwoD({
             </svg>
           </button>
 
+          {/* دکمه سوئیچ نمایش سرفصل‌های اصلی / تمام جزئیات با انیمیشن چرخش نرم */}
+          <button
+            onClick={() => setOnlySubtopics(!onlySubtopics)}
+            className="toolbar-btn"
+            title={onlySubtopics ? "نمایش همه جزئیات" : "فقط نمایش سرفصل‌های اصلی"}
+            style={{
+              background: onlySubtopics
+                ? (isDark ? "#3f3f46" : "#e4e4e7")
+                : (isDark ? "#27272a" : "#ffffff"),
+              color: onlySubtopics
+                ? (isDark ? "#ffffff" : "#18181b")
+                : (isDark ? "#a1a1aa" : "#52525b"),
+            }}
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{
+                transform: onlySubtopics ? "rotate(180deg)" : "rotate(0deg)",
+                transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+              }}
+            >
+              {onlySubtopics ? (
+                <>
+                  <line x1="4" y1="6" x2="20" y2="6" />
+                  <line x1="4" y1="12" x2="20" y2="12" />
+                  <line x1="4" y1="18" x2="20" y2="18" />
+                </>
+              ) : (
+                <>
+                  <line x1="4" y1="6" x2="20" y2="6" />
+                  <line x1="4" y1="12" x2="14" y2="12" />
+                  <line x1="4" y1="18" x2="10" y2="18" />
+                </>
+              )}
+            </svg>
+          </button>
+
           <button
             onClick={onSwitchTo3D}
+            className="toolbar-btn"
             title="نمای سه بعدی"
             style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "32px",
-              height: "32px",
-              padding: 0,
-              borderRadius: "8px",
-              border: "none",
-              cursor: "pointer",
               background: isDark ? "#27272a" : "#ffffff",
               color: isDark ? "#a1a1aa" : "#52525b",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
             }}
           >
             <svg
@@ -658,13 +719,15 @@ export default function ClassroomSplitTwoD({
             alignItems: "center",
             justifyContent: "center",
             zIndex: 10,
-            transition: "opacity 0.2s ease",
+            transition: "opacity 0.2s ease, transform 0.2s ease",
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.opacity = "0.8";
+            e.currentTarget.style.transform = "translate(-50%, -50%) scale(1.03)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.opacity = "1";
+            e.currentTarget.style.transform = "translate(-50%, -50%) scale(1)";
           }}
         >
           <span
@@ -771,45 +834,55 @@ export default function ClassroomSplitTwoD({
               const isLevelZero = item.depth === 0;
               const isActive = activeDetailId === item.id;
               const isFocused = focusedCol === 2 && focusedIdx[2] === i;
+              const isVisible = !onlySubtopics || isLevelZero;
 
               return (
-                <button
+                <div
                   key={item.id}
-                  onClick={() => scrollToItem(item.id)}
-                  style={styles.detailItem(isActive, item.depth, lessonColor, isFocused)}
+                  className={`subtopic-item-wrapper ${isVisible ? "is-open" : "is-hidden"}`}
                 >
-                  <span
-                    style={{
-                      color: isActive
-                        ? lessonColor
-                        : isDark
-                        ? "#ffffff"
-                        : "#0f172a",
-                      fontWeight: isLevelZero ? 900 : 600,
-                      fontSize: "0.85rem",
-                      direction: "ltr",
-                      textAlign: "left",
-                      flexShrink: 0,
-                    }}
-                  >
-                    {item.number}
-                  </span>
+                  <div className="subtopic-item-inner">
+                    <button
+                      onClick={() => scrollToItem(item.id)}
+                      style={{
+                        ...styles.detailItem(isActive, item.depth, lessonColor, isFocused),
+                        marginBottom: 0,
+                      }}
+                    >
+                      <span
+                        style={{
+                          color: isActive
+                            ? lessonColor
+                            : isDark
+                            ? "#ffffff"
+                            : "#0f172a",
+                          fontWeight: isLevelZero ? 900 : 600,
+                          fontSize: "0.85rem",
+                          direction: "ltr",
+                          textAlign: "left",
+                          flexShrink: 0,
+                        }}
+                      >
+                        {item.number}
+                      </span>
 
-                  <span
-                    style={{
-                      textAlign: "right",
-                      flex: 1,
-                      color: isActive
-                        ? lessonColor
-                        : isDark
-                        ? "#ffffff"
-                        : "#475569",
-                      fontWeight: isActive ? 800 : isLevelZero ? 700 : 500,
-                    }}
-                  >
-                    {item.title}
-                  </span>
-                </button>
+                      <span
+                        style={{
+                          textAlign: "right",
+                          flex: 1,
+                          color: isActive
+                            ? lessonColor
+                            : isDark
+                            ? "#ffffff"
+                            : "#475569",
+                          fontWeight: isActive ? 800 : isLevelZero ? 700 : 500,
+                        }}
+                      >
+                        {item.title}
+                      </span>
+                    </button>
+                  </div>
+                </div>
               );
             })}
           </div>
