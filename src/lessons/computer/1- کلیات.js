@@ -79,7 +79,7 @@ export default {
               {
                 title: "ورسل",
                 content:
-                  "فرانت‌اند - https://simin-front-i1y2-puce.vercel.app/ \n" +
+                  "فرانت‌اند - https://simin-front-zeta.vercel.app/ \n" +
                   "بک‌اند - https://simin-back.vercel.app/"
               },
               {
