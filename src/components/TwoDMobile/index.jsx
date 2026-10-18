@@ -4,6 +4,7 @@ import React, { useMemo, useRef, useState, useEffect } from "react";
 import { normalizeRecursive, flattenTree, detectDir } from "./utils";
 import KeypadModal from "./KeypadModal";
 import NavigationDrawer from "./NavigationDrawer";
+import ContrastControl from "../ContrastControl";
 
 // متغیر فعال/غیرفعال کردن رمز رویدادها (در صورت false بودن، رمز درخواست نمی‌شود)
 const REQUIRE_EVENTS_PIN = false; // true , false
@@ -14,6 +15,9 @@ export default function TwoDMobile({
   onSwitchTo3D,
   theme = "dark",
   onToggleTheme,
+  contrast = 100,
+  contrastLevels = { light: "normal", dark: "normal" },
+  onContrastChange,
 }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerTab, setDrawerTab] = useState("sections"); // "sections" | "units" | "topics"
@@ -289,6 +293,7 @@ export default function TwoDMobile({
         fontFamily: "'Vazirmatn', sans-serif",
         overflow: "hidden",
         position: "relative",
+        filter: `contrast(${contrast}%)`,
       }}
     >
       <style>{`
@@ -385,6 +390,7 @@ export default function TwoDMobile({
               </svg>
             )}
           </button>
+          <ContrastControl isDark={isDark} levels={contrastLevels} onChange={onContrastChange} />
 
           {/* سوییچ به سه‌بعدی */}
           {onSwitchTo3D && (

@@ -10,6 +10,7 @@ import {
 } from "./utils";
 import { getThemeStyles } from "./styles";
 import Keypad from "./Keypad";
+import ContrastControl from "../ContrastControl";
 
 export default function ClassroomSplitTwoD({
   lesson,
@@ -17,6 +18,9 @@ export default function ClassroomSplitTwoD({
   onSwitchTo3D,
   theme = "dark",
   onToggleTheme,
+  contrast = 100,
+  contrastLevels = { light: "normal", dark: "normal" },
+  onContrastChange,
   isLockEnabled = false,
 }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -370,7 +374,7 @@ export default function ClassroomSplitTwoD({
   };
 
   return (
-    <div style={styles.mainContainer}>
+    <div style={{ ...styles.mainContainer, filter: `contrast(${contrast}%)` }}>
       <style>
         {`
           * {
@@ -520,6 +524,7 @@ export default function ClassroomSplitTwoD({
               </svg>
             )}
           </button>
+          <ContrastControl isDark={isDark} levels={contrastLevels} onChange={onContrastChange} />
 
           {/* دکمه بازگشت */}
           {onBack && (

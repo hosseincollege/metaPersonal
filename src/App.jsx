@@ -10,6 +10,7 @@ import LessonRoom from "./components/LessonRoom";
 import ClassroomSplitTwoD from "./components/TwoD/index.jsx";
 import TwoDMobile from "./components/TwoDMobile/index.jsx";
 import SECTIONS from "./Section";
+import ContrastControl, { contrastValue } from "./components/ContrastControl";
 
 const IS_PASSWORD_PROTECTED = false; // true, false
 
@@ -143,6 +144,13 @@ export default function App() {
 
   // تم سه‌حالته: dark / light / system
   const [themeMode, setThemeMode] = useState("system");
+  const [contrastLevels, setContrastLevels] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("metaPersonal.contrast") || "{}");
+      const normalize = (value) => ["low", "normal", "high"].includes(value) ? value : value < 100 ? "low" : value > 100 ? "high" : "normal";
+      return { light: normalize(saved.light ?? "normal"), dark: normalize(saved.dark ?? "normal") };
+    } catch { return { light: 100, dark: 100 }; }
+  });
   const [systemIsDark, setSystemIsDark] = useState(() => {
     if (typeof window === "undefined") return false;
 
@@ -193,6 +201,13 @@ export default function App() {
 
     return themeMode === "dark";
   }, [themeMode, systemIsDark]);
+
+  const contrast = contrastValue(contrastLevels[isDark ? "dark" : "light"]);
+  const updateContrast = (mode, level) => {
+    const next = { ...contrastLevels, [mode]: level };
+    setContrastLevels(next);
+    try { localStorage.setItem("metaPersonal.contrast", JSON.stringify(next)); } catch {}
+  };
 
   // چرخه تم: dark → light → system → dark
   const handleThemeCycle = useCallback(() => {
@@ -290,6 +305,9 @@ export default function App() {
         onBack={handleBack}
         on2D={() => setViewMode("2D")}
         theme={isDark ? "dark" : "light"}
+        contrast={contrast}
+        contrastLevels={contrastLevels}
+        onContrastChange={updateContrast}
       />
     );
   }
@@ -306,6 +324,9 @@ export default function App() {
         onSwitchTo3D={() => setViewMode("3D")}
         theme={themeMode}
         onToggleTheme={handleChildThemeChange}
+        contrast={contrast}
+        contrastLevels={contrastLevels}
+        onContrastChange={updateContrast}
       />
     ) : (
       <ClassroomSplitTwoD
@@ -314,6 +335,9 @@ export default function App() {
         onSwitchTo3D={() => setViewMode("3D")}
         theme={themeMode}
         onToggleTheme={handleChildThemeChange}
+        contrast={contrast}
+        contrastLevels={contrastLevels}
+        onContrastChange={updateContrast}
       />
     );
   }
@@ -334,6 +358,7 @@ export default function App() {
         flexDirection: "column",
         alignItems: "center",
         boxSizing: "border-box",
+        filter: `contrast(${contrast}%)`,
       }}
     >
       <style>
@@ -539,6 +564,7 @@ export default function App() {
               </svg>
             )}
           </button>
+          <ContrastControl isDark={isDark} levels={contrastLevels} onChange={updateContrast} />
         </div>
 
         {/* عنوان مرکزی نوار */}
