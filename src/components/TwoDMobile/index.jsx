@@ -19,7 +19,7 @@ export default function TwoDMobile({
   contrastLevels = { light: "normal", dark: "normal" },
   onContrastChange,
 }) {
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(true);
   const [drawerTab, setDrawerTab] = useState("sections"); // "sections" | "units" | "topics"
   const [activeSectionIdx, setActiveSectionIdx] = useState(0);
   const [activeUnitIdx, setActiveUnitIdx] = useState(0);
@@ -447,38 +447,6 @@ export default function TwoDMobile({
             </button>
           )}
         </div>
-
-        {/* دکمه وسط: متاورس شخصی */}
-        <button
-          onClick={onBack}
-          className="mobile-btn-interactive"
-          style={{
-            position: "absolute",
-            left: "50%",
-            top: "50%",
-            transform: "translate(-50%, -50%)",
-            background: "transparent",
-            border: "none",
-            outline: "none",
-            cursor: "pointer",
-            padding: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 10,
-          }}
-        >
-          <span
-            style={{
-              fontSize: "1rem",
-              fontWeight: 900,
-              whiteSpace: "nowrap",
-              color: lessonColor,
-            }}
-          >
-            متاورس شخصی
-          </span>
-        </button>
 
         {/* عنوان درس در سمت چپ */}
         <h2

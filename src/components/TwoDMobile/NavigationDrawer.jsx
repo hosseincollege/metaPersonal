@@ -116,7 +116,11 @@ export default function NavigationDrawer({
         >
           <div>
             <span style={{ fontSize: "0.68rem", color: "#777", fontWeight: 600, display: "block" }}>
-              فهرست ناوبری
+              {drawerTab === "sections"
+                ? "۱. بخش را انتخاب کن"
+                : drawerTab === "units"
+                ? "۲. قسمت را انتخاب کن"
+                : "۳. فصل را انتخاب کن؛ متن نمایش داده می‌شود"}
             </span>
             <div style={{ fontSize: "0.95rem", fontWeight: 900, color: lessonColor }}>
               {lessonTitle || "سرفصل‌ها"}
