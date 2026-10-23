@@ -11,6 +11,7 @@ import ClassroomSplitTwoD from "./components/TwoD/index.jsx";
 import TwoDMobile from "./components/TwoDMobile/index.jsx";
 import SECTIONS from "./Section";
 import ContrastControl, { contrastValue } from "./components/ContrastControl";
+import HomeNotesCenter from "./components/HomeNotesCenter";
 
 const IS_PASSWORD_PROTECTED = false; // true, false
 
@@ -565,6 +566,7 @@ export default function App() {
             )}
           </button>
           <ContrastControl isDark={isDark} levels={contrastLevels} onChange={updateContrast} />
+          <HomeNotesCenter isDark={isDark} />
         </div>
 
         {/* عنوان مرکزی نوار */}

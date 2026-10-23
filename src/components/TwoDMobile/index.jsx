@@ -1,6 +1,9 @@
 // File: E:\metaPersonal\src\components\TwoDMobile\index.jsx
 
 import React, { useMemo, useRef, useState, useEffect } from "react";
+import NotesPanel from "../NotesPanel";
+import { NotebookPen } from "lucide-react";
+
 import { normalizeRecursive, flattenTree, detectDir } from "./utils";
 import KeypadModal from "./KeypadModal";
 import NavigationDrawer from "./NavigationDrawer";
@@ -23,6 +26,7 @@ export default function TwoDMobile({
   const [drawerTab, setDrawerTab] = useState("sections"); // "sections" | "units" | "topics"
   const [activeSectionIdx, setActiveSectionIdx] = useState(0);
   const [activeUnitIdx, setActiveUnitIdx] = useState(0);
+  const [unitSelectionBySection, setUnitSelectionBySection] = useState({});
   const [activeDetailId, setActiveDetailId] = useState(null);
   const [onlySubtopics, setOnlySubtopics] = useState(false);
 
@@ -99,6 +103,18 @@ export default function TwoDMobile({
   const activeSection = sections[activeSectionIdx] || null;
   const units = activeSection?.children || [];
   const activeUnit = units[activeUnitIdx] || null;
+  useEffect(() => {
+    if (!activeSection) return;
+    setUnitSelectionBySection((previous) => ({ ...previous, [activeSection.id]: activeUnitIdx }));
+  }, [activeSection?.id, activeUnitIdx]);
+  const openNoteForCurrent = () => {
+    const item = detailItems.find((detail) => detail.id === activeDetailId) || activeUnit || activeSection || { id: lesson?.key, title: lesson?.title || "درس" };
+    const isLesson = item.id === lesson?.key;
+    const isSection = item === activeSection;
+    const isUnit = item === activeUnit;
+    const type = isLesson ? "درس" : isSection ? "بخش" : isUnit ? "قسمت" : item.depth === 0 ? "موضوع" : item.depth === 1 ? "زیرموضوع" : "جزئیات";
+    window.dispatchEvent(new CustomEvent("metaPersonal:open-note", { detail: { id: isLesson ? lesson.key : `${lesson.key}:${item.id}`, title: item.title, type } }));
+  };
   const detailItems = useMemo(
     () => flattenTree(activeUnit?.children || []),
     [activeUnit]
@@ -151,15 +167,17 @@ export default function TwoDMobile({
       setPin("");
       setPassError(false);
     } else {
+      const keepCurrentUnit = idx === activeSectionIdx;
       setActiveSectionIdx(idx);
-      setActiveUnitIdx(0);
-      setActiveDetailId(null);
+      setActiveUnitIdx(keepCurrentUnit ? activeUnitIdx : unitSelectionBySection[targetSection?.id] ?? 0);
+      if (!keepCurrentUnit) setActiveDetailId(null);
       setDrawerTab("units");
     }
   };
 
   const handleUnitSelect = (idx) => {
     setActiveUnitIdx(idx);
+    if (activeSection) setUnitSelectionBySection((previous) => ({ ...previous, [activeSection.id]: idx }));
     setActiveDetailId(null);
     setDrawerTab("topics");
   };
@@ -182,7 +200,7 @@ export default function TwoDMobile({
       if (pendingAction && pendingAction.type === "section") {
         setUnlockedSections((prev) => [...prev, pendingAction.id]);
         setActiveSectionIdx(pendingAction.idx);
-        setActiveUnitIdx(0);
+        setActiveUnitIdx(unitSelectionBySection[pendingAction.id] ?? 0);
         setActiveDetailId(null);
         setDrawerTab("units");
       }
@@ -296,6 +314,7 @@ export default function TwoDMobile({
         filter: `contrast(${contrast}%)`,
       }}
     >
+      <NotesPanel lesson={lesson} isDark={isDark} showLauncher={false} />
       <style>{`
         * { box-sizing: border-box; }
         button, div, span { -webkit-tap-highlight-color: transparent; }
@@ -464,6 +483,7 @@ export default function TwoDMobile({
         >
           {lesson?.title || "کلاس آموزشی"}
         </h2>
+        <button type="button" onClick={openNoteForCurrent} title="یادداشت برای مورد انتخاب‌شده" aria-label="یادداشت برای مورد انتخاب‌شده" style={{ display: "grid", placeItems: "center", width: 34, height: 34, padding: 0, background: "transparent", color: isDark ? "#c4b5fd" : "#7c3aed", border: "1px solid #64748b55", borderRadius: 8 }}><NotebookPen size={18}/></button>
       </header>
 
       {/* نوار وضعیت موقعیت کاربر */}

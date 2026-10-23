@@ -11,6 +11,8 @@ import {
 import { getThemeStyles } from "./styles";
 import Keypad from "./Keypad";
 import ContrastControl from "../ContrastControl";
+import NotesPanel from "../NotesPanel";
+import { NotebookPen } from "lucide-react";
 
 export default function ClassroomSplitTwoD({
   lesson,
@@ -28,6 +30,7 @@ export default function ClassroomSplitTwoD({
   const [onlySubtopics, setOnlySubtopics] = useState(false);
   const [activeSectionIdx, setActiveSectionIdx] = useState(0);
   const [activeUnitIdx, setActiveUnitIdx] = useState(0);
+  const [unitSelectionBySection, setUnitSelectionBySection] = useState({});
   const [activeDetailId, setActiveDetailId] = useState(null);
 
   // مدیریت تم سه‌حالته: dark / light / system
@@ -101,6 +104,22 @@ export default function ClassroomSplitTwoD({
   const [focusedCol, setFocusedCol] = useState(0);
   const [focusedIdx, setFocusedIdx] = useState({ 0: 0, 1: 0, 2: 0 });
 
+  const getFocusedNoteTarget = () => {
+    if (focusedCol === 0 && sections[focusedIdx[0]]) return { item: sections[focusedIdx[0]], type: "بخش" };
+    if (focusedCol === 1 && units[focusedIdx[1]]) return { item: units[focusedIdx[1]], type: "قسمت" };
+    if (focusedCol === 2 && detailItems[focusedIdx[2]]) {
+      const item = detailItems[focusedIdx[2]];
+      return { item, type: item.depth === 0 ? "موضوع" : item.depth === 1 ? "زیرموضوع" : "جزئیات" };
+    }
+    return { item: { id: lesson?.key, title: lesson?.title || "درس" }, type: "درس", lesson: true };
+  };
+
+  const openNoteForFocused = () => {
+    const target = getFocusedNoteTarget();
+    const id = target.lesson ? lesson?.key : `${lesson?.key}:${target.item.id}`;
+    window.dispatchEvent(new CustomEvent("metaPersonal:open-note", { detail: { id, title: target.item.title, type: target.type } }));
+  };
+
   const contentRefs = useRef({});
   const keypadRef = useRef(null);
 
@@ -120,6 +139,10 @@ export default function ClassroomSplitTwoD({
   const activeSection = sections[activeSectionIdx] || null;
   const units = activeSection?.children || [];
   const activeUnit = units[activeUnitIdx] || null;
+  useEffect(() => {
+    if (!activeSection) return;
+    setUnitSelectionBySection((previous) => ({ ...previous, [activeSection.id]: activeUnitIdx }));
+  }, [activeSection?.id, activeUnitIdx]);
   
   // تمام آیتم‌ها را همیشه نگه می‌داریم تا ترنزیشن خروج به صورت انیمیشنی اجرا شود
   const detailItems = useMemo(() => {
@@ -186,6 +209,8 @@ export default function ClassroomSplitTwoD({
 
   // هاب ورود به بخش‌ها با محافظ قفل رمز
   const handleSectionClick = (idx) => {
+    setFocusedCol(0);
+    setFocusedIdx((prev) => ({ ...prev, 0: idx }));
     const targetSection = sections[idx];
 
     if (
@@ -199,18 +224,24 @@ export default function ClassroomSplitTwoD({
       setPin("");
       setPassError(false);
     } else {
+      const keepCurrentUnit = idx === activeSectionIdx;
       setActiveSectionIdx(idx);
-      setActiveUnitIdx(0);
-      setActiveDetailId(null);
+      setActiveUnitIdx(keepCurrentUnit ? activeUnitIdx : unitSelectionBySection[targetSection?.id] ?? 0);
+      if (!keepCurrentUnit) setActiveDetailId(null);
     }
   };
 
   const handleUnitClick = (idx) => {
+    setFocusedCol(1);
+    setFocusedIdx((prev) => ({ ...prev, 1: idx }));
     setActiveUnitIdx(idx);
+    if (activeSection) setUnitSelectionBySection((previous) => ({ ...previous, [activeSection.id]: idx }));
     setActiveDetailId(null);
   };
 
   const scrollToItem = (id) => {
+    setFocusedCol(2);
+    setFocusedIdx((prev) => ({ ...prev, 2: detailItems.findIndex((item) => item.id === id) }));
     setActiveDetailId(id);
     contentRefs.current[id]?.scrollIntoView({
       behavior: "smooth",
@@ -232,7 +263,7 @@ export default function ClassroomSplitTwoD({
       if (pendingAction && pendingAction.type === "section") {
         setUnlockedSections((prev) => [...prev, pendingAction.id]);
         setActiveSectionIdx(pendingAction.idx);
-        setActiveUnitIdx(0);
+        setActiveUnitIdx(unitSelectionBySection[pendingAction.id] ?? 0);
         setActiveDetailId(null);
       }
       setShowKeypad(false);
@@ -289,7 +320,7 @@ export default function ClassroomSplitTwoD({
       switch (e.key) {
         case "ArrowRight":
           e.preventDefault();
-          setFocusedCol((prev) => Math.max(0, prev - 1));
+          setFocusedCol((prev) => Math.max(-1, prev - 1));
           break;
         case "ArrowLeft":
           e.preventDefault();
@@ -344,6 +375,7 @@ export default function ClassroomSplitTwoD({
     detailItems,
     onlySubtopics,
     unlockedSections,
+    unitSelectionBySection,
     onBack,
     isLockEnabled,
   ]);
@@ -375,6 +407,7 @@ export default function ClassroomSplitTwoD({
 
   return (
     <div style={{ ...styles.mainContainer, filter: `contrast(${contrast}%)` }}>
+      <NotesPanel lesson={lesson} isDark={isDark} showLauncher={false} />
       <style>
         {`
           * {
@@ -525,6 +558,10 @@ export default function ClassroomSplitTwoD({
             )}
           </button>
           <ContrastControl isDark={isDark} levels={contrastLevels} onChange={onContrastChange} />
+
+          <button type="button" onClick={openNoteForFocused} className="toolbar-btn" title="یادداشت برای مورد انتخاب‌شده" aria-label="یادداشت برای مورد انتخاب‌شده" style={{ background: isDark ? "#27272a" : "#ffffff", color: isDark ? "#c4b5fd" : "#7c3aed" }}>
+            <NotebookPen size={18} />
+          </button>
 
           {/* دکمه بازگشت */}
           {onBack && (
@@ -734,8 +771,24 @@ export default function ClassroomSplitTwoD({
           </span>
         </button>
 
-        <h2 style={{ ...styles.toolbarTitle, color: lessonColor }}>
-          {lesson?.title || "کلاس آموزشی"}
+        <h2 style={{
+          ...styles.toolbarTitle,
+          color: lessonColor,
+          outline: "none",
+        }}>
+          <span
+            onClick={() => setFocusedCol(-1)}
+            style={{
+              display: "inline-block",
+              padding: "2px 7px",
+              borderRadius: 8,
+              outline: focusedCol === -1 ? `2px solid ${lessonColor}` : "none",
+              outlineOffset: 3,
+              cursor: "pointer",
+            }}
+          >
+            {lesson?.title || "کلاس آموزشی"}
+          </span>
         </h2>
       </div>
 

@@ -5,6 +5,9 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5174,       // ✅ پورت دلخواه
-    open: true        // اختیاری: auto open browser
+    open: true,       // اختیاری: auto open browser
+    proxy: {
+      '/api': 'http://127.0.0.1:3001',
+    },
   }
 })

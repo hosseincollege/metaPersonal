@@ -201,6 +201,7 @@ export default function NavigationDrawer({
                     onClick={() => handleSectionSelect(i)}
                     className="drawer-interactive-btn"
                     style={{
+                      position: "relative",
                       width: "100%",
                       padding: "12px 14px",
                       borderRadius: 12,
@@ -262,6 +263,7 @@ export default function NavigationDrawer({
                     onClick={() => handleUnitSelect(i)}
                     className="drawer-interactive-btn"
                     style={{
+                      position: "relative",
                       width: "100%",
                       padding: "12px 14px",
                       borderRadius: 12,
