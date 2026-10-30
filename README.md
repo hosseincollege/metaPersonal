@@ -1,16 +1,29 @@
-# React + Vite
+# MetaPersonal
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+MetaPersonal یک فضای شخصی فارسی برای نگهداری محتوای درسی، یادداشت‌ها و پیگیری برنامه دانشگاه است. رابط با React و Vite ساخته شده و API محلی Express/PostgreSQL برای همگام‌سازی یادداشت‌ها دارد. اگر API در دسترس نباشد، رابط از حافظه محلی مرورگر استفاده می‌کند.
 
-Currently, two official plugins are available:
+## شروع
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```sh
+npm install
+npm run dev
+```
 
-## React Compiler
+برای قابلیت یادداشت‌های همگام‌شده، متغیر `DATABASE_URL` را در `.env` تنظیم کنید، طرح `database/schema.sql` را روی PostgreSQL اجرا کنید و API را با `npm run api` بالا بیاورید. API به‌طور پیش‌فرض روی پورت 3001 گوش می‌دهد. فایل `.env` را منتشر نکنید.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+برای ساخت نسخهٔ وب: `npm run build`؛ برای اجرای API: `npm run api`؛ برای بررسی سبک کد: `npm run lint`.
 
-## Expanding the ESLint configuration
+## ساختار فعلی
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- `src/lessons`: محتوای درسی و برنامهٔ ترم به شکل داده‌های ثابت.
+- `src/components/TwoD` و `TwoDMobile`: مرور محتوای درسی در دسکتاپ و موبایل.
+- `src/components/NotesPanel.jsx` و `HomeNotesCenter.jsx`: ثبت و جست‌وجوی یادداشت‌ها و مهلت‌ها.
+- `server/index.js` و `database/schema.sql`: API و پایگاه دادهٔ یادداشت‌ها.
+
+برنامهٔ هفتگی و امتحان‌های ترم 4051 در `src/lessons/university/0- ترم 4051.js` ثبت شده‌اند. بخش‌هایی از برنامه و رویدادهای شخصی در محتوای دروس دیگر هم به شکل متن آزاد آمده‌اند؛ بنابراین فعلاً تقویم واحدی برای دیدن همهٔ تعهدها وجود ندارد.
+
+## هدف محصول و گام بعدی
+
+هدف پیشنهادی: MetaPersonal را به میزکار روزانهٔ شخصی تبدیل کنیم که کاربر بتواند برنامهٔ هفتگی، رویدادهای تاریخ‌دار، مهلت‌ها و کارهای بعدی را یکجا ببیند و وضعیت هرکدام را پیگیری کند.
+
+نقشهٔ اجرایی و معیار پایان در [PROJECT_PLAN.md](./PROJECT_PLAN.md) آمده است. گام اول، تبدیل برنامه و رویدادهای جاری به داده‌های ساخت‌یافته و ساخت نمای «امروز / پیش‌رو / عقب‌افتاده» با تاریخ‌های سازگار با تقویم فارسی و منطقهٔ زمانی تهران است.

@@ -7,7 +7,7 @@ const tabs = [
   ["all", "همه"],
   ["pending", "انجام‌نشده"],
   ["done", "انجام‌شده"],
-  ["today", "امروز"],
+  ["today", "موعد امروز"],
 ];
 
 function tehranDay(value) {
@@ -56,7 +56,7 @@ export default function HomeNotesCenter({ isDark }) {
   const visible = useMemo(() => notes.filter((note) => {
     if (tab === "pending") return !note.done;
     if (tab === "done") return note.done;
-    if (tab === "today") return note.createdAt && tehranDay(note.createdAt) === tehranDay(Date.now());
+    if (tab === "today") return note.dueDate === tehranDay(Date.now());
     return true;
   }).filter((note) => `${note.targetTitle || note.target || ""} ${note.lessonTitle || note.lessonKey || ""} ${note.body || ""}`.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase())).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)), [notes, tab, search]);
 
@@ -66,7 +66,7 @@ export default function HomeNotesCenter({ isDark }) {
       <section style={{ width: "min(720px, 100%)", maxHeight: "85vh", overflow: "auto", background: surface, color: foreground, borderRadius: 18, padding: 20, direction: "rtl", boxShadow: "0 20px 70px #0008" }}>
         <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}><div><h2>یادداشت‌ها</h2><small>{notes.length} یادداشت · {message ? "حافظهٔ محلی" : "همگام با سرور"}</small></div><button type="button" onClick={() => setOpen(false)} aria-label="بستن"><X size={18}/></button></header>
         {message && <p role="status" style={{ padding: 10, borderRadius: 8, background: isDark ? "#27272a" : "#f1f5f9" }}>{message}</p>}
-        <nav role="tablist" aria-label="دسته‌بندی یادداشت‌ها" style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>{tabs.map(([key, label]) => <button role="tab" aria-selected={tab === key} key={key} onClick={() => setTab(key)} style={{ background: tab === key ? "#7c3aed" : isDark ? "#27272a" : "#f1f5f9", color: tab === key ? "white" : foreground }}>{label} ({key === "all" ? notes.length : key === "pending" ? notes.filter((n) => !n.done).length : key === "done" ? notes.filter((n) => n.done).length : notes.filter((n) => n.createdAt && tehranDay(n.createdAt) === tehranDay(Date.now())).length})</button>)}</nav>
+        <nav role="tablist" aria-label="دسته‌بندی یادداشت‌ها" style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>{tabs.map(([key, label]) => <button role="tab" aria-selected={tab === key} key={key} onClick={() => setTab(key)} style={{ background: tab === key ? "#7c3aed" : isDark ? "#27272a" : "#f1f5f9", color: tab === key ? "white" : foreground }}>{label} ({key === "all" ? notes.length : key === "pending" ? notes.filter((n) => !n.done).length : key === "done" ? notes.filter((n) => n.done).length : notes.filter((n) => n.dueDate === tehranDay(Date.now())).length})</button>)}</nav>
         <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="جست‌وجو در متن، درس یا عنوان" aria-label="جست‌وجو در یادداشت‌ها" style={{ width: "100%", marginBottom: 14, padding: 10, borderRadius: 8, border: "1px solid #64748b55", background: surface, color: foreground, font: "inherit" }} />
         {visible.length === 0 ? <p style={{ opacity: .7, padding: 24, textAlign: "center" }}>یادداشتی مطابق این فیلتر پیدا نشد.</p> : <div style={{ display: "grid", gap: 10 }}>{visible.map((note) => <article key={note.id} style={{ border: "1px solid #64748b55", borderRadius: 12, padding: 12, opacity: note.done ? .65 : 1 }}><div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", gap: 12 }}><div><strong>{note.targetTitle || note.target}</strong><div style={{ fontSize: 12, opacity: .7 }}>{note.lessonTitle || note.lessonKey}{note.targetType ? ` · ${note.targetType}` : ""} · {formatPersianDateTime(note.createdAt)}{note.dueDate ? ` · یادآوری: ${new Intl.DateTimeFormat("fa-IR-u-ca-persian", { timeZone: "Asia/Tehran", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(`${note.dueDate}T12:00:00`))}` : ""}</div></div><div style={{ display: "flex", gap: 5 }}><button type="button" title={note.done ? "انجام‌نشده" : "انجام‌شده"} onClick={async () => { const done = !note.done; try { const response = await fetch(`${API}/notes/${note.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ done }) }); if (!response.ok) throw new Error(); setMessage(""); } catch { setMessage("تغییر وضعیت در سرور ثبت نشد؛ تغییر فقط محلی نگه داشته شد."); } setNotes((all) => all.map((n) => n.id === note.id ? { ...n, done } : n)); }}><Check size={16}/></button><button type="button" title="حذف" onClick={async () => { try { const response = await fetch(`${API}/notes/${note.id}`, { method: "DELETE" }); if (!response.ok) throw new Error(); setMessage(""); } catch { setMessage("حذف در سرور ثبت نشد؛ مورد فقط از نمایش محلی حذف شد."); } setNotes((all) => all.filter((n) => n.id !== note.id)); }}><Trash2 size={16}/></button></div></div><p style={{ marginTop: 8, whiteSpace: "pre-wrap", textDecoration: note.done ? "line-through" : "none" }}>{note.body}</p></article>)}</div>}
       </section>
