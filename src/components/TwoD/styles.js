@@ -4,10 +4,10 @@ export const getThemeStyles = (isDark, collapsed) => ({
   mainContainer: {
     width: "100vw",
     height: "100vh",
-    backgroundColor: isDark ? "#080808" : "#f8fafc",
+    backgroundColor: isDark ? "#171819" : "#f8fafc",
     display: "flex",
     flexDirection: "column",
-    color: isDark ? "#f8fafc" : "#0f172a",
+    color: isDark ? "#a8afb7" : "#0f172a",
     direction: "rtl",
     fontFamily: "'Vazirmatn', sans-serif",
     overflow: "hidden",
@@ -19,8 +19,8 @@ export const getThemeStyles = (isDark, collapsed) => ({
     display: "flex",
     alignItems: "center",
     gap: 16,
-    background: isDark ? "#0f0f0f" : "#ffffff",
-    borderBottom: isDark ? "1px solid #222" : "1px solid #e2e8f0",
+    background: isDark ? "#222426" : "#ffffff",
+    borderBottom: isDark ? "1px solid #353c45" : "1px solid #e2e8f0",
     zIndex: 20,
     flexDirection: "row",
     position: "relative",
@@ -40,16 +40,16 @@ export const getThemeStyles = (isDark, collapsed) => ({
 
   sidePanel: {
     width: collapsed ? 80 : 250,
-    background: isDark ? "#0a0a0a" : "#ffffff",
-    borderLeft: isDark ? "1px solid #222" : "1px solid #e2e8f0",
+    background: isDark ? "#191b1d" : "#ffffff",
+    borderLeft: isDark ? "1px solid #353c45" : "1px solid #e2e8f0",
     display: "flex",
     flexDirection: "column",
     transition: "0.3s cubic-bezier(0.4, 0, 0.2, 1)",
   },
   middlePanel: {
     width: collapsed ? 80 : 240,
-    background: isDark ? "#0d0d0d" : "#fcfcfc",
-    borderLeft: isDark ? "1px solid #222" : "1px solid #e2e8f0",
+    background: isDark ? "#1d1f21" : "#fcfcfc",
+    borderLeft: isDark ? "1px solid #353c45" : "1px solid #e2e8f0",
     display: "flex",
     flexDirection: "column",
     transition: "0.3s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -57,8 +57,8 @@ export const getThemeStyles = (isDark, collapsed) => ({
 
   thirdColumnPanel: (visible) => ({
     width: visible ? 240 : 0,
-    background: isDark ? "#0a0a0a" : "#ffffff",
-    borderLeft: visible ? (isDark ? "1px solid #222" : "1px solid #e2e8f0") : "none",
+    background: isDark ? "#1b1d1f" : "#ffffff",
+    borderLeft: visible ? (isDark ? "1px solid #353c45" : "1px solid #e2e8f0") : "none",
     display: "flex",
     flexDirection: "column",
     overflow: "hidden",
@@ -71,14 +71,14 @@ export const getThemeStyles = (isDark, collapsed) => ({
     flex: 1,
     overflowY: "auto",
     scrollBehavior: "smooth",
-    background: isDark ? "#080808" : "#ffffff",
+    background: isDark ? "#171819" : "#ffffff",
     padding: "40px 30px",
-    scrollbarColor: isDark ? "#444 #080808" : "#cbd5e1 #ffffff",
+    scrollbarColor: isDark ? "#515963 #171819" : "#cbd5e1 #ffffff",
     scrollbarWidth: "thin",
   },
   panelHeader: {
     padding: "14px 16px",
-    borderBottom: isDark ? "1px solid #222" : "1px solid #e2e8f0",
+    borderBottom: isDark ? "1px solid #353c45" : "1px solid #e2e8f0",
     minHeight: 64,
     display: "flex",
     flexDirection: "column",
@@ -104,7 +104,7 @@ export const getThemeStyles = (isDark, collapsed) => ({
     flex: 1,
     overflowY: "auto",
     padding: "12px 8px",
-    scrollbarColor: isDark ? "#444 #0a0a0a" : "#cbd5e1 #ffffff",
+    scrollbarColor: isDark ? "#515963 #222426" : "#cbd5e1 #ffffff",
     scrollbarWidth: "thin",
   },
 
@@ -130,7 +130,7 @@ export const getThemeStyles = (isDark, collapsed) => ({
       ? `1px solid ${color}`
       : "1px solid transparent",
     boxShadow: isFocused ? `0 0 0 1px ${color}22, 0 0 10px ${color}18` : "none",
-    color: active ? color : isDark ? "#ffffff" : "#0f172a",
+    color: active ? color : isDark ? "#a8afb7" : "#0f172a",
     fontWeight: active ? 850 : 600,
     transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
     fontSize: collapsedMode ? "0.82rem" : "0.92rem",
@@ -184,7 +184,7 @@ export const getThemeStyles = (isDark, collapsed) => ({
         : "#f8fafc"
       : "transparent",
     boxShadow: isFocused ? `0 0 0 1px ${color}22, 0 0 8px ${color}18` : "none",
-    color: active ? color : isDark ? "#ffffff" : "#0f172a",
+    color: active ? color : isDark ? "#a8afb7" : "#0f172a",
     display: "flex",
     alignItems: "center",
     gap: 10,
@@ -227,7 +227,7 @@ export const getThemeStyles = (isDark, collapsed) => ({
 
   contentTitle: (depth, color) => ({
     margin: 0,
-    color: depth === 0 ? color : isDark ? "#fff" : "#111",
+    color: depth === 0 ? color : isDark ? "#a8afb7" : "#111",
     fontSize: depth === 0 ? "1.45rem" : "1.08rem",
     fontWeight: 900,
     lineHeight: 1.6,
@@ -236,7 +236,7 @@ export const getThemeStyles = (isDark, collapsed) => ({
   contentText: {
     fontSize: "1.05rem",
     lineHeight: "2.25",
-    color: isDark ? "#cfcfcf" : "#333",
+    color: isDark ? "#cbd5e1" : "#333",
     textAlign: "justify",
     marginTop: 12,
     whiteSpace: "pre-line",

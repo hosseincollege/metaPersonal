@@ -58,12 +58,12 @@ function TopicTooltip({ topic, position, onClose, theme }) {
     ? "rgba(15,15,20,0.92)" 
     : "rgba(255,255,255,0.95)";
   
-  const textColor = isDark ? "white" : "#0f172a";
-  const subTextColor = isDark ? "#e2e8f0" : "#334155";
+  const textColor = isDark ? "#a8afb7" : "#0f172a";
+  const subTextColor = isDark ? "#a8afb7" : "#334155";
   const subTopicBg = isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.06)";
   const borderColor = isDark ? "rgba(255,255,255,0.28)" : "rgba(0,0,0,0.15)";
   const closeBtnBg = isDark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.1)";
-  const closeBtnColor = isDark ? "white" : "#334155";
+  const closeBtnColor = isDark ? "#a8afb7" : "#334155";
 
   return (
     <Html
@@ -224,7 +224,7 @@ export default function LessonRoom({ lesson, onBack, on2D, theme = "dark" }) {
   };
 
   if (!lesson)
-    return <div style={{ color: isDark ? "white" : "black", padding: 50 }}>در حال بارگذاری...</div>;
+    return <div style={{ color: isDark ? "#a8afb7" : "black", padding: 50 }}>در حال بارگذاری...</div>;
 
   // استایل مشترک برای دکمه‌های آیکون‌دار
   const iconButtonStyle = (isActive, activeColor = "white") => {
@@ -268,17 +268,16 @@ export default function LessonRoom({ lesson, onBack, on2D, theme = "dark" }) {
           alignItems: "center",
           gap: "8px", 
           // تغییر رنگ پنل بالا
-          background: isDark ? "rgba(20,20,20,0.65)" : "rgba(255,255,255,0.85)", 
+          background: isDark ? "rgba(20,20,20,0.65)" : "rgba(255,255,255,0.85)",
           backdropFilter: "blur(6px)",
           borderRadius: "8px",
           padding: "6px 10px",
           border: isDark ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(0,0,0,0.1)",
-          color: isDark ? "white" : "#1e293b",
+          color: isDark ? "#a8afb7" : "#1e293b",
           boxShadow: isDark ? "none" : "0 2px 10px rgba(0,0,0,0.05)",
           transition: "all 0.3s ease"
         }}
       >
-
         {/* دکمه: زوم خودکار (دوربین) */}
         <button
           onClick={() => setZoomEnabled(!zoomEnabled)}
@@ -339,7 +338,7 @@ export default function LessonRoom({ lesson, onBack, on2D, theme = "dark" }) {
             margin: "0 4px",
             fontSize: "1.1rem",
             fontWeight: "700",
-            color: isDark ? "#e2e8f0" : "#334155",
+            color: isDark ? "#a8afb7" : "#334155",
             whiteSpace: "nowrap",
             padding: 0,
           }}

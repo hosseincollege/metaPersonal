@@ -95,8 +95,8 @@ export default function NavigationDrawer({
           width: "84vw",
           maxWidth: 360,
           height: "100%",
-          background: isDark ? "#0a0a0a" : "#ffffff",
-          borderLeft: isDark ? "1px solid #222" : "1px solid #e2e8f0",
+          background: isDark ? "#222426" : "#ffffff",
+          borderLeft: isDark ? "1px solid #353c45" : "1px solid #e2e8f0",
           display: "flex",
           flexDirection: "column",
           boxShadow: "-8px 0 32px rgba(0,0,0,0.35)",
@@ -131,7 +131,7 @@ export default function NavigationDrawer({
             className="drawer-interactive-btn"
             style={{
               border: "none",
-              background: isDark ? "#1f1f1f" : "#f1f5f9",
+              background: isDark ? "#222426" : "#f1f5f9",
               color: isDark ? "#aaa" : "#555",
               width: 32,
               height: 32,
@@ -151,7 +151,7 @@ export default function NavigationDrawer({
           style={{
             display: "flex",
             borderBottom: isDark ? "1px solid #222" : "1px solid #e2e8f0",
-            background: isDark ? "#0d0d0d" : "#fcfcfc",
+              background: isDark ? "#1b1d1f" : "#fcfcfc",
           }}
         >
           {[
@@ -212,7 +212,7 @@ export default function NavigationDrawer({
                           ? "rgba(255,255,255,0.05)"
                           : "#f8fafc"
                         : "transparent",
-                      color: isActive ? lessonColor : isDark ? "#ffffff" : "#0f172a",
+                      color: isActive ? lessonColor : isDark ? "#a8afb7" : "#0f172a",
                       fontWeight: isActive ? 850 : 600,
                       fontSize: "0.9rem",
                       display: "flex",
@@ -274,7 +274,7 @@ export default function NavigationDrawer({
                           ? "rgba(255,255,255,0.05)"
                           : "#f8fafc"
                         : "transparent",
-                      color: isActive ? lessonColor : isDark ? "#ffffff" : "#0f172a",
+                      color: isActive ? lessonColor : isDark ? "#a8afb7" : "#0f172a",
                       fontWeight: isActive ? 850 : 600,
                       fontSize: "0.9rem",
                       display: "flex",
@@ -409,7 +409,7 @@ export default function NavigationDrawer({
                           padding: `10px ${12 + item.depth * 14}px 10px 8px`,
                           borderRadius: 10,
                           background: isActive ? `${lessonColor}15` : "transparent",
-                          color: isActive ? lessonColor : isDark ? "#ffffff" : "#0f172a",
+                          color: isActive ? lessonColor : isDark ? "#a8afb7" : "#0f172a",
                           display: "flex",
                           alignItems: "center",
                           gap: 10,
@@ -419,7 +419,7 @@ export default function NavigationDrawer({
                       >
                         <span
                           style={{
-                            color: isActive ? lessonColor : isDark ? "#ffffff" : "#0f172a",
+                            color: isActive ? lessonColor : isDark ? "#a8afb7" : "#0f172a",
                             fontWeight: isLevelZero ? 900 : 600,
                             fontSize: "0.82rem",
                             direction: "ltr",
@@ -433,7 +433,7 @@ export default function NavigationDrawer({
                           style={{
                             textAlign: "right",
                             flex: 1,
-                            color: isActive ? lessonColor : isDark ? "#ffffff" : "#475569",
+                            color: isActive ? lessonColor : isDark ? "#a8afb7" : "#475569",
                             whiteSpace: "nowrap",
                             overflow: "hidden",
                             textOverflow: "ellipsis",

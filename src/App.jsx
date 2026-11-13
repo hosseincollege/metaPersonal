@@ -12,6 +12,7 @@ import TwoDMobile from "./components/TwoDMobile/index.jsx";
 import SECTIONS from "./Section";
 import ContrastControl, { contrastValue } from "./components/ContrastControl";
 import HomeNotesCenter from "./components/HomeNotesCenter";
+import PersianClock from "./components/PersianClock";
 
 const IS_PASSWORD_PROTECTED = false; // true, false
 
@@ -58,8 +59,8 @@ const Card = React.memo(
           transition: "border-color 0.22s, background 0.22s",
           background: isDark
             ? hovered
-              ? `linear-gradient(180deg, ${color}15 0%, #050505 100%)`
-              : "#000000"
+              ? `linear-gradient(180deg, ${color}15 0%, #222426 100%)`
+              : "#222426"
             : hovered
             ? `linear-gradient(180deg, ${color}0d 0%, #ffffff 100%)`
             : "#ffffff",
@@ -90,7 +91,7 @@ const Card = React.memo(
             textAlign: "center",
             padding: "0 8px",
             lineHeight: "1.4",
-            color: isDark ? "#f1f5f9" : "#0f172a",
+            color: isDark ? "#a8afb7" : "#0f172a",
           }}
         >
           {title}
@@ -351,9 +352,9 @@ export default function App() {
         minHeight: "100vh",
         direction: "rtl",
         fontFamily: "'Vazirmatn', sans-serif",
-        color: isDark ? "#fff" : "#0f172a",
+        color: isDark ? "#a8afb7" : "#0f172a",
         background: isDark
-          ? "linear-gradient(185deg, #000000 0%, #0c0e12 60%, #000000 100%)"
+          ? "#171819"
           : "linear-gradient(185deg, #f8fafc 0%, #f1f5f9 60%, #e2e8f0 100%)",
         display: "flex",
         flexDirection: "column",
@@ -409,16 +410,16 @@ export default function App() {
                 }
 
                 ::-webkit-scrollbar-track {
-                  background: #0f0f0f !important;
+                  background: #171819 !important;
                 }
 
                 ::-webkit-scrollbar-thumb {
-                  background: #444444 !important;
+                  background: #353c45 !important;
                   border-radius: 8px;
                 }
 
                 ::-webkit-scrollbar-thumb:hover {
-                  background: #555555 !important;
+                  background: #515963 !important;
                 }
               `
           }
@@ -434,9 +435,9 @@ export default function App() {
           display: "flex",
           alignItems: "center",
           gap: 16,
-          background: isDark ? "#0f0f0f" : "#ffffff",
+          background: isDark ? "#222426" : "#ffffff",
           borderBottom: isDark
-            ? "1px solid #222"
+            ? "1px solid #353c45"
             : "1px solid #e2e8f0",
           zIndex: 20,
           flexDirection: "row",
@@ -569,6 +570,8 @@ export default function App() {
           <HomeNotesCenter isDark={isDark} />
         </div>
 
+        <PersianClock isDark={isDark} />
+
         {/* عنوان مرکزی نوار */}
         <div
           style={{
@@ -589,7 +592,7 @@ export default function App() {
               fontSize: "1.15rem",
               fontWeight: 900,
               whiteSpace: "nowrap",
-              color: isDark ? "#ffffff" : "#0f172a",
+              color: isDark ? "#a8afb7" : "#0f172a",
             }}
           >
             متاورس شخصی

@@ -12,6 +12,7 @@ import { getThemeStyles } from "./styles";
 import Keypad from "./Keypad";
 import ContrastControl from "../ContrastControl";
 import NotesPanel from "../NotesPanel";
+import PersianClock from "../PersianClock";
 import { NotebookPen } from "lucide-react";
 
 export default function ClassroomSplitTwoD({
@@ -492,20 +493,21 @@ export default function ClassroomSplitTwoD({
               height: 8px;
             }
             ::-webkit-scrollbar-track {
-              background: #0f0f0f !important;
+              background: #171819 !important;
             }
             ::-webkit-scrollbar-thumb {
-              background: #444444 !important;
+              background: #353c45 !important;
               border-radius: 8px;
             }
             ::-webkit-scrollbar-thumb:hover {
-              background: #555555 !important;
+              background: #515963 !important;
             }
           `}
         `}
       </style>
 
       <div style={styles.topToolbar}>
+        <PersianClock isDark={isDark} />
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           {/* دکمه تغییر تم سه‌حالته */}
           <button
@@ -797,7 +799,7 @@ export default function ClassroomSplitTwoD({
         <aside style={styles.sidePanel}>
           <div style={styles.panelHeader}>
             <span style={styles.headerLabel}>ستون اول</span>
-            <div style={{ ...styles.headerActiveTitle, color: isDark ? "#fff" : "#111" }}>
+            <div style={{ ...styles.headerActiveTitle, color: isDark ? "#a8afb7" : "#111" }}>
               بخش‌ها
             </div>
           </div>
@@ -898,7 +900,7 @@ export default function ClassroomSplitTwoD({
                           color: isActive
                             ? lessonColor
                             : isDark
-                            ? "#ffffff"
+                            ? "#a8afb7"
                             : "#0f172a",
                           fontWeight: isLevelZero ? 900 : 600,
                           fontSize: "0.85rem",
@@ -917,7 +919,7 @@ export default function ClassroomSplitTwoD({
                           color: isActive
                             ? lessonColor
                             : isDark
-                            ? "#ffffff"
+                            ? "#a8afb7"
                             : "#475569",
                           fontWeight: isActive ? 800 : isLevelZero ? 700 : 500,
                         }}

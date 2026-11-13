@@ -8,6 +8,7 @@ import { normalizeRecursive, flattenTree, detectDir } from "./utils";
 import KeypadModal from "./KeypadModal";
 import NavigationDrawer from "./NavigationDrawer";
 import ContrastControl from "../ContrastControl";
+import PersianClock from "../PersianClock";
 
 // متغیر فعال/غیرفعال کردن رمز رویدادها (در صورت false بودن، رمز درخواست نمی‌شود)
 const REQUIRE_EVENTS_PIN = false; // true , false
@@ -266,7 +267,7 @@ export default function TwoDMobile({
             <h2
               style={{
                 margin: 0,
-                color: depth === 0 ? lessonColor : isDark ? "#fff" : "#111",
+                color: depth === 0 ? lessonColor : isDark ? "#a8afb7" : "#111",
                 fontSize: depth === 0 ? "1.3rem" : "1.05rem",
                 fontWeight: 900,
                 lineHeight: 1.5,
@@ -281,7 +282,7 @@ export default function TwoDMobile({
               style={{
                 fontSize: "1rem",
                 lineHeight: "2.1",
-                color: isDark ? "#cfcfcf" : "#333",
+                color: isDark ? "#cbd5e1" : "#333",
                 textAlign: "justify",
                 marginTop: 10,
                 whiteSpace: "pre-line",
@@ -303,10 +304,10 @@ export default function TwoDMobile({
       style={{
         width: "100vw",
         height: "100vh",
-        backgroundColor: isDark ? "#080808" : "#f8fafc",
+        backgroundColor: isDark ? "#171819" : "#f8fafc",
         display: "flex",
         flexDirection: "column",
-        color: isDark ? "#f8fafc" : "#0f172a",
+        color: isDark ? "#a8afb7" : "#0f172a",
         direction: "rtl",
         fontFamily: "'Vazirmatn', sans-serif",
         overflow: "hidden",
@@ -337,8 +338,8 @@ export default function TwoDMobile({
         `
             : `
           ::-webkit-scrollbar { width: 6px; height: 6px; }
-          ::-webkit-scrollbar-track { background: #0f0f0f !important; }
-          ::-webkit-scrollbar-thumb { background: #444444 !important; border-radius: 6px; }
+          ::-webkit-scrollbar-track { background: #171819 !important; }
+          ::-webkit-scrollbar-thumb { background: #353c45 !important; border-radius: 6px; }
         `
         }
       `}</style>
@@ -350,13 +351,14 @@ export default function TwoDMobile({
           padding: "0 14px",
           display: "flex",
           alignItems: "center",
-          background: isDark ? "#0f0f0f" : "#ffffff",
-          borderBottom: isDark ? "1px solid #222" : "1px solid #e2e8f0",
+          background: isDark ? "#222426" : "#ffffff",
+          borderBottom: isDark ? "1px solid #353c45" : "1px solid #e2e8f0",
           zIndex: 30,
           flexShrink: 0,
           position: "relative",
         }}
       >
+        <PersianClock isDark={isDark} compact />
         <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
           {/* دکمه تم سه‌حالته */}
           <button
@@ -472,6 +474,7 @@ export default function TwoDMobile({
           style={{
             flex: 1,
             margin: 0,
+          paddingLeft: 96,
             fontSize: "0.95rem",
             fontWeight: 900,
             textAlign: "left",
@@ -490,8 +493,8 @@ export default function TwoDMobile({
       <div
         style={{
           padding: "8px 14px",
-          background: isDark ? "#0c0c0c" : "#f1f5f9",
-          borderBottom: isDark ? "1px solid #1f1f1f" : "1px solid #e2e8f0",
+          background: isDark ? "#1b1d1f" : "#f1f5f9",
+          borderBottom: isDark ? "1px solid #353c45" : "1px solid #e2e8f0",
           fontSize: "0.8rem",
           display: "flex",
           alignItems: "center",
@@ -506,7 +509,7 @@ export default function TwoDMobile({
           <span style={{ color: "#777" }}>/</span>
           <span
             style={{
-              color: isDark ? "#e2e8f0" : "#334155",
+              color: isDark ? "#a8afb7" : "#334155",
               fontWeight: 700,
               whiteSpace: "nowrap",
               overflow: "hidden",
@@ -524,8 +527,8 @@ export default function TwoDMobile({
             padding: "5px 10px",
             borderRadius: 8,
             border: `1px solid ${isDark ? "#2a2a2a" : "#cbd5e1"}`,
-            background: isDark ? "#1a1a1a" : "#ffffff",
-            color: isDark ? "#ffffff" : "#0f172a",
+            background: isDark ? "#222426" : "#ffffff",
+            color: isDark ? "#a8afb7" : "#0f172a",
             fontWeight: 800,
             fontSize: "0.78rem",
             display: "flex",
@@ -551,7 +554,7 @@ export default function TwoDMobile({
           flex: 1,
           overflowY: "auto",
           padding: "24px 16px 85px 16px",
-          background: isDark ? "#080808" : "#ffffff",
+          background: isDark ? "#171819" : "#ffffff",
           WebkitOverflowScrolling: "touch",
           scrollBehavior: "smooth",
         }}
@@ -571,7 +574,7 @@ export default function TwoDMobile({
                   fontWeight: 900,
                   marginBottom: 14,
                   lineHeight: 1.45,
-                  color: isDark ? "#ffffff" : "#0f172a",
+                  color: isDark ? "#a8afb7" : "#0f172a",
                 }}
               >
                 {activeUnit.title}
@@ -581,7 +584,7 @@ export default function TwoDMobile({
                   style={{
                     fontSize: "1.02rem",
                     lineHeight: "2.2",
-                    color: isDark ? "#cfcfcf" : "#333",
+                    color: isDark ? "#cbd5e1" : "#333",
                     textAlign: "justify",
                   }}
                 >
@@ -615,7 +618,7 @@ export default function TwoDMobile({
           left: 0,
           right: 0,
           height: 56,
-          background: isDark ? "rgba(15,15,15,0.92)" : "rgba(255,255,255,0.92)",
+          background: isDark ? "rgba(37,39,41,0.96)" : "rgba(255,255,255,0.92)",
           backdropFilter: "blur(16px)",
           WebkitBackdropFilter: "blur(16px)",
           borderTop: isDark ? "1px solid #222" : "1px solid #e2e8f0",
@@ -638,7 +641,7 @@ export default function TwoDMobile({
             borderRadius: 10,
             border: "none",
             background: activeUnitIdx === 0 ? "transparent" : isDark ? "#27272a" : "#f1f5f9",
-            color: activeUnitIdx === 0 ? "#555" : isDark ? "#fff" : "#0f172a",
+            color: activeUnitIdx === 0 ? "#555" : isDark ? "#a8afb7" : "#0f172a",
             fontSize: "0.82rem",
             fontWeight: 700,
             cursor: activeUnitIdx === 0 ? "default" : "pointer",
@@ -680,7 +683,7 @@ export default function TwoDMobile({
             border: "none",
             background:
               activeUnitIdx >= units.length - 1 ? "transparent" : isDark ? "#27272a" : "#f1f5f9",
-            color: activeUnitIdx >= units.length - 1 ? "#555" : isDark ? "#fff" : "#0f172a",
+            color: activeUnitIdx >= units.length - 1 ? "#555" : isDark ? "#a8afb7" : "#0f172a",
             fontSize: "0.82rem",
             fontWeight: 700,
             cursor: activeUnitIdx >= units.length - 1 ? "default" : "pointer",
