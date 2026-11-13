@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-برای قابلیت یادداشت‌های همگام‌شده، متغیر `DATABASE_URL` را در `.env` تنظیم کنید، طرح `database/schema.sql` را روی PostgreSQL اجرا کنید و API را با `npm run api` بالا بیاورید. API به‌طور پیش‌فرض روی پورت 3001 گوش می‌دهد. فایل `.env` را منتشر نکنید.
+برای اجرای محلی یادداشت‌ها، `DATABASE_URL` را در `.env` به PostgreSQL محلی تنظیم کنید و طرح `database/schema.sql` را روی دیتابیس اجرا کنید. با `npm run dev` رابط و API هر دو اجرا می‌شوند و API یادداشت‌ها روی پورت 3017 گوش می‌دهد. در Vercel، متغیر `DATABASE_URL` باید به پایگاه PostgreSQL ابری اشاره کند. فایل `.env` را منتشر نکنید.
 
 برای ساخت نسخهٔ وب: `npm run build`؛ برای اجرای API: `npm run api`؛ برای بررسی سبک کد: `npm run lint`.
 

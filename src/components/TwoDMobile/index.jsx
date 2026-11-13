@@ -109,12 +109,22 @@ export default function TwoDMobile({
     setUnitSelectionBySection((previous) => ({ ...previous, [activeSection.id]: activeUnitIdx }));
   }, [activeSection?.id, activeUnitIdx]);
   const openNoteForCurrent = () => {
-    const item = detailItems.find((detail) => detail.id === activeDetailId) || activeUnit || activeSection || { id: lesson?.key, title: lesson?.title || "درس" };
+    const item = detailItems.find((detail) => detail.id === activeDetailId) || activeUnit || activeSection || { id: lesson?.key, title: lesson?.title || "پوشه" };
     const isLesson = item.id === lesson?.key;
     const isSection = item === activeSection;
     const isUnit = item === activeUnit;
-    const type = isLesson ? "درس" : isSection ? "بخش" : isUnit ? "قسمت" : item.depth === 0 ? "موضوع" : item.depth === 1 ? "زیرموضوع" : "جزئیات";
-    window.dispatchEvent(new CustomEvent("metaPersonal:open-note", { detail: { id: isLesson ? lesson.key : `${lesson.key}:${item.id}`, title: item.title, type } }));
+    const type = isLesson ? "پوشه" : isSection ? "بخش" : isUnit ? "قسمت" : item.depth === 0 ? "موضوع" : item.depth === 1 ? "زیرموضوع" : "جزئیات";
+    const path = [{ type: "پوشه", title: lesson?.title || "پوشه" }];
+    if (isSection) {
+      path.push({ type: "بخش", title: item.title });
+    } else if (isUnit) {
+      path.push({ type: "بخش", title: activeSection.title }, { type: "قسمت", title: item.title });
+    } else if (!isLesson) {
+      path.push({ type: "بخش", title: activeSection.title }, { type: "قسمت", title: activeUnit.title });
+      (item.ancestors || []).forEach((ancestor, index) => path.push({ type: index === 0 ? "فصل" : "عنوان", title: ancestor.title }));
+      path.push({ type: item.depth === 0 ? "فصل" : "عنوان", title: item.title });
+    }
+    window.dispatchEvent(new CustomEvent("metaPersonal:open-note", { detail: { id: isLesson ? lesson.key : `${lesson.key}:${item.id}`, title: item.title, type, path } }));
   };
   const detailItems = useMemo(
     () => flattenTree(activeUnit?.children || []),

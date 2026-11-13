@@ -1,6 +1,4 @@
 -- PostgreSQL schema for lesson notes. Apply with psql after configuring the DB.
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
-
 CREATE TABLE IF NOT EXISTS notes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   lesson_key TEXT NOT NULL,
@@ -11,9 +9,12 @@ CREATE TABLE IF NOT EXISTS notes (
   body TEXT NOT NULL,
   due_date DATE,
   is_done BOOLEAN NOT NULL DEFAULT FALSE,
+  target_path TEXT NOT NULL DEFAULT '',
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+ALTER TABLE notes ADD COLUMN IF NOT EXISTS target_path TEXT NOT NULL DEFAULT '';
 
 CREATE INDEX IF NOT EXISTS notes_lesson_key_idx ON notes (lesson_key);
 CREATE INDEX IF NOT EXISTS notes_lesson_target_idx ON notes (lesson_key, target_title);

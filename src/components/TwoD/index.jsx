@@ -106,19 +106,32 @@ export default function ClassroomSplitTwoD({
   const [focusedIdx, setFocusedIdx] = useState({ 0: 0, 1: 0, 2: 0 });
 
   const getFocusedNoteTarget = () => {
-    if (focusedCol === 0 && sections[focusedIdx[0]]) return { item: sections[focusedIdx[0]], type: "بخش" };
-    if (focusedCol === 1 && units[focusedIdx[1]]) return { item: units[focusedIdx[1]], type: "قسمت" };
+    const folderPath = [{ type: "پوشه", title: lesson?.title || "پوشه" }];
+    if (focusedCol === 0 && sections[focusedIdx[0]]) {
+      const item = sections[focusedIdx[0]];
+      return { item, type: "بخش", path: [...folderPath, { type: "بخش", title: item.title }] };
+    }
+    if (focusedCol === 1 && units[focusedIdx[1]]) {
+      const item = units[focusedIdx[1]];
+      return { item, type: "قسمت", path: [...folderPath, { type: "بخش", title: activeSection?.title }, { type: "قسمت", title: item.title }] };
+    }
     if (focusedCol === 2 && detailItems[focusedIdx[2]]) {
       const item = detailItems[focusedIdx[2]];
-      return { item, type: item.depth === 0 ? "موضوع" : item.depth === 1 ? "زیرموضوع" : "جزئیات" };
+      const ancestors = (item.ancestors || []).map((ancestor, index) => ({ type: index === 0 ? "فصل" : "عنوان", title: ancestor.title }));
+      const type = item.depth === 0 ? "فصل" : "عنوان";
+      return {
+        item,
+        type,
+        path: [...folderPath, { type: "بخش", title: activeSection?.title }, { type: "قسمت", title: activeUnit?.title }, ...ancestors, { type, title: item.title }],
+      };
     }
-    return { item: { id: lesson?.key, title: lesson?.title || "درس" }, type: "درس", lesson: true };
+    return { item: { id: lesson?.key, title: lesson?.title || "پوشه" }, type: "پوشه", path: folderPath, lesson: true };
   };
 
   const openNoteForFocused = () => {
     const target = getFocusedNoteTarget();
     const id = target.lesson ? lesson?.key : `${lesson?.key}:${target.item.id}`;
-    window.dispatchEvent(new CustomEvent("metaPersonal:open-note", { detail: { id, title: target.item.title, type: target.type } }));
+    window.dispatchEvent(new CustomEvent("metaPersonal:open-note", { detail: { id, title: target.item.title, type: target.type, path: target.path } }));
   };
 
   const contentRefs = useRef({});

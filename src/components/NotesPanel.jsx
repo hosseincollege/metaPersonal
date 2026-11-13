@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Check, Pencil, Plus, Trash2, X } from "lucide-react";
 import { loadNotes } from "../lib/notesApi.js";
+import { formatNotePath, getNotePath } from "../lib/notePath.js";
 
 const API = "/api";
 
@@ -13,8 +14,9 @@ export default function NotesPanel({ lesson, isDark = true, showLauncher = true 
   const [notes, setNotes] = useState([]);
   const [targetId, setTargetId] = useState(lesson?.key || "");
   const [body, setBody] = useState("");
-  const [targetTitle, setTargetTitle] = useState(lesson?.title || "درس");
-  const [targetType, setTargetType] = useState("درس");
+  const [targetTitle, setTargetTitle] = useState(lesson?.title || "پوشه");
+  const [targetType, setTargetType] = useState("پوشه");
+  const [targetPath, setTargetPath] = useState(() => formatNotePath([{ type: "پوشه", title: lesson?.title || "پوشه" }]));
   const [openedAt, setOpenedAt] = useState(() => new Date().toISOString());
   const [editing, setEditing] = useState(null);
   const [apiReady, setApiReady] = useState(false);
@@ -27,7 +29,12 @@ export default function NotesPanel({ lesson, isDark = true, showLauncher = true 
     const openForTarget = (event) => {
       setTargetId(event.detail.id);
       setTargetTitle(event.detail.title);
-      setTargetType(event.detail.type);
+      setTargetType(event.detail.type === "درس" ? "پوشه" : event.detail.type);
+      const pathParts = event.detail.path?.length ? event.detail.path : [
+        { type: "پوشه", title: lesson?.title || "پوشه" },
+        ...(event.detail.type === "درس" || event.detail.type === "پوشه" ? [] : [{ type: event.detail.type, title: event.detail.title }]),
+      ];
+      setTargetPath(formatNotePath(pathParts));
       setEditing(null);
       setBody("");
       setDueDate("");
@@ -37,7 +44,7 @@ export default function NotesPanel({ lesson, isDark = true, showLauncher = true 
     };
     window.addEventListener("metaPersonal:open-note", openForTarget);
     return () => window.removeEventListener("metaPersonal:open-note", openForTarget);
-  }, []);
+  }, [lesson?.title]);
   useEffect(() => {
     let alive = true;
     loadNotes(`${API}/notes?lessonKey=${encodeURIComponent(lesson?.key || "")}`).then((items) => {
@@ -54,7 +61,7 @@ export default function NotesPanel({ lesson, isDark = true, showLauncher = true 
     event.preventDefault();
     if (!targetId || !body.trim()) return;
     try {
-      const response = await fetch(editing ? `${API}/notes/${editing}` : `${API}/notes`, { method: editing ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(editing ? { body: body.trim(), dueDate: dueDate || null } : { lessonKey: lesson?.key, lessonTitle: lesson?.title, targetId, targetTitle, targetType, body: body.trim(), dueDate: dueDate || null }) });
+      const response = await fetch(editing ? `${API}/notes/${editing}` : `${API}/notes`, { method: editing ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(editing ? { body: body.trim(), dueDate: dueDate || null } : { lessonKey: lesson?.key, lessonTitle: lesson?.title, targetId, targetTitle, targetType, targetPath, body: body.trim(), dueDate: dueDate || null }) });
       if (!response.ok) throw new Error("Database save failed");
       if (editing) {
         setNotes((items) => items.map((item) => item.id === editing ? { ...item, body: body.trim(), dueDate: dueDate || null } : item));
@@ -97,7 +104,7 @@ export default function NotesPanel({ lesson, isDark = true, showLauncher = true 
     }
   };
 
-  const startEdit = (note) => { setEditing(note.id); setTargetId(note.targetId || lesson?.key || ""); setTargetTitle(note.targetTitle || note.target || ""); setTargetType(note.targetType || "درس"); setOpenedAt(note.createdAt || new Date().toISOString()); setBody(note.body); setDueDate(note.dueDate || ""); setMessage(""); };
+  const startEdit = (note) => { setEditing(note.id); setTargetId(note.targetId || lesson?.key || ""); setTargetTitle(note.targetTitle || note.target || ""); setTargetType(note.targetType === "درس" || !note.targetType ? "پوشه" : note.targetType); setTargetPath(getNotePath(note)); setOpenedAt(note.createdAt || new Date().toISOString()); setBody(note.body); setDueDate(note.dueDate || ""); setMessage(""); };
   const visibleNotes = notes.filter((note) => {
     if (note.lessonKey !== lesson?.key) return false;
     if (filter === "pending" && note.done) return false;
@@ -105,17 +112,17 @@ export default function NotesPanel({ lesson, isDark = true, showLauncher = true 
     const query = search.trim().toLocaleLowerCase();
     return !query || `${note.targetTitle || note.target || ""} ${note.body || ""}`.toLocaleLowerCase().includes(query);
   }).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-  const surface = isDark ? "#171a20" : "#fff";
+  const surface = isDark ? "#222426" : "#fff";
   const foreground = isDark ? "#f1f5f9" : "#172033";
 
   return <>
     {showLauncher && <button type="button" onClick={() => setOpen(true)} aria-label="یادداشت‌ها" title="یادداشت‌ها" style={{ position: "fixed", bottom: 20, left: 20, zIndex: 40, border: 0, borderRadius: 999, padding: "11px 16px", background: lesson?.color || "#38bdf8", color: "white", fontWeight: 800, boxShadow: "0 5px 20px #0004" }}>یادداشت‌ها ({notes.filter((n) => n.lessonKey === lesson?.key).length})</button>}
     {open && <div role="dialog" aria-modal="true" aria-label="مدیریت یادداشت‌ها" onMouseDown={(e) => { if (e.target === e.currentTarget) setOpen(false); }} style={{ position: "fixed", inset: 0, zIndex: 100, background: "#0009", display: "grid", placeItems: "center", padding: 16 }}>
       <div style={{ width: "min(600px, 100%)", maxHeight: "85vh", overflow: "auto", background: surface, color: foreground, borderRadius: 18, padding: 20, direction: "rtl", boxShadow: "0 20px 70px #0008" }}>
-        <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}><div><h2>یادداشت‌های {lesson?.title}</h2><small>{apiReady ? "متصل به دیتابیس" : "اتصال دیتابیس برقرار نیست"} · {visibleNotes.length} مورد</small></div><button type="button" onClick={() => setOpen(false)} aria-label="بستن"><X size={18}/></button></header>
+        <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}><div><h2>یادداشت‌های پوشهٔ {lesson?.title}</h2><small>{apiReady ? "متصل به دیتابیس" : "اتصال دیتابیس برقرار نیست"} · {visibleNotes.length} مورد</small></div><button type="button" onClick={() => setOpen(false)} aria-label="بستن"><X size={18}/></button></header>
         {message && <p role="status" style={{ padding: 10, borderRadius: 8, background: isDark ? "#27272a" : "#f1f5f9", color: foreground }}>{message}</p>}
         <form onSubmit={save} style={{ display: "grid", gap: 10, marginBottom: 20 }}>
-          <div style={{ padding: 10, borderRadius: 8, border: "1px solid #64748b55" }}>{targetType} · {targetTitle}</div>
+          <div style={{ padding: 10, borderRadius: 8, border: "1px solid #64748b55" }}>{targetPath}</div>
           <textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="متن یادداشت" rows={3} required style={{ padding: 10, borderRadius: 8, border: "1px solid #64748b", background: surface, color: foreground, font: "inherit" }} />
           <label style={{ display: "grid", gap: 5 }}>یادآوری (اختیاری)<input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} style={{ padding: 9, borderRadius: 8, border: "1px solid #64748b", background: surface, color: foreground, font: "inherit" }} /></label>
           <div style={{ fontSize: 13, opacity: .75 }}>زمان ثبت: {formatPersianDateTime(openedAt)}</div>
@@ -124,7 +131,7 @@ export default function NotesPanel({ lesson, isDark = true, showLauncher = true 
         <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="جست‌وجو در یادداشت‌ها" aria-label="جست‌وجو در یادداشت‌ها" style={{ flex: "1 1 180px", minWidth: 0, padding: 9, borderRadius: 8, border: "1px solid #64748b55", background: surface, color: foreground, font: "inherit" }} />{[["all", "همه"], ["pending", "باز"], ["done", "انجام‌شده"]].map(([key, label]) => <button type="button" key={key} onClick={() => setFilter(key)} aria-pressed={filter === key} style={{ borderRadius: 8, border: "1px solid #64748b55", background: filter === key ? "#7c3aed" : surface, color: filter === key ? "white" : foreground, padding: "6px 10px" }}>{label}</button>)}</div>
         <div style={{ display: "grid", gap: 10 }}>{visibleNotes.length === 0 ? <p style={{ textAlign: "center", opacity: .7, padding: 16 }}>یادداشتی مطابق این فیلتر پیدا نشد.</p> : visibleNotes.map((note) => <article key={note.id} style={{ border: "1px solid #64748b55", borderRadius: 12, padding: 12, opacity: note.done ? .72 : 1 }}>
           <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}><strong>{note.targetTitle || note.target}</strong><div style={{ display: "flex", gap: 4 }}><button type="button" onClick={() => toggleDone(note)} title={note.done ? "علامت‌گذاری انجام‌نشده" : "علامت‌گذاری انجام‌شده"}><Check size={16}/></button><button type="button" onClick={() => startEdit(note)} title="ویرایش"><Pencil size={16}/></button><button type="button" onClick={() => deleteNote(note)}><Trash2 size={16}/></button></div></div>
-          <p style={{ whiteSpace: "pre-wrap", textDecoration: note.done ? "line-through" : "none" }}>{note.body}</p><small>{note.done ? "انجام‌شده" : "در انتظار"} · ثبت: {formatPersianDateTime(note.createdAt || Date.now())}{note.dueDate ? ` · یادآوری: ${new Intl.DateTimeFormat("fa-IR-u-ca-persian", { timeZone: "Asia/Tehran", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(`${note.dueDate}T12:00:00`))}` : ""}</small>
+          <small>{getNotePath(note)}</small><p style={{ whiteSpace: "pre-wrap", textDecoration: note.done ? "line-through" : "none" }}>{note.body}</p><small>{note.done ? "انجام‌شده" : "در انتظار"} · ثبت: {formatPersianDateTime(note.createdAt || Date.now())}{note.dueDate ? ` · یادآوری: ${new Intl.DateTimeFormat("fa-IR-u-ca-persian", { timeZone: "Asia/Tehran", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(`${note.dueDate}T12:00:00`))}` : ""}</small>
         </article>)}</div>
       </div>
     </div>}

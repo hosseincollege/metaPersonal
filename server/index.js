@@ -18,4 +18,5 @@ app.get("/api/health", async (_req, res) => {
 });
 app.all("/api/notes", notesCollectionHandler);
 app.all("/api/notes/:id", noteItemHandler);
-app.listen(Number(process.env.API_PORT || 3001), "127.0.0.1", () => console.log("Local notes API listening on 127.0.0.1"));
+const apiPort = Number(process.env.API_PORT || 3017);
+app.listen(apiPort, "127.0.0.1", () => console.log(`Local notes API listening on 127.0.0.1:${apiPort}`));

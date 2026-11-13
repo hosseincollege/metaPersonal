@@ -65,11 +65,11 @@ export const normalizeRecursive = (items, path = "root") => {
   });
 };
 
-export const flattenTree = (items, depth = 0, parentNumber = "") => {
+export const flattenTree = (items, depth = 0, parentNumber = "", ancestors = []) => {
   if (!Array.isArray(items)) return [];
   return items.flatMap((item, index) => {
     const number = parentNumber ? `${parentNumber}.${index + 1}` : `${index + 1}`;
-    const current = { ...item, depth, number };
-    return [current, ...flattenTree(item.children || [], depth + 1, number)];
+    const current = { ...item, depth, number, ancestors };
+    return [current, ...flattenTree(item.children || [], depth + 1, number, [...ancestors, item])];
   });
 };

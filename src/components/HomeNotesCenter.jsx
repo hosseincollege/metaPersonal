@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Check, NotebookPen, Trash2, X } from "lucide-react";
 import { loadNotes } from "../lib/notesApi.js";
+import { getNotePath } from "../lib/notePath.js";
 
 const API = "/api";
 const tabs = [
@@ -26,7 +27,7 @@ export default function HomeNotesCenter({ isDark }) {
   const [notes, setNotes] = useState([]);
   const [message, setMessage] = useState("");
   const [search, setSearch] = useState("");
-  const surface = isDark ? "#171a20" : "#fff";
+  const surface = isDark ? "#222426" : "#fff";
   const foreground = isDark ? "#f1f5f9" : "#172033";
 
   useEffect(() => {
@@ -78,8 +79,8 @@ export default function HomeNotesCenter({ isDark }) {
         <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}><div><h2>یادداشت‌ها</h2><small>{notes.length} یادداشت · دیتابیس</small></div><button type="button" onClick={() => setOpen(false)} aria-label="بستن"><X size={18}/></button></header>
         {message && <p role="status" style={{ padding: 10, borderRadius: 8, background: isDark ? "#27272a" : "#f1f5f9" }}>{message}</p>}
         <nav role="tablist" aria-label="دسته‌بندی یادداشت‌ها" style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>{tabs.map(([key, label]) => <button role="tab" aria-selected={tab === key} key={key} onClick={() => setTab(key)} style={{ background: tab === key ? "#7c3aed" : isDark ? "#27272a" : "#f1f5f9", color: tab === key ? "white" : foreground }}>{label} ({key === "all" ? notes.length : key === "pending" ? notes.filter((n) => !n.done).length : key === "done" ? notes.filter((n) => n.done).length : notes.filter((n) => n.dueDate === tehranDay(Date.now())).length})</button>)}</nav>
-        <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="جست‌وجو در متن، درس یا عنوان" aria-label="جست‌وجو در یادداشت‌ها" style={{ width: "100%", marginBottom: 14, padding: 10, borderRadius: 8, border: "1px solid #64748b55", background: surface, color: foreground, font: "inherit" }} />
-        {visible.length === 0 ? <p style={{ opacity: .7, padding: 24, textAlign: "center" }}>یادداشتی مطابق این فیلتر پیدا نشد.</p> : <div style={{ display: "grid", gap: 10 }}>{visible.map((note) => <article key={note.id} style={{ border: "1px solid #64748b55", borderRadius: 12, padding: 12, opacity: note.done ? .65 : 1 }}><div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", gap: 12 }}><div><strong>{note.targetTitle || note.target}</strong><div style={{ fontSize: 12, opacity: .7 }}>{note.lessonTitle || note.lessonKey}{note.targetType ? ` · ${note.targetType}` : ""} · {formatPersianDateTime(note.createdAt)}{note.dueDate ? ` · یادآوری: ${new Intl.DateTimeFormat("fa-IR-u-ca-persian", { timeZone: "Asia/Tehran", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(`${note.dueDate}T12:00:00`))}` : ""}</div></div><div style={{ display: "flex", gap: 5 }}><button type="button" title={note.done ? "انجام‌نشده" : "انجام‌شده"} onClick={() => toggleDone(note)}><Check size={16}/></button><button type="button" title="حذف" onClick={() => deleteNote(note)}><Trash2 size={16}/></button></div></div><p style={{ marginTop: 8, whiteSpace: "pre-wrap", textDecoration: note.done ? "line-through" : "none" }}>{note.body}</p></article>)}</div>}
+        <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="جست‌وجو در متن، پوشه یا عنوان" aria-label="جست‌وجو در یادداشت‌ها" style={{ width: "100%", marginBottom: 14, padding: 10, borderRadius: 8, border: "1px solid #64748b55", background: surface, color: foreground, font: "inherit" }} />
+        {visible.length === 0 ? <p style={{ opacity: .7, padding: 24, textAlign: "center" }}>یادداشتی مطابق این فیلتر پیدا نشد.</p> : <div style={{ display: "grid", gap: 10 }}>{visible.map((note) => <article key={note.id} style={{ border: "1px solid #64748b55", borderRadius: 12, padding: 12, opacity: note.done ? .65 : 1 }}><div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", gap: 12 }}><div><strong>{note.targetTitle || note.target}</strong><div style={{ fontSize: 12, opacity: .7 }}>{getNotePath(note)} · {formatPersianDateTime(note.createdAt)}{note.dueDate ? ` · یادآوری: ${new Intl.DateTimeFormat("fa-IR-u-ca-persian", { timeZone: "Asia/Tehran", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(`${note.dueDate}T12:00:00`))}` : ""}</div></div><div style={{ display: "flex", gap: 5 }}><button type="button" title={note.done ? "انجام‌نشده" : "انجام‌شده"} onClick={() => toggleDone(note)}><Check size={16}/></button><button type="button" title="حذف" onClick={() => deleteNote(note)}><Trash2 size={16}/></button></div></div><p style={{ marginTop: 8, whiteSpace: "pre-wrap", textDecoration: note.done ? "line-through" : "none" }}>{note.body}</p></article>)}</div>}
       </section>
     </div>}
   </>;
