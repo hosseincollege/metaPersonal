@@ -24,8 +24,6 @@ export default function PersianClock({ isDark = true, compact = false, top = "50
   const spokenDate = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
     ...dateOptions,
     weekday: "long",
-    day: "numeric",
-    month: "long",
   }).format(now);
   const time = new Intl.DateTimeFormat("fa-IR", {
     timeZone: "Asia/Tehran",
@@ -64,16 +62,16 @@ export default function PersianClock({ isDark = true, compact = false, top = "50
         direction: "rtl",
       }}
     >
-      <span style={{ display: "inline-flex", alignItems: "center", gap: 6, color: muted }}>
-        <CalendarDays size={compact ? 14 : 16} aria-hidden="true" />
-        <span>{numericDate}</span>
-      </span>
-      <span aria-hidden="true" style={{ width: 1, height: 18, background: divider }} />
       <time dateTime={now.toISOString()} style={{ display: "inline-flex", alignItems: "center", padding: "7px 9px", borderRadius: 8, background: chip, color: foreground, fontVariantNumeric: "tabular-nums", fontWeight: 700, letterSpacing: "0.02em" }}>
-        <Clock size={compact ? 13 : 14} aria-hidden="true" style={{ marginInlineEnd: 5, color: muted }} />
         {time}
+        <Clock size={compact ? 13 : 14} aria-hidden="true" style={{ marginInlineStart: 5, color: muted }} />
       </time>
+      <span aria-hidden="true" style={{ width: 1, height: 18, background: divider }} />
       <span style={{ color: muted, fontWeight: 500 }}>{spokenDate}</span>
+      <span style={{ display: "inline-flex", alignItems: "center", gap: 6, color: muted }}>
+        <span>{numericDate}</span>
+        <CalendarDays size={compact ? 14 : 16} aria-hidden="true" />
+      </span>
     </div>
   );
 }
