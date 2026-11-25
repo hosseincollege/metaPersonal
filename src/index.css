@@ -130,3 +130,9 @@ button:focus-visible {
     color: #0f172a;
   }
 }
+@media (max-width: 767px) {
+  .home-clock {
+    display: none !important;
+  }
+}
+

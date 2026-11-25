@@ -570,7 +570,7 @@ export default function App() {
           <HomeNotesCenter isDark={isDark} />
         </div>
 
-        <PersianClock isDark={isDark} />
+        <PersianClock className="home-clock" isDark={isDark} />
 
         {/* عنوان مرکزی نوار */}
         <div
