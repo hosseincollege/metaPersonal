@@ -7,7 +7,7 @@ const dateOptions = {
   numberingSystem: "arabext",
 };
 
-export default function PersianClock({ isDark = true, compact = false, top = "50%", centerVertically = true, className }) {
+export default function PersianClock({ isDark = true, compact = false, top = "50%", centerVertically = true }) {
   const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
@@ -39,7 +39,6 @@ export default function PersianClock({ isDark = true, compact = false, top = "50
 
   return (
     <div
-      className={className}
       role="group"
       aria-label={`${spokenDate}، تاریخ ${numericDate}، ساعت ${time} به وقت تهران`}
       style={{

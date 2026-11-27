@@ -8,6 +8,7 @@ import { normalizeRecursive, flattenTree, detectDir } from "./utils";
 import KeypadModal from "./KeypadModal";
 import NavigationDrawer from "./NavigationDrawer";
 import ContrastControl from "../ContrastControl";
+import PersianClock from "../PersianClock";
 
 // متغیر فعال/غیرفعال کردن رمز رویدادها (در صورت false بودن، رمز درخواست نمی‌شود)
 const REQUIRE_EVENTS_PIN = false; // true , false
@@ -367,6 +368,7 @@ export default function TwoDMobile({
           position: "relative",
         }}
       >
+        <PersianClock isDark={isDark} compact />
         <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
           {/* دکمه تم سه‌حالته */}
           <button
