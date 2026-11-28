@@ -1,3 +1,5 @@
+import { API_BASE } from "./apiBase.js";
+
 const LEGACY_NOTES_KEY = "metaPersonal.notes.v1";
 
 let legacyMigration;
@@ -12,7 +14,7 @@ async function migrateLegacyNotes() {
       if (!Array.isArray(legacyNotes)) throw new Error("Legacy notes data is invalid");
 
       for (const note of legacyNotes) {
-        const response = await fetch("/api/notes", {
+        const response = await fetch(`${API_BASE}/notes`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

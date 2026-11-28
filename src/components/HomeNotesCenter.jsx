@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { Check, NotebookPen, Trash2, X } from "lucide-react";
 import { loadNotes } from "../lib/notesApi.js";
 import { getNotePath } from "../lib/notePath.js";
+import { API_BASE } from "../lib/apiBase.js";
 
-const API = "/api";
+const API = API_BASE;
 const tabs = [
   ["all", "همه"],
   ["pending", "انجام‌نشده"],

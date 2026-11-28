@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { Check, Pencil, Plus, Trash2, X } from "lucide-react";
 import { loadNotes } from "../lib/notesApi.js";
 import { formatNotePath, getNotePath } from "../lib/notePath.js";
+import { API_BASE } from "../lib/apiBase.js";
 
-const API = "/api";
+const API = API_BASE;
 
 function formatPersianDateTime(value) {
   return new Intl.DateTimeFormat("fa-IR-u-ca-persian", { timeZone: "Asia/Tehran", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date(value));

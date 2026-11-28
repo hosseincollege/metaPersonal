@@ -7,9 +7,13 @@
     "dev": "node scripts/dev.js",
     "api": "node server/index.js",
     "start": "node server/index.js",
+    "start:api-server": "set \"API_PORT=5274\" && node server/index.js",
+    "db:migrate": "node database/migrate.js",
     "build": "vite build",
+    "build:server": "set \"VITE_BASE_PATH=/meta-personal/\" && set \"VITE_API_BASE=/meta-personal/api\" && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start:server": "vite preview --host 127.0.0.1 --port 5273 --strictPort"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
